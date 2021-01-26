@@ -1,2 +1,2 @@
 # Aegis
-![plot](https://github.com/Ulq1517/Aegis/Aegis.png)
+![plot](https://github.com/Ulq1517/Aegis/Aegis.png?raw=true)
