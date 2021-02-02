@@ -5,16 +5,16 @@
 ## Features
 ### Arithmetic
 Java            Aegis
-+         =     +
--        =    -
-*        =    *
-/        =    /
-%        =    MOD
-Math.pow()     =    **
++ +         =     +
++ -        =    -
++ *        =    *
++ /        =    /
++ %        =    MOD
++ Math.pow()     =    **
 ### Logic
-||        =    |
-&&        =    &
-!        =    !
++ ||        =    |
++ &&        =    &
++ !        =    !
 ### Loops
 Java            Aegis
 while         =    LOOP
