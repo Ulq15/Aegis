@@ -6,9 +6,14 @@
 Aegis {
   Program          = FunctionDeclare+
   FunctionDeclare  = id "(" (typeKeys id ("," typeKeys id)*)? ")" typeKey? ":\n" Statement+ "\n"endKey
-  
-  
-  
+  Statement        = Arithmetic
+                   | Assignment
+                   | Conditional
+                   | Loop
+                   | Declaration
+                   | 
+  int              = digit+
+  decimal          = digit+ ("." digit+)?
   logicop          = "&" | "|" | "!"
   addop            = "+" | "-"
   multop           = "*" | "/"
@@ -23,6 +28,9 @@ Aegis {
   loopKey          = "LOOP" | "DO"
   printKey         = "OUTPUT"
   endKey           = "END"
+  arrayDeclare     = typeKeys id "{" int "}"
+                   | numType id "{}" "=" "["
+                   |
   keyword          = typeKeys
                    | conditionalKey
                    | loopKey
