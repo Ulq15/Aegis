@@ -1,14 +1,18 @@
 # Aegis
+
 ![plot](https://github.com/Ulq1517/Aegis/blob/main/Aegis.png?raw=true)
 
-## Elevator Pitch
+## Pitch
 
-## Grammar 
+Aegis, a word that is derived from Greek mythology is defined as protection, backing, or support to an individual person or organization. Similarly, Aegis is a programming language that aims to support the user and their experience with the langauge. With hints of Java, Aegis was designed to be statically a typed language with a modern touches, such as removing semicolons to end statements as well as replacing curly braces with colons for scope limitations. Aegis seeks to improve code functionality while honing in on code readability!
+
+## Grammar
+
 ```
 Aegis {
   Program              = FunctionDeclare+
   FunctionDeclare      = id "(" (typeKeys id ("," typeKeys id)*)? ")" typeKeys? ":\n" Body endKey            --functiondeclaration
-  Body                 = Exp ("\n" Exp)*  
+  Body                 = Exp ("\n" Exp)*
   Exp                  = Math
                        | Assignment
                        | Logic
@@ -29,7 +33,7 @@ Aegis {
   Assignment           = (typeKeys)? id "=" Exp                                                               --varAssign
                        | typeKeys id ("=" Exp)?                                                               --varDeclare
                        | DictionaryOp
-                       | ArrayOp 
+                       | ArrayOp
                        | Array
                        | Dictionary
   Logic                = Exp ((logicop | compareOp) Logic)*                                                   --basicLogicStatement
@@ -52,7 +56,7 @@ Aegis {
                        | space
   stringLiteral        = "\"" string* "\""
   data                 = int | decimal | boolean | stringLiteral | id
-  logicop              = "&" | "|" 
+  logicop              = "&" | "|"
   compareOp            = "==" | "!=" | "<" | "<=" | ">" | ">="
   negateOp             = "!"
   addop                = "+" | "-"
@@ -83,129 +87,146 @@ Aegis {
 ```
 
 ## Features
+
 ### Arithmetic
-|Java|Ageis|
-|----|-----|
-|+|+|
-|-|-|
-|*|*|
-|/|/|
-|%|MOD|
-|Math.pow()|**|
+
+| Java       | Ageis |
+| ---------- | ----- |
+| +          | +     |
+| -          | -     |
+| \*         | \*    |
+| /          | /     |
+| %          | MOD   |
+| Math.pow() | \*\*  |
 
 ### Increment / Decrement
-|Java|Aegis|
-|-----|-----|
-|var++|var++|
-|var--|var--|
-|++var|++var|
-|--var|--var|
 
+| Java  | Aegis |
+| ----- | ----- |
+| var++ | var++ |
+| var-- | var-- |
+| ++var | ++var |
+| --var | --var |
 
 ### Logic
-|Java|Ageis|
-|----|-----|
-|\|\||\||
-|&&|&|
-|!|!|
+
+| Java | Ageis |
+| ---- | ----- |
+| \|\| | \|    |
+| &&   | &     |
+| !    | !     |
 
 ### Compare Logic
-|Java|Ageis|
-|----|-----|
-|==|==|
-|!=|!=|
-|<|<|
-|<=|<=|
-|>|>|
-|>=|>=|
+
+| Java | Ageis |
+| ---- | ----- |
+| ==   | ==    |
+| !=   | !=    |
+| <    | <     |
+| <=   | <=    |
+| >    | >     |
+| >=   | >=    |
 
 ### Loops
-|Java|Ageis|
-|----|-----|
-|while|LOOP|
-|for|DO|
+
+| Java  | Ageis |
+| ----- | ----- |
+| while | LOOP  |
+| for   | DO    |
 
 ### Conditionals
-|Java|Ageis|
-|----|-----|
-|if...else|IF...OTHER|
-|else if|IFOTHER|
 
+| Java      | Ageis      |
+| --------- | ---------- |
+| if...else | IF...OTHER |
+| else if   | IFOTHER    |
 
 ### Statically Typed
-|Java|Ageis|
-|----|-----|
-|int|NUM|
-|double|DECI|
-|boolean|BOOL|
-|String|CHARS|
+
+| Java    | Ageis |
+| ------- | ----- |
+| int     | NUM   |
+| double  | DECI  |
+| boolean | BOOL  |
+| String  | CHARS |
 
 ### Comments
-|Java|Ageis|
-|----|-----|
-|//|##|
-|/* */|#* *#|
+
+| Java    | Ageis   |
+| ------- | ------- |
+| //      | ##      |
+| /\* \*/ | #\* \*# |
 
 ### Data Structures
-|Java|Ageis|
-|----|-----|
-|Type[] array|Type array{index}|
-|Map<Integer, String>|map[tyoe1][type2]|
+
+| Java                 | Ageis             |
+| -------------------- | ----------------- |
+| Type[] array         | Type array{index} |
+| Map<Integer, String> | map[tyoe1][type2] |
 
 ### Function Declarations
-|Java|Ageis|
-|----|-----|
-|public static void main(String[] args){...}|main(CHARS{} args):...END|
-| public int addOne(int x){ return ++x;}|addOne(NUM x) NUM: RETURN ++x END|
+
+| Java                                        | Ageis                             |
+| ------------------------------------------- | --------------------------------- |
+| public static void main(String[] args){...} | main(CHARS{} args):...END         |
+| public int addOne(int x){ return ++x;}      | addOne(NUM x) NUM: RETURN ++x END |
 
 ## Example Programs
+
 ### Hello World!
-|Java|Ageis|
-|----|-----|
-|System.out.println("Hello world")|OUTPUT("Hello world")|
+
+| Java                              | Ageis                 |
+| --------------------------------- | --------------------- |
+| System.out.println("Hello world") | OUTPUT("Hello world") |
 
 ### Assignment Operation
-|Java         |Ageis        |
-|-------------|-------------|
-|int x = 3 * y|NUM x = 3 * y|
-|double y = 3.14|DECI y = 3.14|
-|boolean condition = true|BOOL condition = TRUE|
-|String name = "Hello, World!"|CHARS name = "Hello, World!"|
-|char character = 'c'|CHARS character = 'c'|
+
+| Java                          | Ageis                        |
+| ----------------------------- | ---------------------------- |
+| int x = 3 \* y                | NUM x = 3 \* y               |
+| double y = 3.14               | DECI y = 3.14                |
+| boolean condition = true      | BOOL condition = TRUE        |
+| String name = "Hello, World!" | CHARS name = "Hello, World!" |
+| char character = 'c'          | CHARS character = 'c'        |
 
 ### Looping
-|Java|Ageis|
-|----|-----|
-|for(int i = 0; i < max, i++){...}|DO(NUM i = 0, i < max, i++):...END|
-|while(bool){...}|LOOP(BOOL):...END|
+
+| Java                              | Ageis                              |
+| --------------------------------- | ---------------------------------- |
+| for(int i = 0; i < max, i++){...} | DO(NUM i = 0, i < max, i++):...END |
+| while(bool){...}                  | LOOP(BOOL):...END                  |
 
 ### Conditionals
-|Java|Ageis|
-|----|-----|
-|if(boolean){...}|IF(BOOL):... END|
-|if(boolean){...}else{...}|IF(BOOL):...OTHER:...END|
-|if(boolean){...}else if{...}else{..}|IF(BOOL):...IFOTHER:...OTHER:...END|
+
+| Java                                 | Ageis                               |
+| ------------------------------------ | ----------------------------------- |
+| if(boolean){...}                     | IF(BOOL):... END                    |
+| if(boolean){...}else{...}            | IF(BOOL):...OTHER:...END            |
+| if(boolean){...}else if{...}else{..} | IF(BOOL):...IFOTHER:...OTHER:...END |
 
 ### Logic
-|Java|Ageis|
-|----|-----|
-|(X && Y)|(X & Y)|
-|(X\|\|Y)|(X\|Y)|
-|(!X)|(!X)|
-|X == Y| X==Y|
-|X!=Y | X!=Y|
-|X<=Y|X<=Y|
+
+| Java     | Ageis   |
+| -------- | ------- |
+| (X && Y) | (X & Y) |
+| (X\|\|Y) | (X\|Y)  |
+| (!X)     | (!X)    |
+| X == Y   | X==Y    |
+| X!=Y     | X!=Y    |
+| X<=Y     | X<=Y    |
 
 ### Function Declarations
-|Java|Ageis|
-|----|-----|
-|public static void main(String[] args){...}|main(CHARS{} args):...END|
+
+| Java                                        | Ageis                     |
+| ------------------------------------------- | ------------------------- |
+| public static void main(String[] args){...} | main(CHARS{} args):...END |
 
 ### Data Structures
-|Java      |Ageis|
-|----------|-----|
-|int[] arr =  {1, 3, 2};|NUM{} array=[1,3,2]|
-|int arr[3]|NUM array{3}|
-|Map<Integer, String> myMap = new HashMap<Integer, String>()|myMap[NUM][CHARS]|
-|myMap.put(1, “SomeString”)|myMap ADD[1][“SomeString”]|
-|myMap.get(1)|myMap GET[1]|
+
+| Java                                                        | Ageis                      |
+| ----------------------------------------------------------- | -------------------------- |
+| int[] arr = {1, 3, 2};                                      | NUM{} array=[1,3,2]        |
+| int arr[3]                                                  | NUM array{3}               |
+| Map<Integer, String> myMap = new HashMap<Integer, String>() | myMap[NUM][chars]          |
+| myMap.put(1, “SomeString”)                                  | myMap ADD[1][“somestring”] |
+| myMap.get(1)                                                | myMap GET[1]               |
