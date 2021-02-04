@@ -4,75 +4,79 @@
 ## Grammar (Still WIP)
 ```
 Aegis {
-  Program          = FunctionDeclare+
-  FunctionDeclare  = id "(" (typeKeys id ("," typeKeys id)*)? ")" typeKeys? ":\n" Body endKey            --functiondeclaration
-  Body               = Exp ("\n" Exp)*  
-  Exp                 = Math
-                          | Declaration
-                          | Assignment
-                          | Conditional
-                          | Loop
-                          | id
-                          | data
-  Math        = Exp (addop Exp)+            --addsubtract
-  				   | Multiply
-  Multiply    = Exp (multop Exp)+      --mulidivide
-                   | Exponent
-  Exponent  = Exp (exponentop Exp)+            --exponent
-                   | Modulo
-  Modulo     =  Exp (moduloKey Exp)+            --modulo
-  				   
-  Assignment = (typeKeys)? id "=" Exp			         --varAssign
-                      | typeKeys id ("=" Exp)?                  --varDeclare
-                      | dictionaryOp
-                      | arrayOp       
-  
-  Conditional      =
-  
-  Loop                = 
-  
-  Declaration      = array
-                          | dictionary
-                          
-  int                    = digit+
-  decimal           = digit+ ("." digit+)
-  num                 = int | decimal
-  boolean           = "TRUE" | "FALSE"
+  Program              = FunctionDeclare+
+  FunctionDeclare      = id "(" (typeKeys id ("," typeKeys id)*)? ")" typeKeys? ":\n" Body endKey            --functiondeclaration
+  Body                 = Exp ("\n" Exp)*  
+  Exp                  = Math
+                       | Assignment
+                       | Logic
+                       | Conditional
+                       | Loop
+                       | returnKey Exp                                                                        --returnStatement
+                       | printKey "(" Exp ")"                                                                 --print
+                       | data
+  Math                 = Exp (addop Exp)+                                                                     --addsubtract
+                       | Exp crementOp                                                                        --post_increment
+                       | crementOp Exp                                                                        --pre_increment
+                       | Multiply
+  Multiply    		     = Exp (multop Exp)+                                                                    --mulidivide
+                       | Exponent
+  Exponent		         = Exp (exponentop Exp)+                                                                --exponent
+                       | Modulo
+  Modulo		           = Exp (moduloKey Exp)+                                                                 --modulo
+  Assignment           = (typeKeys)? id "=" Exp			                                                          --varAssign
+                       | typeKeys id ("=" Exp)?                                                               --varDeclare
+                       | DictionaryOp
+                       | ArrayOp 
+                       | Array
+                       | Dictionary
+  Logic                = Exp ((logicop | compareOp) Logic)*                                                   --basicLogicStatement
+                       | negateOp Exp                                                                         --negation
+  Conditional          = "IF" "(" Logic "):" Body ("IFOTHER" "(" Logic "):" Body)* ("OTHER:" Body)? endKey    --multipleIFs
+  Loop                 = "DO" "(" numType? id "=" int "," Logic "," Math "):" Body endKey                     --stepByStepBased
+                       | "LOOP" "(" Logic "):" Body endKey                                                    --statementBased
+  Array                = typeKeys "{" int "}" id                                                              --declaration
+                       | typeKeys "{""}" id "=" "[" data ("," data)* "]"                                      --populate
+  ArrayOp              = id"{" int "}" "=" data                                                               --arrayAssignment
+  Dictionary           = id "[" typeKeys "][" typeKeys "]"                                                    --dictionaryDeclaration
+  DictionaryOp         = id "ADD[" data "][" data "]"                                                         --addToDictionary
+                       | id "GET[" data "]"                                                                   --getFromDictionary
+  crementOp            = "++" | "--"
+  int                  = digit+
+  decimal              = digit+ ("." digit+)
+  num                  = int | decimal
+  boolean              = "TRUE" | "FALSE"
   string               = alnum
-                          | space
-  stringLiteral     = "\"" string* "\""
-  data                 = int | decimal | boolean | stringLiteral
-  logicop             = "&" | "|" | "!"
-  addop              = "+" | "-"
-  multop             = "*" | "/"
-  exponentop     = "**"
-  numType         = "NUM"
-  decimalType    = "DECI"
-  booleanType    = "BOOL"
-  stringType        = "CHARS"
-  typeKeys          = numType | decimalType | booleanType | stringType
-  moduloKey       = "MOD"
-  conditionalKey  = "IF" | "OTHER" | "IFOTHER"
-  loopKey            = "LOOP" | "DO"
-  printKey            = "OUTPUT"
-  endKey             = "END"
-  array                 = typeKeys id "{" int "}"                           --declaration
-                           | numType id "{}" "=" "[" int (("," int)*)? "]"    --numArrayInit
-                           | decimalType id "{}" "=" "[" decimal (("," decimal)*)? "]"  --decimalArrayInit
-                           | booleanType id "{}" "=" "[" boolean (("," boolean)*)? "]"  --booleanArrayInit
-                           | stringType id "{}" "=" "[" string (("," string)*)? "]"              --stringArrayInit
-  arrayOp            = id"{" int "}" "=" data                                    --arrayAssignment
-  dictionary          = id "[" typeKeys "][" typeKeys "]"                --dictionaryDeclaration
-  dictionaryOp     = id "ADD[" data "][" data "]"                         --addToDictionary
-                           | id "GET[" data "]"                                        --getFromDictionary
-  keyword            = typeKeys
-                           | conditionalKey
-                           | loopKey
-                           | printKey
-                           | endKey
-                           | moduloKey
-  id                      = ~keyword letter alnum*
-  space             += "##" (~"\n" any)* ("\n" | end)   --comment
+                       | space
+  stringLiteral        = "\"" string* "\""
+  data                 = int | decimal | boolean | stringLiteral | id
+  logicop              = "&" | "|" 
+  compareOp            = "==" | "!=" | "<" | "<=" | ">" | ">="
+  negateOp             = "!"
+  addop                = "+" | "-"
+  multop               = "*" | "/"
+  exponentop           = "**"
+  numType              = "NUM"
+  decimalType          = "DECI"
+  booleanType          = "BOOL"
+  stringType           = "CHARS"
+  typeKeys             = numType | decimalType | booleanType | stringType
+  moduloKey            = "MOD"
+  conditionalKey       = "IF" | "OTHER" | "IFOTHER"
+  loopKey              = "LOOP" | "DO"
+  printKey             = "OUTPUT"
+  endKey               = "END"
+  returnKey            = "RETURN"
+  keyword              = typeKeys
+                       | conditionalKey
+                       | loopKey
+                       | printKey
+                       | endKey
+                       | returnKey
+                       | moduloKey
+  id                   = ~keyword letter alnum*
+  space               += "##" (~"\n" any)* ("\n" | end)                                                       --singleLineComment
+                       | "#*" (~"*#" any)* ("*#" | end)                                                       --multiLineComment
 }
 ```
 
@@ -87,12 +91,31 @@ Aegis {
 |%|MOD|
 |Math.pow()|**|
 
+### Increment / Decrement
+|Java|Aegis|
+|-----|-----|
+|var++|var++|
+|var--|var--|
+|++var|++var|
+|--var|--var|
+
+
 ### Logic
 |Java|Ageis|
 |----|-----|
 |\|\||\||
 |&&|&|
 |!|!|
+
+### Compare Logic
+|Java|Ageis|
+|----|-----|
+|==|==|
+|!=|!=|
+|<|<|
+|<=|<=|
+|>|>|
+|>=|>=|
 
 ### Loops
 |Java|Ageis|
@@ -103,7 +126,9 @@ Aegis {
 ### Conditionals
 |Java|Ageis|
 |----|-----|
-|If...else|IF...OTHER|
+|if...else|IF...OTHER|
+|else if|IFOTHER|
+
 
 ### Statically Typed
 |Java|Ageis|
@@ -123,18 +148,19 @@ Aegis {
 |Java|Ageis|
 |----|-----|
 |Type[] array|Type array{index}|
-|Map<Integer, String>|map[NUM][CHARS]|
+|Map<Integer, String>|map[tyoe1][type2]|
 
 ### Function Declarations
 |Java|Ageis|
 |----|-----|
-|Access static return method(param){...}|name(params) return:...|
+|public static void main(String[] args){...}|main(CHARS{} args):...END|
+|```java public int addOne(int x){ return ++x;}```|addOne(NUM x) NUM: RETURN ++x END|
 
 ## Example Programs
 ### Hello World!
 |Java|Ageis|
 |----|-----|
-|System.out.println("Hello world")|output("Hello world")|
+|System.out.println("Hello world")|OUTPUT("Hello world")|
 
 ### Assignment Operation
 |Java         |Ageis        |
@@ -159,12 +185,14 @@ Aegis {
 |if(boolean){...}else if{...}else{..}|IF(BOOL):...IFOTHER:...OTHER:...END|
 
 ### Logic
-X is True, Y is false.
 |Java|Ageis|
 |----|-----|
-|(X && Y) is false|(X & Y) is false|
-|(X\|\|Y) is true|(X\|Y) is true|
-|(!X) is false|(!X) is false|
+|(X && Y)|(X & Y)|
+|(X\|\|Y)|(X\|Y)|
+|(!X)|(!X)|
+|X == Y| X==Y|
+|X!=Y | X!=Y|
+|X<=Y|X<=Y|
 
 ### Function Declarations
 |Java|Ageis|
@@ -174,8 +202,8 @@ X is True, Y is false.
 ### Data Structures
 |Java      |Ageis|
 |----------|-----|
-|int[] arr =  {1, 3, 2};|NUM array{}=[1,3,2]|
+|int[] arr =  {1, 3, 2};|NUM{} array=[1,3,2]|
 |int arr[3]|NUM array{3}|
 |Map<Integer, String> myMap = new HashMap<Integer, String>()|myMap[NUM][CHARS]|
-|myMap.put(1, “SomeString”)|myMap.add[1][“SomeString”]|
-|myMap.get(1)|myMap.get[1]|
+|myMap.put(1, “SomeString”)|myMap ADD[1][“SomeString”]|
+|myMap.get(1)|myMap GET[1]|
