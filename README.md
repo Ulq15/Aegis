@@ -1,7 +1,9 @@
 # Aegis
 ![plot](https://github.com/Ulq1517/Aegis/blob/main/Aegis.png?raw=true)
 
-## Grammar (Still WIP)
+## Elevator Pitch
+
+## Grammar 
 ```
 Aegis {
   Program              = FunctionDeclare+
