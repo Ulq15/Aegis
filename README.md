@@ -19,11 +19,11 @@ Aegis {
                        | Exp crementOp                                                                        --post_increment
                        | crementOp Exp                                                                        --pre_increment
                        | Multiply
-  Multiply    		     = Exp (multop Exp)+                                                                    --mulidivide
+  Multiply             = Exp (multop Exp)+                                                                    --mulidivide
                        | Exponent
-  Exponent		         = Exp (exponentop Exp)+                                                                --exponent
+  Exponent             = Exp (exponentop Exp)+                                                                --exponent
                        | Modulo
-  Modulo		           = Exp (moduloKey Exp)+                                                                 --modulo
+  Modulo               = Exp (moduloKey Exp)+                                                                 --modulo
   Assignment           = (typeKeys)? id "=" Exp			                                                          --varAssign
                        | typeKeys id ("=" Exp)?                                                               --varDeclare
                        | DictionaryOp
