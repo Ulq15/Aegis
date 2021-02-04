@@ -78,14 +78,14 @@ Aegis {
 
 ## Features
 ### Arithmetic
-|Java      |Ageis|
-|----------|-----|
-|+         |+    |
-|-         |-    |
-|*         |*    |
-|/         |/    |
-|%         |MOD  |
-|Math.pow()|**   |
+|Java|Ageis|
+|----|-----|
+|+|+|
+|-|-|
+|*|*|
+|/|/|
+|%|MOD|
+|Math.pow()|**|
 ### Logic
 |Java      |Ageis|
 |----------|-----|
@@ -119,14 +119,14 @@ Aegis {
 |Type[] array        |Type array{index}|
 |Map<Integer, String>|map[NUM][CHARS]  |
 ### Function Declarations
-|Java                                   |Ageis               |
+|Java                                   |Ageis|
 |---------------------------------------|--------------------|
 |Access static return method(param){...}|name(params) return:|
 
 ## Example Programs
 ### Hello World!
-|Java                             |Ageis                |
-|---------------------------------|---------------------|
+|Java|Ageis|
+|----|-----|
 |System.out.println("Hello world")|output("Hello world")|
 
 ### Assignment Operation
