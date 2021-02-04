@@ -154,7 +154,7 @@ Aegis {
 |Java|Ageis|
 |----|-----|
 |public static void main(String[] args){...}|main(CHARS{} args):...END|
-|```java public int addOne(int x){ return ++x;}```|addOne(NUM x) NUM: RETURN ++x END|
+| public int addOne(int x){ return ++x;}|addOne(NUM x) NUM: RETURN ++x END|
 
 ## Example Programs
 ### Hello World!
