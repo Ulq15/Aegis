@@ -78,19 +78,35 @@ Aegis {
 
 ## Features
 ### Arithmetic
-
+|Java      |Ageis|
+|----------|-----|
+|+         |+    |
+|-         |-    |
+|*         |*    |
+|/.        |/.   |
+|%.        |MOD. |
+|Math.pow()|**.  |
 ### Logic
-
+```
+```
 ### Loops
-
+```
+```
 ### Conditionals
-
+```
+```
 ### Statically Typed
-
+```
+```
 ### Comments
-
+```
+```
 ### Data Structures
-
+```
+```
 ### Function Declarations
-
+```
+```
 ## Example Programs
+```
+```
