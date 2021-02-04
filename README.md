@@ -83,30 +83,73 @@ Aegis {
 |+         |+    |
 |-         |-    |
 |*         |*    |
-|/.        |/.   |
-|%.        |MOD. |
-|Math.pow()|**.  |
+|/         |/    |
+|%         |MOD  |
+|Math.pow()|**   |
 ### Logic
-```
-```
+|Java      |Ageis|
+|----------|-----|
+|||        ||    |
+|&&        |&    |
+|!         |!    |
 ### Loops
+|Java      |Ageis|
+|----------|-----|
+|while     |LOOP |
+|for       |DO   |
+### Conditionals
+|Java      |Ageis     |
+|----------|----------|
+|If...else |IF...OTHER|
+### Statically Typed
+|Java      |Ageis|
+|----------|-----|
+|int       |NUM  |
+|double    |DECI |
+|boolean   |BOOL |
+|String    |CHARS|
+### Comments
+|Java      |Ageis|
+|----------|-----|
+|//        |##   |
+|/* */     |#* *#|
+### Data Structures
+|Java                |Ageis            |
+|--------------------|-----------------|
+|Type[] array        |Type array{index}|
+|Map<Integer, String>|map[NUM][CHARS]  |
+### Function Declarations
+|Java                                   |Ageis               |
+|---------------------------------------|--------------------|
+|Access static return method(param){...}|name(params) return:|
+
+## Example Programs
+### Hello World!
+|Java                             |Ageis                |
+|---------------------------------|---------------------|
+|System.out.println("Hello world")|output("Hello world")|
+
+### Assignment Operation
+|Java         |Ageis        |
+|-------------|-------------|
+|int x = 3 * y|NUM x = 3 * y|
+|double y = 3.14|DECI y = 3.14|
+|boolean condition = true|BOOL condition = TRUE|
+|String name = "Hello, World!"|CHARS name = "Hello, World!"|
+|char character = 'c'|CHARS character = 'c'|
+### Looping
 ```
 ```
 ### Conditionals
 ```
 ```
-### Statically Typed
-```
-```
-### Comments
-```
-```
-### Data Structures
+### Logic
+X is True, Y is false.
 ```
 ```
 ### Function Declarations
 ```
 ```
-## Example Programs
+### Data Structures
 ```
 ```
