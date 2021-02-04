@@ -89,38 +89,38 @@ Aegis {
 ### Logic
 |Java|Ageis|
 |----|-----|
-|'||'  |'|'   |
+|    |     |
 |&&|&|
 |!|!|
 ### Loops
-|Java      |Ageis|
-|----------|-----|
-|while     |LOOP |
-|for       |DO   |
+|Java|Ageis|
+|----|-----|
+|while|LOOP|
+|for|DO|
 ### Conditionals
-|Java      |Ageis     |
-|----------|----------|
-|If...else |IF...OTHER|
+|Java|Ageis|
+|----|-----|
+|If...else|IF...OTHER|
 ### Statically Typed
-|Java      |Ageis|
-|----------|-----|
-|int       |NUM  |
-|double    |DECI |
-|boolean   |BOOL |
-|String    |CHARS|
+|Java|Ageis|
+|----|-----|
+|int|NUM|
+|double|DECI|
+|boolean|BOOL|
+|String|CHARS|
 ### Comments
-|Java      |Ageis|
-|----------|-----|
-|//        |##   |
-|/* */     |#* *#|
+|Java|Ageis|
+|----|-----|
+|//|##|
+|/* */|#* *#|
 ### Data Structures
-|Java                |Ageis            |
-|--------------------|-----------------|
+|Java|Ageis|
+|----|-----|
 |Type[] array        |Type array{index}|
 |Map<Integer, String>|map[NUM][CHARS]  |
 ### Function Declarations
-|Java                                   |Ageis|
-|---------------------------------------|--------------------|
+|Java|Ageis|
+|----|-----|
 |Access static return method(param){...}|name(params) return:|
 
 ## Example Programs
@@ -138,18 +138,32 @@ Aegis {
 |String name = "Hello, World!"|CHARS name = "Hello, World!"|
 |char character = 'c'|CHARS character = 'c'|
 ### Looping
-```
-```
+|Java|Ageis|
+|----|-----|
+|for(int i = 0; i < max, i++){...}|DO(NUM i = 0, i < max, i++):...END|
+|while(bool){...}|LOOP(BOOL):...END|
 ### Conditionals
-```
-```
+|Java|Ageis|
+|----|-----|
+|if(boolean){...}|IF(BOOL):... END|
+|if(boolean){...}else{...}|IF(BOOL):...OTHER:...END|
+|if(boolean){...}else if{...}else{..}|IF(BOOL):...IFOTHER:...OTHER:...END|
 ### Logic
 X is True, Y is false.
-```
-```
+|Java|Ageis|
+|----|-----|
+|(X && Y) is false|(X & Y) is false|
+|(X||Y) is true|(X|Y) is true|
+|(!X) is false|(!X) is false|
 ### Function Declarations
-```
-```
+|Java|Ageis|
+|----|-----|
+|public static void main(String[] args){...}|main(CHARS{} args):...END|
 ### Data Structures
-```
-```
+|Java      |Ageis|
+|----------|-----|
+|int[] arr =  {1, 3, 2};|NUM array{}=[1,3,2]|
+|int arr[3]|NUM array{3}|
+|Map<Integer, String> myMap = new HashMap<Integer, String>()|myMap[NUM][CHARS]|
+|myMap.put(1, “SomeString”)|myMap.add[1][“SomeString”]|
+|myMap.get(1)|myMap.get[1]|
