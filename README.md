@@ -128,7 +128,7 @@ Aegis {
 ### Function Declarations
 |Java|Ageis|
 |----|-----|
-|Access static return method(param){...}|name(params) return:|
+|Access static return method(param){...}|name(params) return:...|
 
 ## Example Programs
 ### Hello World!
