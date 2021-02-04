@@ -86,21 +86,25 @@ Aegis {
 |/|/|
 |%|MOD|
 |Math.pow()|**|
+
 ### Logic
 |Java|Ageis|
 |----|-----|
-|    |     |
+|\|\||\||
 |&&|&|
 |!|!|
+
 ### Loops
 |Java|Ageis|
 |----|-----|
 |while|LOOP|
 |for|DO|
+
 ### Conditionals
 |Java|Ageis|
 |----|-----|
 |If...else|IF...OTHER|
+
 ### Statically Typed
 |Java|Ageis|
 |----|-----|
@@ -108,16 +112,19 @@ Aegis {
 |double|DECI|
 |boolean|BOOL|
 |String|CHARS|
+
 ### Comments
 |Java|Ageis|
 |----|-----|
 |//|##|
 |/* */|#* *#|
+
 ### Data Structures
 |Java|Ageis|
 |----|-----|
-|Type[] array        |Type array{index}|
-|Map<Integer, String>|map[NUM][CHARS]  |
+|Type[] array|Type array{index}|
+|Map<Integer, String>|map[NUM][CHARS]|
+
 ### Function Declarations
 |Java|Ageis|
 |----|-----|
@@ -137,28 +144,33 @@ Aegis {
 |boolean condition = true|BOOL condition = TRUE|
 |String name = "Hello, World!"|CHARS name = "Hello, World!"|
 |char character = 'c'|CHARS character = 'c'|
+
 ### Looping
 |Java|Ageis|
 |----|-----|
 |for(int i = 0; i < max, i++){...}|DO(NUM i = 0, i < max, i++):...END|
 |while(bool){...}|LOOP(BOOL):...END|
+
 ### Conditionals
 |Java|Ageis|
 |----|-----|
 |if(boolean){...}|IF(BOOL):... END|
 |if(boolean){...}else{...}|IF(BOOL):...OTHER:...END|
 |if(boolean){...}else if{...}else{..}|IF(BOOL):...IFOTHER:...OTHER:...END|
+
 ### Logic
 X is True, Y is false.
 |Java|Ageis|
 |----|-----|
 |(X && Y) is false|(X & Y) is false|
-|(X||Y) is true|(X|Y) is true|
+|(X\|\|Y) is true|(X\|Y) is true|
 |(!X) is false|(!X) is false|
+
 ### Function Declarations
 |Java|Ageis|
 |----|-----|
 |public static void main(String[] args){...}|main(CHARS{} args):...END|
+
 ### Data Structures
 |Java      |Ageis|
 |----------|-----|
