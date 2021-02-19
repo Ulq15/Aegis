@@ -1,6 +1,6 @@
 # Aegis
 
-![plot](https://github.com/Ulq1517/Aegis/blob/main/Aegis.png?raw=true)
+![plot](https://github.com/Ulq1517/Aegis/blob/main/resources/Aegis.png?raw=true)
 
 ## Pitch
 
