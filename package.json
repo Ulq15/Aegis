@@ -1,1 +1,51 @@
-
+{
+  "name": "aegis",
+  "version": "1.0.0",
+  "description": "A prototype compiler for the language Aegis",
+  "main": "index.js",
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "/parser.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ulq1517/Aegis.git"
+  },
+  "contributors": [
+    {
+      "name": "Hassan Hage Hassan",
+      "username": "Ulq1517"
+    },
+    {
+      "name": " ",
+      "username": ""
+    },
+    {
+      "name": " ",
+      "username": ""
+    },
+    {
+      "name": " ",
+      "username": ""
+    },
+    {
+      "name": " ",
+      "username": ""
+    },
+    {
+      "name": " ",
+      "username": ""
+    }
+  ],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ulq1517/Aegis/issues"
+  },
+  "homepage": "https://github.com/Ulq1517/Aegis#readme",
+  "devDependencies": {
+    "prettier": "2.2.1"
+  }
+}
