@@ -34,6 +34,7 @@ const syntaxErrors = [
 ]
 
 describe("The parser", () => {
+    console.log("Parser Test Start:\n")
     for (const [scenario, source] of syntaxChecks) {
         it(`recognizes that ${scenario}`, () => {
             assert(parse(source))
