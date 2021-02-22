@@ -21,8 +21,8 @@ const aegisGrammar = ohm.grammar(String.raw`Aegis {
     Exponent             = Exp (exponentop Exp)+                                                                --exponent
                          | Modulo
     Modulo               = Exp (moduloKey Exp)+                                                                 --modulo
-    Assignment           = (typeKeys)? id "=" Exp                                                               --varAssign
-                         | typeKeys id ("=" Exp)?                                                               --varDeclare
+    Assignment           = typeKeys id ("=" Exp)?                                                               --varDeclare
+                         |(typeKeys)? id "=" Exp                                                                --varAssign
                          | DictionaryOp
                          | ArrayOp
                          | Array
