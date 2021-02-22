@@ -1,14 +1,14 @@
 {
   "name": "aegis",
   "version": "1.0.0",
-  "description": "A prototype compiler for the language Aegis",
-  "main": "index.js",
+  "description": "A compiler for the language Aegis",
+  "main": "aegis.js",
   "directories": {
     "example": "examples",
     "test": "test"
   },
   "scripts": {
-    "test": "/parser.test.js"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -17,27 +17,27 @@
   "contributors": [
     {
       "name": "Hassan Hage Hassan",
-      "username": "Ulq1517"
+      "url": "https://github.com/Ulq1517"
     },
     {
-      "name": " ",
-      "username": ""
+      "name": "Varun Desai",
+      "url": "https://github.com/vdesai10"
     },
     {
-      "name": " ",
-      "username": ""
+      "name": "Mason Hendrick",
+      "url": "https://github.com/Super40111"
     },
     {
-      "name": " ",
-      "username": ""
+      "name": "Patrick Jayoma",
+      "url": "https://github.com/PatrickJayo"
     },
     {
-      "name": " ",
-      "username": ""
+      "name": "Andrey Varakin",
+      "url": "https://github.com/Andrey-Varakin"
     },
     {
-      "name": " ",
-      "username": ""
+      "name": "Kyle Traverse",
+      "url": "https://github.com/thekyletraverse"
     }
   ],
   "license": "ISC",
@@ -47,5 +47,10 @@
   "homepage": "https://github.com/Ulq1517/Aegis#readme",
   "devDependencies": {
     "prettier": "2.2.1"
+  },
+  "dependencies": {
+    "c8": "^7.6.0",
+    "mocha": "^8.3.0",
+    "ohm-js": "^15.4.1"
   }
 }
