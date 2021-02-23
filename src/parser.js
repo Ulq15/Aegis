@@ -1,7 +1,7 @@
 import ohm from "ohm-js"
 
 const aegisGrammar = ohm.grammar(String.raw`Aegis {
-    Program              = FunctionDeclare+
+    Program              = FunctionDeclare+ (Body)?
     FunctionDeclare      = id "(" (typeKeys id ("," typeKeys id)*)? ")" typeKeys? ":\n" Body endKey            --functiondeclaration
     Body                 = Exp ("\n" Exp)*
     Exp                  = Math
@@ -29,7 +29,7 @@ const aegisGrammar = ohm.grammar(String.raw`Aegis {
                          | Dictionary
     Logic                = Exp ((logicop | compareOp) Logic)*                                                   --basicLogicStatement
                          | negateOp Exp                                                                         --negation
-    Conditional          = "IF" "(" Logic "):" Body ("IFOTHER" "(" Logic "):" Body)* ("OTHER:" Body)? endKey    --multipleIFs
+    Conditional          = "IF" "(" Logic "):" Body ("IFELSE" "(" Logic "):" Body)* ("ELSE:" Body)? endKey    --multipleIFs
     Loop                 = "DO" "(" numType? id "=" int "," Logic "," Math "):" Body endKey                     --stepByStepBased
                          | "LOOP" "(" Logic "):" Body endKey                                                    --statementBased
     Array                = typeKeys "{" int "}" id                                                              --declaration
@@ -59,7 +59,7 @@ const aegisGrammar = ohm.grammar(String.raw`Aegis {
     stringType           = "CHARS"
     typeKeys             = numType | decimalType | booleanType | stringType
     moduloKey            = "MOD"
-    conditionalKey       = "IF" | "OTHER" | "IFOTHER"
+    conditionalKey       = "IF" | "ELSE" | "IFELSE"
     loopKey              = "LOOP" | "DO"
     printKey             = "OUTPUT"
     endKey               = "END"
