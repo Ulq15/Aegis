@@ -1,8 +1,9 @@
 import assert from "assert"
 import parse from "../src/parser.js"
+import fs from "fs"
 
 const syntaxChecks = [
-    /*  
+  /*  
     Examples of scenario and sorce code Here
     Example case from Ael:
     [
@@ -16,7 +17,7 @@ const syntaxChecks = [
 ]
 
 const syntaxErrors = [
-    /*  
+  /*  
     Examples of scenario and sorce code Here
     Example case from Ael:
     [
@@ -34,15 +35,24 @@ const syntaxErrors = [
 ]
 
 describe("The parser", () => {
-    console.log("Parser Test Start:\n")
-    for (const [scenario, source] of syntaxChecks) {
-        it(`recognizes that ${scenario}`, () => {
-            assert(parse(source))
-        })
-    }
-    for (const [scenario, source, errorMessagePattern] of syntaxErrors) {
-        it(`throws on ${scenario}`, () => {
-            assert.throws(() => parse(source), errorMessagePattern)
-        })
-    }
+  console.log("Parser Test Start:\n")
+  var source 
+  fs.readFile("./examples/example1.txt", "utf8", (err, data) => {
+    if (err) throw err
+    console.log(data)
+    assert(parse(data))
+  })
+  //assert(parse(source))
+  /*
+  for (const [scenario, source] of syntaxChecks) {
+    it(`recognizes that ${scenario}`, () => {
+      assert(parse(source))
+    })
+  }
+  for (const [scenario, source, errorMessagePattern] of syntaxErrors) {
+    it(`throws on ${scenario}`, () => {
+      assert.throws(() => parse(source), errorMessagePattern)
+    })
+  }
+  */
 })

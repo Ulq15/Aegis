@@ -9,81 +9,87 @@ Aegis, a word that is derived from Greek mythology is defined as protection, bac
 ## Grammar
 
 ```
-Aegis {
-  Program              = FunctionDeclare+ (Body)?
-  FunctionDeclare      = id "(" (typeKeys id ("," typeKeys id)*)? ")" typeKeys? ":\n" Body endKey            --functiondeclaration
-  Body                 = Exp ("\n" Exp)*
-  Exp                  = Math
-                       | Assignment
-                       | Logic
-                       | Conditional
-                       | Loop
-                       | returnKey Exp                                                                        --returnStatement
-                       | printKey "(" Exp ")"                                                                 --print
-                       | data
-  Math                 = Exp (addop Exp)+                                                                     --addsubtract
-                       | Exp crementOp                                                                        --post_increment
-                       | crementOp Exp                                                                        --pre_increment
-                       | Multiply
-  Multiply             = Exp (multop Exp)+                                                                    --mulidivide
-                       | Exponent
-  Exponent             = Exp (exponentop Exp)+                                                                --exponent
-                       | Modulo
-  Modulo               = Exp (moduloKey Exp)+                                                                 --modulo
-  Assignment           = typeKeys id ("=" Exp)?                                                               --varDeclare
-                       | (typeKeys)? id "=" Exp                                                               --varAssign
-                       | DictionaryOp
-                       | ArrayOp
-                       | Array
-                       | Dictionary
-  Logic                = Exp ((logicop | compareOp) Logic)*                                                   --basicLogicStatement
-                       | negateOp Exp                                                                         --negation
-  Conditional          = "IF" "(" Logic "):" Body ("IFELSE" "(" Logic "):" Body)* ("ELSE:" Body)? endKey    --multipleIFs
-  Loop                 = "DO" "(" numType? id "=" int "," Logic "," Math "):" Body endKey                     --stepByStepBased
-                       | "LOOP" "(" Logic "):" Body endKey                                                    --statementBased
-  Array                = typeKeys "{" int "}" id                                                              --declaration
-                       | typeKeys "{""}" id "=" "[" data ("," data)* "]"                                      --populate
-  ArrayOp              = id"{" int "}" "=" data                                                               --arrayAssignment
-  Dictionary           = id "[" typeKeys "][" typeKeys "]"                                                    --dictionaryDeclaration
-  DictionaryOp         = id "ADD[" data "][" data "]"                                                         --addToDictionary
-                       | id "GET[" data "]"                                                                   --getFromDictionary
-  crementOp            = "++" | "--"
-  int                  = digit+
-  decimal              = digit+ ("." digit+)
-  num                  = int | decimal
-  boolean              = "TRUE" | "FALSE"
-  string               = alnum
-                       | space
-  stringLiteral        = "\"" string* "\""
-  data                 = int | decimal | boolean | stringLiteral | id
-  logicop              = "&" | "|"
-  compareOp            = "==" | "!=" | "<" | "<=" | ">" | ">="
-  negateOp             = "!"
-  addop                = "+" | "-"
-  multop               = "*" | "/"
-  exponentop           = "**"
-  numType              = "NUM"
-  decimalType          = "DECI"
-  booleanType          = "BOOL"
-  stringType           = "CHARS"
-  typeKeys             = numType | decimalType | booleanType | stringType
-  moduloKey            = "MOD"
-  conditionalKey       = "IF" | "ELSE" | "IFELSE"
-  loopKey              = "LOOP" | "DO"
-  printKey             = "OUTPUT"
-  endKey               = "END"
-  returnKey            = "RETURN"
-  keyword              = typeKeys
-                       | conditionalKey
-                       | loopKey
-                       | printKey
-                       | endKey
-                       | returnKey
-                       | moduloKey
-  id                   = ~keyword letter alnum*
-  space               += "##" (~"\n" any)* ("\n" | end)                                                       --singleLineComment
-                       | "#*" (~"*#" any)* ("*#" | end)                                                       --multiLineComment
-}
+  Aegis {
+    Program         = classKey id ":" ProgramBody endKey
+    ProgramBody     = Body Function* Body
+    Function        = id "(" (typeKeys id ("," typeKeys id)*)? ")" typeKeys? ":" Body endKey               --declaration
+    Body            = (Exp #"\n")*
+    Exp             = Assignment
+                    | Math
+                    | Logic
+                    | Conditional
+                    | Loop
+                    | returnKey Exp                                                                        --returnStatement
+                    | printKey "(" Exp ")"                                                                 --print
+                    | id
+                    | data
+    Assignment      = Array
+                    | Dictionary
+                    | DictionaryOp
+                    | ArrayOp
+                    | Variable
+    Array           = typeKeys "{" (id | int)? "}" id ("=" "{" (data ("," data)*)? "}")?                   --arrayCreate
+    ArrayOp         = id"{" (id | int) "}" "=" Exp                                                         --arrayAssignment
+    Dictionary      = id "[" typeKeys "][" typeKeys "]"                                                    --dictionaryCreate
+    DictionaryOp    = id "ADD[" data "][" data "]"                                                         --addToDictionary
+                    | id "GET[" data "]"                                                                   --getFromDictionary
+    Variable        = typeKeys  ~("{" (id | int)? "}") id "=" Exp                                          --varDeclare
+                    | (typeKeys)?  ~("{" (id | int)? "}") id "=" Exp                                       --varAssign
+    Math            = Arithmetic
+                    | Multiply
+                    | Exponent
+                    | Modulo
+                    | Crement
+    Arithmetic      = Exp (addop Exp)+                                                                     --addsubtract
+    Multiply        = Exp (multop Exp)+                                                                    --mulidivide
+    Exponent        = Exp (exponentop Exp)+                                                                --exponent
+    Modulo          = Exp (moduloKey Exp)+                                                                 --modulo
+    Crement         = crementOp? Exp crementOp?                                                            --post_increment
+    Logic           = Exp ((logicop | compareOp) Logic)*                                                   --basicLogicStatement
+                    | negateOp Exp                                                                         --negation
+    Conditional     = "IF" "(" Logic "):" Body ("IFELSE" "(" Logic "):" Body)* ("ELSE:" Body)? endKey      --multipleIFs
+    Loop            = "DO" "(" numType? id ("=" int)? "," Logic "," Exp "):" Body endKey                   --stepByStepBased
+                    | "LOOP" "(" Logic "):" Body endKey                                                    --statementBased
+    crementOp       = "++" | "--"
+    int             = digit+
+    decimal         = digit+ ("." digit+)
+    num             = decimal | int
+    boolean         = "TRUE" | "FALSE"
+    string          = alnum
+                    | space        
+    stringLiteral   = "\"" string* "\""
+    data            = int | decimal | boolean | stringLiteral
+    logicop         = "&" | "|"
+    compareOp       = "==" | "!=" | ">=" | "<=" | "<" | ">" 
+    negateOp        = "!"
+    addop           = "+" | "-"
+    multop          = "*" | "/"
+    exponentop      = "**"
+    numType         = "NUM"
+    decimalType     = "DECI"
+    booleanType     = "BOOL"
+    stringType      = "CHARS"
+    typeKeys        = numType | decimalType | booleanType | stringType
+    moduloKey       = "MOD"
+    conditionalKey  = "IF" | "ELSE" | "IFELSE"
+    loopKey         = "LOOP" | "DO"
+    printKey        = "OUTPUT"
+    endKey          = "END"
+    returnKey       = "RETURN"
+    classKey        = "CLASS"
+    keyword         = typeKeys
+                    | conditionalKey
+                    | loopKey
+                    | printKey
+                    | endKey
+                    | returnKey
+                    | moduloKey
+                    | classKey
+    id              = ~keyword letter alnum*
+    space          += ~"\n"
+    space          += "##" (~"\n" any)* ("\n" | end)                                                       --singleLineComment
+                    | "#*" (~"*#" any)* ("*#" | end)                                                       --multiLineComment
+  }
 ```
 
 ## Features
@@ -136,8 +142,8 @@ Aegis {
 
 ### Conditionals
 
-| Java      | Ageis      |
-| --------- | ---------- |
+| Java      | Ageis     |
+| --------- | --------- |
 | if...else | IF...ELSE |
 | else if   | IFELSE    |
 
@@ -198,10 +204,10 @@ Aegis {
 
 ### Conditionals
 
-| Java                                 | Ageis                               |
-| ------------------------------------ | ----------------------------------- |
-| if(boolean){...}                     | IF(BOOL):... END                    |
-| if(boolean){...}else{...}            | IF(BOOL):...ELSE:...END            |
+| Java                                 | Ageis                             |
+| ------------------------------------ | --------------------------------- |
+| if(boolean){...}                     | IF(BOOL):... END                  |
+| if(boolean){...}else{...}            | IF(BOOL):...ELSE:...END           |
 | if(boolean){...}else if{...}else{..} | IF(BOOL):...IFELSE:...ELSE:...END |
 
 ### Logic
