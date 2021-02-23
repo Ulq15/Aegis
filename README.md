@@ -10,7 +10,7 @@ Aegis, a word that is derived from Greek mythology is defined as protection, bac
 
 ```
 Aegis {
-  Program              = FunctionDeclare+
+  Program              = FunctionDeclare+ (Body)?
   FunctionDeclare      = id "(" (typeKeys id ("," typeKeys id)*)? ")" typeKeys? ":\n" Body endKey            --functiondeclaration
   Body                 = Exp ("\n" Exp)*
   Exp                  = Math
@@ -30,15 +30,15 @@ Aegis {
   Exponent             = Exp (exponentop Exp)+                                                                --exponent
                        | Modulo
   Modulo               = Exp (moduloKey Exp)+                                                                 --modulo
-  Assignment           = (typeKeys)? id "=" Exp                                                               --varAssign
-                       | typeKeys id ("=" Exp)?                                                               --varDeclare
+  Assignment           = typeKeys id ("=" Exp)?                                                               --varDeclare
+                       | (typeKeys)? id "=" Exp                                                               --varAssign
                        | DictionaryOp
                        | ArrayOp
                        | Array
                        | Dictionary
   Logic                = Exp ((logicop | compareOp) Logic)*                                                   --basicLogicStatement
                        | negateOp Exp                                                                         --negation
-  Conditional          = "IF" "(" Logic "):" Body ("IFOTHER" "(" Logic "):" Body)* ("OTHER:" Body)? endKey    --multipleIFs
+  Conditional          = "IF" "(" Logic "):" Body ("IFELSE" "(" Logic "):" Body)* ("ELSE:" Body)? endKey    --multipleIFs
   Loop                 = "DO" "(" numType? id "=" int "," Logic "," Math "):" Body endKey                     --stepByStepBased
                        | "LOOP" "(" Logic "):" Body endKey                                                    --statementBased
   Array                = typeKeys "{" int "}" id                                                              --declaration
@@ -68,7 +68,7 @@ Aegis {
   stringType           = "CHARS"
   typeKeys             = numType | decimalType | booleanType | stringType
   moduloKey            = "MOD"
-  conditionalKey       = "IF" | "OTHER" | "IFOTHER"
+  conditionalKey       = "IF" | "ELSE" | "IFELSE"
   loopKey              = "LOOP" | "DO"
   printKey             = "OUTPUT"
   endKey               = "END"
@@ -138,8 +138,8 @@ Aegis {
 
 | Java      | Ageis      |
 | --------- | ---------- |
-| if...else | IF...OTHER |
-| else if   | IFOTHER    |
+| if...else | IF...ELSE |
+| else if   | IFELSE    |
 
 ### Statically Typed
 
@@ -162,7 +162,7 @@ Aegis {
 | Java                 | Ageis             |
 | -------------------- | ----------------- |
 | Type[] array         | Type array{index} |
-| Map<Integer, String> | map[tyoe1][type2] |
+| Map<Integer, String> | map[type1][type2] |
 
 ### Function Declarations
 
@@ -201,8 +201,8 @@ Aegis {
 | Java                                 | Ageis                               |
 | ------------------------------------ | ----------------------------------- |
 | if(boolean){...}                     | IF(BOOL):... END                    |
-| if(boolean){...}else{...}            | IF(BOOL):...OTHER:...END            |
-| if(boolean){...}else if{...}else{..} | IF(BOOL):...IFOTHER:...OTHER:...END |
+| if(boolean){...}else{...}            | IF(BOOL):...ELSE:...END            |
+| if(boolean){...}else if{...}else{..} | IF(BOOL):...IFELSE:...ELSE:...END |
 
 ### Logic
 
