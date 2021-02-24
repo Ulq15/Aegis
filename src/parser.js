@@ -2,22 +2,22 @@ import ohm from "ohm-js"
 
 const aegisGrammar = ohm.grammar(String.raw`Aegis {
   Program         = classKey id ":" ProgramBody endKey
-  ProgramBody     = Body Function* Body
+  ProgramBody     = Function*
   Function        = id "(" (typeKeys id ("," typeKeys id)*)? ")" typeKeys? ":" Body endKey               --declaration
   Body            = (Expression | Conditional | Loop)*                                                   
   Expression      = Exp ";"
-  Exp             = Assignment
+  Exp             = DataStructures
                   | Math
                   | Logic
+                  | Variable
                   | returnKey Exp                                                                        --return
                   | printKey "(" Exp ")"                                                                 --print
                   | id
                   | data
-  Assignment      = Array
+  DataStructures  = Array
                   | Dictionary
                   | DictionaryOp
                   | ArrayOp
-                  | Variable
   Array           = typeKeys "{" (id | int)? "}" id ("=" "{" (data ("," data)*)? "}")?                   --declaration
   ArrayOp         = id"{" (id | int) "}" "=" Exp                                                         --assign
   Dictionary      = id "[" typeKeys "][" typeKeys "]"                                                    --declaration

@@ -1,11 +1,10 @@
-## Runs a loop to find and place all factors of 100 into an array
+## Runs a loop to find and place all factors of y into an array
 ## and prints the array
 CLASS Example1:
-    main():
-        NUM y = 100;
+    factors(NUM y):
         NUM {} results;
         NUM count = 0;
-        DO(NUM x=1, x <= 100, x++):
+        DO(NUM x=1, x <= y, x++):
             NUM z = y MOD x;
             IF( z == 0 ):
                 results{count} = x;
