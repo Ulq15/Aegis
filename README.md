@@ -9,17 +9,16 @@ Aegis, a word that is derived from Greek mythology is defined as protection, bac
 ## Grammar
 
 ```
-  Aegis {
+Aegis {
     Program         = classKey id ":" ProgramBody endKey
     ProgramBody     = Body Function* Body
     Function        = id "(" (typeKeys id ("," typeKeys id)*)? ")" typeKeys? ":" Body endKey               --declaration
-    Body            = (Exp #"\n")*
+    Body            = (Expression | Conditional | Loop)*                                                   
+    Expression      = Exp ";"
     Exp             = Assignment
                     | Math
                     | Logic
-                    | Conditional
-                    | Loop
-                    | returnKey Exp                                                                        --returnStatement
+                    | returnKey Exp                                                                        --return
                     | printKey "(" Exp ")"                                                                 --print
                     | id
                     | data
@@ -28,26 +27,26 @@ Aegis, a word that is derived from Greek mythology is defined as protection, bac
                     | DictionaryOp
                     | ArrayOp
                     | Variable
-    Array           = typeKeys "{" (id | int)? "}" id ("=" "{" (data ("," data)*)? "}")?                   --arrayCreate
-    ArrayOp         = id"{" (id | int) "}" "=" Exp                                                         --arrayAssignment
-    Dictionary      = id "[" typeKeys "][" typeKeys "]"                                                    --dictionaryCreate
+    Array           = typeKeys "{" (id | int)? "}" id ("=" "{" (data ("," data)*)? "}")?                   --declaration
+    ArrayOp         = id"{" (id | int) "}" "=" Exp                                                         --assign
+    Dictionary      = id "[" typeKeys "][" typeKeys "]"                                                    --declaration
     DictionaryOp    = id "ADD[" data "][" data "]"                                                         --addToDictionary
                     | id "GET[" data "]"                                                                   --getFromDictionary
-    Variable        = typeKeys  ~("{" (id | int)? "}") id "=" Exp                                          --varDeclare
-                    | (typeKeys)?  ~("{" (id | int)? "}") id "=" Exp                                       --varAssign
+    Variable        = typeKeys  ~("{" (id | int)? "}") id "=" Exp                                          --declaration
+                    | (typeKeys)?  ~("{" (id | int)? "}") id "=" Exp                                       --assign
     Math            = Arithmetic
                     | Multiply
                     | Exponent
                     | Modulo
                     | Crement
     Arithmetic      = Exp (addop Exp)+                                                                     --addsubtract
-    Multiply        = Exp (multop Exp)+                                                                    --mulidivide
+    Multiply        = Exp (multop Exp)+                                                                    --multidivide
     Exponent        = Exp (exponentop Exp)+                                                                --exponent
     Modulo          = Exp (moduloKey Exp)+                                                                 --modulo
-    Crement         = crementOp? Exp crementOp?                                                            --post_increment
+    Crement         = crementOp? Exp crementOp?                                                            --addsubtract
     Logic           = Exp ((logicop | compareOp) Logic)*                                                   --basicLogicStatement
                     | negateOp Exp                                                                         --negation
-    Conditional     = "IF" "(" Logic "):" Body ("IFELSE" "(" Logic "):" Body)* ("ELSE:" Body)? endKey      --multipleIFs
+    Conditional     = "IF" "(" Logic "):" Body ("IFELSE" "(" Logic "):" Body)* ("ELSE:" Body)? endKey      --condition
     Loop            = "DO" "(" numType? id ("=" int)? "," Logic "," Exp "):" Body endKey                   --stepByStepBased
                     | "LOOP" "(" Logic "):" Body endKey                                                    --statementBased
     crementOp       = "++" | "--"
@@ -86,7 +85,6 @@ Aegis, a word that is derived from Greek mythology is defined as protection, bac
                     | moduloKey
                     | classKey
     id              = ~keyword letter alnum*
-    space          += ~"\n"
     space          += "##" (~"\n" any)* ("\n" | end)                                                       --singleLineComment
                     | "#*" (~"*#" any)* ("*#" | end)                                                       --multiLineComment
   }

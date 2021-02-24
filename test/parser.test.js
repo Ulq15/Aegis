@@ -1,7 +1,7 @@
 import assert from "assert"
 import parse from "../src/parser.js"
 import fs from "fs"
-
+const example1 = "./examples/example1.ags"
 const syntaxChecks = [
   /*  
     Examples of scenario and sorce code Here
@@ -34,15 +34,11 @@ const syntaxErrors = [
     */
 ]
 
-describe("The parser", () => {
-  console.log("Parser Test Start:\n")
-  var source 
-  fs.readFile("./examples/example1.txt", "utf8", (err, data) => {
-    if (err) throw err
-    console.log(data)
-    assert(parse(data))
-  })
-  //assert(parse(source))
+describe("The Parser", () => {
+  console.log("Parser Test:\n")
+  var source = fs.readFileSync(example1).toString()
+  it(`Successfully parsed ${example1}`, ()=>{assert(parse(source))})
+  
   /*
   for (const [scenario, source] of syntaxChecks) {
     it(`recognizes that ${scenario}`, () => {
