@@ -41,6 +41,22 @@ export class UnaryExpression {
   }
 }
 
+export class ArrayExpression {
+  constructor(type, id, _size, _data) {
+    Object.assign(this, { type, id, _size, _data })
+  }
+}
+
+export class Math {
+  constructor(op, left, right='') {
+    if (right === '') {
+      Object.assign(this, { op, operand=left })
+    } else {
+      Object.assign(this, { op, left, right })
+    }
+  }
+}
+
 export class Variable {
   constructor(type, id, data) {
     Object.assign(this, { type, id, data })
@@ -65,12 +81,10 @@ export class IdentifierExpression {
   }
 }
 
-export class Literal {
+export class Data {
   constructor(value) {
     this.value = value
   }
 }
 
-function formatAST(node){
-
-}
+function formatAST(node) {}

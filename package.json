@@ -8,7 +8,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "buildReadMeWIN": "type fragments\\* > README.md",
+    "buildReadMeUNIX": "cat fragments/* > README.md"
   },
   "repository": {
     "type": "git",
