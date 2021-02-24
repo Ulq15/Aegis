@@ -2,16 +2,16 @@
 ## and prints the array
 CLASS Example1:
     main():
-        NUM y = 100
-        NUM {} results
-        NUM count = 0
+        NUM y = 100;
+        NUM {} results;
+        NUM count = 0;
         DO(NUM x=1, x <= 100, x++):
-            NUM z = y MOD x
+            NUM z = y MOD x;
             IF( z == 0 ):
-                results{count} = x
-                count++
+                results{count} = x;
+                count++;
             END
         END
-        OUTPUT( results )
+        OUTPUT( results );
     END
 END

@@ -4,12 +4,11 @@ const aegisGrammar = ohm.grammar(String.raw`Aegis {
     Program         = classKey id ":" ProgramBody endKey
     ProgramBody     = Body Function* Body
     Function        = id "(" (typeKeys id ("," typeKeys id)*)? ")" typeKeys? ":" Body endKey               --declaration
-    Body            = (Exp #"\n")*
+    Body            = (Expression | Conditional | Loop)*                                                   --multi
+    Expression      = Exp ";"
     Exp             = Assignment
                     | Math
                     | Logic
-                    | Conditional
-                    | Loop
                     | returnKey Exp                                                                        --returnStatement
                     | printKey "(" Exp ")"                                                                 --print
                     | id
