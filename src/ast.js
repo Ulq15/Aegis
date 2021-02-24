@@ -50,7 +50,8 @@ export class ArrayExpression {
 export class Math {
   constructor(op, left, right='') {
     if (right === '') {
-      Object.assign(this, { op, operand=left })
+      var operand = left
+      Object.assign(this, { op, operand })
     } else {
       Object.assign(this, { op, left, right })
     }
