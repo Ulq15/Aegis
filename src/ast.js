@@ -35,7 +35,13 @@ export class BinaryExpression {
   }
 }
 
-export class UnaryExpression {
+export class PrefixExpression {
+  constructor(op, operand) {
+    Object.assign(this, { op, operand })
+  }
+}
+
+export class PostfixExpression {
   constructor(op, operand) {
     Object.assign(this, { op, operand })
   }
@@ -58,9 +64,9 @@ export class Math {
   }
 }
 
-export class Variable {
-  constructor(type, id, data) {
-    Object.assign(this, { type, id, data })
+export class VarDec {
+  constructor(type, id, initializer) {
+    Object.assign(this, { type, id, initializer })
   }
 }
 

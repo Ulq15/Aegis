@@ -10,45 +10,38 @@ Aegis, a word that is derived from Greek mythology is defined as protection, bac
 
 ```
 Aegis {
-  Program         = classKey id ":" ProgramBody endKey
-  ProgramBody     = Function*
-  Function        = id "(" (typeKeys id ("," typeKeys id)*)? ")" typeKeys? ":" Body endKey               --declaration
-  Body            = (Expression | Conditional | Loop)*                                                   
-  Expression      = Exp ";"
-  Exp             = DataStructures
-                  | Math
-                  | Logic
-                  | Variable
-                  | Parens
+  Program         = classKey id ":" ClassBody endKey
+  ClassBody       = Declaration*
+  Declaration     = VarDec 
+                  | FunDec
+  VarDec          = TypeExp id "=" Exp                                          --declaration
+                  | id "=" Exp                                                   --assign
+  FunDec          = id "(" (TypeExp id ("," TypeExp id)*)? ")" TypeExp? ":" Body endKey               --declaration
+  Body            = Statement*                                             
+  Statement       = Conditional 
+                  | Loop
                   | returnKey Exp                                                                        --return
-                  | printKey Parens                                                               --print
-                  | id
-                  | data
-  Parens          = "(" Exp ")"                                                                          --parens
-  DataStructures  = Array
-                  | Dictionary
+                  | printKey Parens                                                               --print        
+                  | Declaration
+                  | Call
+  Call            = id "("(Exp(","Exp)*)? ")"                                                  --call                                                    
+  Exp             = Formula (logicop Formula)+
+  Formula         = Comperand (compareOp Comperand)+ 
+  Comperand       = Term (addop Term)*
+  Term            = Factor (multop Factor)*
+  Factor          = Primary (exponentop Primary)*                                                               --exponent
+  Primary         = Primary crementOp                             --postfix
+                  | crementOp Primary                             --prefix
+                  | negateOp Primary                              --negate
+                  | "{" (Exp ("," Exp)*)? "}"                     --array
+                  | id "{" Comperand "}"                          --indexing
                   | DictionaryOp
-                  | ArrayOp
-  Array           = typeKeys "{" (id | int)? "}" id ("=" "{" (data ("," data)*)? "}")?                   --declaration
-  ArrayOp         = id"{" (id | int) "}" "=" Exp                                                         --assign
-  Dictionary      = id "[" typeKeys "][" typeKeys "]"                                                    --declaration
-  DictionaryOp    = id "ADD[" data "][" data "]"                                                         --addToDictionary
-                  | id "GET[" data "]"                                                                   --getFromDictionary
-  Variable        = typeKeys  ~("{" (id | int)? "}") id "=" Exp                                          --declaration
-                  | (typeKeys)?  ~("{" (id | int)? "}") id "=" Exp                                       --assign
-  Math            = Arithmetic
-                  | Multiply
-                  | Exponent
-                  | Modulo
-                  | Crement
-  Arithmetic      = Exp (addop Exp)+                                                                     --addsubtract
-  Multiply        = Exp (multop Exp)+                                                                    --multidivide
-  Exponent        = Exp (exponentop Exp)+                                                                --exponent
-  Modulo          = Exp (moduloKey Exp)+                                                                 --modulo
-  Crement         = crementOp? Exp crementOp?                                                            --addsubtract
-  Logic           = Exp (logicop | compareOp) Exp ((logicop | compareOp) Exp)*                                                   --basicLogicStatement
-                  | negateOp Exp                                                                         --negation
-  Conditional     = "IF" "(" Logic "):" Body ("IFELSE" "(" Logic "):" Body)* ("ELSE:" Body)? endKey      --condition
+                  | "(" Exp ")"                                   --parens
+                  | literal
+                  | id
+  DictionaryOp    = id "ADD[" Exp "][" Exp "]"                                                          --addToDictionary
+                  | id "GET[" Exp "]"                                                                   --getFromDictionary
+  Conditional     = "IF" "(" Logic "):" Body ("ELSEIF" "(" Logic "):" Body)* ("ELSE:" Body)? endKey      --condition
   Loop            = "DO" "(" numType? id ("=" int)? "," Logic "," Exp "):" Body endKey                   --stepByStepBased
                   | "LOOP" "(" Logic "):" Body endKey                                                    --statementBased
   crementOp       = "++" | "--"
@@ -56,10 +49,10 @@ Aegis {
   decimal         = digit+ ("." digit+)
   num             = decimal | int
   boolean         = "TRUE" | "FALSE"
-  string          = alnum
+  char            = alnum
                   | space        
-  stringLiteral   = "\"" string* "\""
-  data            = int | decimal | boolean | stringLiteral
+  stringLiteral   = "\"" char* "\""
+  literal         = num | boolean | stringLiteral
   logicop         = "&" | "|"
   compareOp       = "==" | "!=" | ">=" | "<=" | "<" | ">" 
   negateOp        = "!"
@@ -70,15 +63,17 @@ Aegis {
   decimalType     = "DECI"
   booleanType     = "BOOL"
   stringType      = "CHARS"
-  typeKeys        = numType | decimalType | booleanType | stringType
+  TypeExp         = ArrayType | DictionaryType | numType | decimalType | booleanType | stringType 
+  ArrayType       = TypeExp "{" Comperand? "}" 
+  DictionaryType  = "[" TypeExp "][" TypeExp "]" 
   moduloKey       = "MOD"
-  conditionalKey  = "IF" | "ELSE" | "IFELSE"
+  conditionalKey  = "IF" | "ELSE" | "ELSEIF"
   loopKey         = "LOOP" | "DO"
   printKey        = "OUTPUT"
   endKey          = "END"
   returnKey       = "RETURN"
   classKey        = "CLASS"
-  keyword         = typeKeys
+  keyword         = TypeExp
                   | conditionalKey
                   | loopKey
                   | printKey
