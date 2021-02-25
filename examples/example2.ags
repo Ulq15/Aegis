@@ -1,0 +1,9 @@
+CLASS Example2:
+  findMax(NUM i, NUM j) NUM:
+    IF( i > j ):
+      RETURN i;
+    ELSE:
+      RETURN j;
+    END
+  END
+END
