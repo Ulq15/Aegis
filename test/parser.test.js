@@ -1,7 +1,13 @@
 import assert from "assert"
 import parse from "../src/parser.js"
 import fs from "fs"
-var source = fs.readFileSync("./examples/example1.ags").toString()
+var source1 = fs.readFileSync("./examples/example1.ags").toString()
+var source2 = fs.readFileSync("./examples/example2.ags").toString()
+var source3 = fs.readFileSync("./examples/example3.ags").toString()
+var source4 = fs.readFileSync("./examples/example4.ags").toString()
+var source5 = fs.readFileSync("./examples/example5.ags").toString()
+
+
 const syntaxChecks = [
   /*  
     Examples of scenario and sorce code Here
@@ -34,9 +40,21 @@ const syntaxErrors = [
     */
 ]
 
-describe("The Parser", () => {
+describe("Example Codes", () => {
   it(`Successfully parsed ./examples/example1.ags`, () => {
-    assert(parse(source))
+    assert(parse(source1))
+  })
+  it(`Successfully parsed ./examples/example2.ags`, () => {
+    assert(parse(source2))
+  })
+  it(`Successfully parsed ./examples/example3.ags`, () => {
+    assert(parse(source3))
+  })
+  it(`Successfully parsed ./examples/example4.ags`, () => {
+    assert(parse(source4))
+  })
+  it(`Successfully parsed ./examples/example5.ags`, () => {
+    assert(parse(source5))
   })
 })
 /*
