@@ -1,4 +1,4 @@
-#Function to iteratively find the nth fibonacci number
+##Function to iteratively find the nth fibonacci number
 
 CLASS Example4:
 	iterativeFib(NUM n):
