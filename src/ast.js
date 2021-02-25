@@ -11,23 +11,47 @@ export class Program {
   }
 }
 
-export class Function {
+export class FunDec {
   constructor(id, parameters, returnType, body) {
     Object.assign(this, { id, parameters, returnType, body })
   }
 }
 
-export class Expression {}
+export class FunCall {
+  constructor(id, parameters) {
+    Object.assign(this, { id, parameters })
+  }
+}
 
-export class Conditional {}
+export class VarInitializer {
+  constructor(type, id, initializer) {
+    Object.assign(this, { type, id, initializer })
+  }
+}
 
-export class Loop {}
+export class VarDec {
+  constructor(type, id) {
+    Object.assign(this, { type, id })
+  }
+}
 
-export class DoLoop {}
+export class DictionaryDec {
+  constructor(type1, type2, id) {
+    Object.assign(this, { type1, type2, id })
+  }
+}
 
-export class Array {}
+export class ReturnStatement {
+  constructor(expression) {
+    this.expression = expression
+  }
+}
 
-export class Dictionary {}
+export class PrintStatement {
+  constructor(argument) {
+    this.argument = argument
+  }
+}
 
 export class BinaryExpression {
   constructor(op, left, right) {
@@ -47,51 +71,120 @@ export class PostfixExpression {
   }
 }
 
-export class ArrayExpression {
-  constructor(type, id, _size, _data) {
-    Object.assign(this, { type, id, _size, _data })
+export class ArrayLiteral {
+  constructor(list) {
+    this.list = list
   }
 }
 
-export class Math {
-  constructor(op, left, right='') {
-    if (right === '') {
-      var operand = left
-      Object.assign(this, { op, operand })
-    } else {
-      Object.assign(this, { op, left, right })
-    }
-  }
-}
-
-export class VarDec {
-  constructor(type, id, initializer) {
-    Object.assign(this, { type, id, initializer })
-  }
-}
-
-export class ReturnStatement {
-  constructor(expression) {
-    this.expression = expression
-  }
-}
-
-export class PrintStatement {
-  constructor(argument) {
-    this.argument = argument
-  }
-}
-
-export class IdentifierExpression {
-  constructor(name) {
-    this.name = name
-  }
-}
-
-export class Data {
+export class Literal {
   constructor(value) {
     this.value = value
   }
 }
 
-function formatAST(node) {}
+export class Variable {
+  constructor(name) {
+    this.name = name
+  }
+}
+
+export class Assignment {
+  constructor(target, source) {
+    Object.assign(this, { target, source })
+  }
+}
+
+export class TypeExp {
+  constructor(type) {
+    this.type = type
+  }
+}
+
+export class ArrayType {
+  constructor(type, indexExp) {
+    this.type = type
+    if (indexExp !== undefined || indexExp !== null) {
+      this.indexExp = indexExp
+    }
+  }
+}
+
+export class ArrayOp {
+  constructor(exp) {
+    Object.assign(this, { exp })
+  }
+}
+
+export class DictionaryType {
+  constructor(type1, type2) {
+    Object.assign(this, { type1, type2 })
+  }
+}
+
+export class DictionaryAdd {
+  constructor(type1, type2) {
+    Object.assign(this, { type1, type2 })
+  }
+}
+
+export class DictionaryGet {
+  constructor(type1) {
+    Object.assign(this, { type1 })
+  }
+}
+
+export class ConditionalIF {
+  constructor(exp, body) {
+    Object.assign(this, { exp, body })
+  }
+}
+
+export class ConditionalELSE {
+  constructor(body) {
+    Object.assign(this, { body })
+  }
+}
+
+export class Loop {
+  constructor(exp, body) {
+    Object.assign(this, { exp, body })
+  }
+}
+
+export class DoLoop {
+  constructor(varExp, exp1, exp2, body) {
+    Object.assign(this, { varExp, exp1, exp2, body })
+  }
+}
+
+function formatAST(node) {
+  // Return a compact and pretty string representation of the node graph,
+  // taking care of cycles. Written here from scratch because the built-in
+  // inspect function, while nice, isn't nice enough.
+  const tags = new Map()
+
+  function tag(node) {
+    if (tags.has(node) || typeof node !== "object" || node === null) return
+    tags.set(node, tags.size + 1)
+    for (const child of Object.values(node)) {
+      Array.isArray(child) ? child.forEach(tag) : tag(child)
+    }
+  }
+
+  function* lines() {
+    function view(e) {
+      if (tags.has(e)) return `#${tags.get(e)}`
+      if (Array.isArray(e)) return `[${e.map(view)}]`
+      return util.inspect(e)
+    }
+    for (let [node, id] of [...tags.entries()].sort((a, b) => a[1] - b[1])) {
+      let [type, props] = [node.constructor.name, ""]
+      Object.entries(node).forEach(([k, v]) => (props += ` ${k}=${view(v)}`))
+      yield `${String(id).padStart(4, " ")} | ${type}${props}`
+    }
+  }
+
+  tag(node)
+  return [...lines()].join("\n")
+}
