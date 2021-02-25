@@ -10,51 +10,57 @@ Aegis, a word that is derived from Greek mythology is defined as protection, bac
 
 ```
 Aegis {
-  Program         = classKey id ":" ClassBody endKey
+  Program         = classKey id ":" ClassBody endKey                                                     --declare
   ClassBody       = Declaration*
-  Declaration     = VarDec ";"                                                                           --linebreak                                                                         
-                  | FunDec
-  VarDec          = TypeExp id ("=" Exp)?                                                                --declaration
-                  | id (ArrayOp | DictionaryOp)? "=" Exp                                                                           --assign
-  FunDec          = id "(" (TypeExp id ("," TypeExp id)*)? ")" TypeExp? ":" Body endKey                  --declaration
-  Body            = Statement*                                             
+  Declaration     = VarDec ";"                                                                           --var
+                  | FunDec                                                                               --func
+  VarDec          = TypeExp Assignment                                                                   --initialize
+                  | TypeExp id                                                                           --declare
+                  | Assignment
+  Assignment      = id "{" Comparand "}" "=" Exp                                                         --array
+                  | id "ADD[" Exp "][" Exp "]"                                                           --dictAdd
+                  | id "=" Exp                                                                           --assign
+  FunDec          = id "(" (Param ("," Param)*)? ")" TypeExp? ":" Body endKey                            --declare
+  Param           = TypeExp id                                                                           --single
+  Body            = Statement*
   Statement       = Conditional 
                   | Loop
                   | returnKey Exp ";"                                                                    --return
-                  | printKey "(" Exp ")" ";"                                                             --print        
+                  | printKey "(" Exp ")" ";"                                                             --print
                   | Declaration
-                  | Exp ";"                                                                              --linebreak
-                  | FunCall
-  FunCall         = id "("(Exp(","Exp)*)? ")"                                                            --FunCall                                                    
-  Exp             = Formula (logicop Formula)*
-  Formula         = Comperand (compareOp Comperand)* 
-  Comperand       = Term (addop Term)*
-  Term            = Factor (multop Factor)*
-  Factor          = Primary (exponentop Primary)*                                                        --exponent
+                  | Exp ";"                                                                              --expLine
+                  | FunCall ";"                                                                          --funcLine
+  FunCall         = id "(" (Exp ("," Exp)*)? ")"                                                         --call
+  Exp             = Exp (logicop Formula)*                                                               --logic
+                  | Formula
+  Formula         = Formula (compareOp Comparand)*                                                       --compare
+                  | Comparand
+  Comparand       = Comparand (addop Term)*                                                              --arithmetic
+                  | Term
+  Term            = Term (multop Factor)*                                                                --multiOp
+                  | Factor
+  Factor          = Factor (exponentop Primary)*                                                         --exponent
+                  | Primary                                                        
   Primary         = Primary crementOp                                                                    --postfix
                   | crementOp Primary                                                                    --prefix
                   | negateOp Primary                                                                     --negate
-                  | "{" (Exp ("," Exp)*)? "}"                                                            --array
-                  | id ArrayOp                                                                           --accessArray
-                  | id DictionaryOp                                                                      --accessDictionary
+                  | "{" (Exp ("," Exp)*)? "}"                                                            --arrayLiteral
+                  | id "{" Comparand "}"                                                                 --accessArray
+                  | id "GET[" Exp "]"                                                                    --getDictionary
                   | "(" Exp ")"                                                                          --parens
-                  | id
-                  | literal
-  ArrayOp         = "{" Comperand "}"                                                                    --indexing
-  DictionaryOp    = "ADD[" Exp "][" Exp "]"                                                              --addToDictionary
-                  | "GET[" Exp "]"                                                                       --getFromDictionary
+                  | id                                                                                   --id
+                  | literal                                                                              --literal
   Conditional     = "IF" "(" Exp "):" Body ("ELSEIF" "(" Exp "):" Body)* ("ELSE:" Body)? endKey          --condition
-  Loop            = "DO" "(" VarDec "," Exp "," Exp "):" Body endKey                                     --stepByStepBased
-                  | "LOOP" "(" Exp "):" Body endKey                                                      --statementBased
+  Loop            = "DO" "(" VarDec "," Exp "," Exp "):" Body endKey                                     --stepByStep
+                  | "LOOP" "(" Exp "):" Body endKey                                                      --statement
   crementOp       = "++" | "--"
   int             = digit+
   decimal         = digit+ ("." digit+)
-  num             = decimal | int
   boolean         = "TRUE" | "FALSE"
   char            = alnum
-                  | space        
+                  | space
   stringLiteral   = "\"" char* "\""
-  literal         = num | boolean | stringLiteral
+  literal         = decimal | int | boolean | stringLiteral
   logicop         = "&" | "|"
   compareOp       = "==" | "!=" | ">=" | "<=" | "<" | ">" 
   negateOp        = "!"
@@ -67,7 +73,7 @@ Aegis {
   stringType      = "CHARS"
   TypeExp         = ArrayType | DictionaryType | literalType
   literalType     = numType | decimalType | booleanType | stringType
-  ArrayType       = TypeExp "{" Comperand? "}" 
+  ArrayType       = TypeExp "{" Comparand? "}" 
   DictionaryType  = "[" TypeExp "][" TypeExp "]" 
   moduloKey       = "MOD"
   conditionalKey  = "IF" | "ELSE" | "ELSEIF"
