@@ -35,12 +35,6 @@ export class VarDec {
   }
 }
 
-export class DictionaryDec {
-  constructor(type1, type2, id) {
-    Object.assign(this, { type1, type2, id })
-  }
-}
-
 export class ReturnStatement {
   constructor(expression) {
     this.expression = expression
@@ -117,20 +111,20 @@ export class ArrayOp {
 }
 
 export class DictionaryType {
-  constructor(type1, type2) {
-    Object.assign(this, { type1, type2 })
+  constructor(key, value) {
+    Object.assign(this, { key, value })
   }
 }
 
 export class DictionaryAdd {
-  constructor(type1, type2) {
-    Object.assign(this, { type1, type2 })
+  constructor(key, value) {
+    Object.assign(this, { key, value })
   }
 }
 
 export class DictionaryGet {
-  constructor(type1) {
-    Object.assign(this, { type1 })
+  constructor(key) {
+    Object.assign(this, { key })
   }
 }
 
