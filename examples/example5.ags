@@ -1,0 +1,11 @@
+#Function to iteratively find the factorial of n
+
+CLASS Example5:
+	iterativeFactorial(NUM n):
+  		NUM total = 1;
+        DO(NUM i = 1, i <= n, i++):
+        	total = total * i;
+        END
+        RETURN total;
+	END
+END
