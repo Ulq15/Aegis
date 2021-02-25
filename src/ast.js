@@ -12,14 +12,34 @@ export class Program {
 }
 
 export class FunDec {
-  constructor(id, parameters, returnType, body) {
-    Object.assign(this, { id, parameters, returnType, body })
+  constructor(id, _paramList, returnType, body) {
+    Object.assign(this, { id, _paramList, returnType, body })
+  }
+}
+
+export class ParamList {
+  constructor(param, paramList) {
+    this.parm = param
+    this.paramList = paramList
+  }
+}
+
+export class Param {
+  constructor(type, id) {
+    Object.assign(this, { type, id })
+  }
+}
+
+export class ExpList {
+  constructor(exp, expList) {
+    this.exp = exp
+    this.expList = expList
   }
 }
 
 export class FunCall {
-  constructor(id, parameters) {
-    Object.assign(this, { id, parameters })
+  constructor(id, _paramList) {
+    Object.assign(this, { id, _paramList })
   }
 }
 
@@ -84,7 +104,10 @@ export class Variable {
 }
 
 export class Assignment {
-  constructor(target, source) {
+  constructor(target, structOp, source) {
+    if (structOp !== false) {
+      this.structOp = structOp
+    }
     Object.assign(this, { target, source })
   }
 }
@@ -110,9 +133,15 @@ export class ArrayOp {
   }
 }
 
+export class PrimaryArrayOp {
+  constructor(id, exp) {
+    Object.assign(this, { id, exp })
+  }
+}
+
 export class DictionaryType {
-  constructor(key, value) {
-    Object.assign(this, { key, value })
+  constructor(type1, type2) {
+    Object.assign(this, { type1, type2 })
   }
 }
 
