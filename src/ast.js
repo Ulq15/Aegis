@@ -12,15 +12,8 @@ export class Program {
 }
 
 export class FunDec {
-  constructor(id, _paramList, returnType, body) {
-    Object.assign(this, { id, _paramList, returnType, body })
-  }
-}
-
-export class ParamList {
-  constructor(param, paramList) {
-    this.parm = param
-    this.paramList = paramList
+  constructor(id, paramList, returnType, body) {
+    Object.assign(this, { id, paramList, returnType, body })
   }
 }
 
@@ -30,22 +23,15 @@ export class Param {
   }
 }
 
-export class ExpList {
-  constructor(exp, expList) {
-    this.exp = exp
-    this.expList = expList
-  }
-}
-
 export class FunCall {
-  constructor(id, _paramList) {
-    Object.assign(this, { id, _paramList })
+  constructor(id, paramList) {
+    Object.assign(this, { id, paramList })
   }
 }
 
 export class VarInitializer {
-  constructor(type, id, initializer) {
-    Object.assign(this, { type, id, initializer })
+  constructor(type, assignment) {
+    Object.assign(this, { type, assignment })
   }
 }
 
@@ -104,10 +90,7 @@ export class Variable {
 }
 
 export class Assignment {
-  constructor(target, structOp, source) {
-    if (structOp !== false) {
-      this.structOp = structOp
-    }
+  constructor(target, source) {
     Object.assign(this, { target, source })
   }
 }
@@ -118,12 +101,16 @@ export class TypeExp {
   }
 }
 
+export class ArrayVar {
+  constructor(base, indexExp) {
+    this.base = base
+    this.indexExp = indexExp
+  }
+}
+
 export class ArrayType {
-  constructor(type, indexExp) {
-    this.type = type
-    if (indexExp !== undefined || indexExp !== null) {
-      this.indexExp = indexExp
-    }
+  constructor(base) {
+    this.base = base
   }
 }
 
@@ -133,9 +120,9 @@ export class ArrayOp {
   }
 }
 
-export class PrimaryArrayOp {
-  constructor(id, exp) {
-    Object.assign(this, { id, exp })
+export class DictionaryVar {
+  constructor(id, key) {
+    Object.assign({ id, key })
   }
 }
 
@@ -146,18 +133,30 @@ export class DictionaryType {
 }
 
 export class DictionaryAdd {
-  constructor(key, value) {
-    Object.assign(this, { key, value })
+  constructor(dictionary, key, value) {
+    Object.assign(this, { dictionary, key, value })
   }
 }
 
 export class DictionaryGet {
-  constructor(key) {
-    Object.assign(this, { key })
+  constructor(dictionary, key) {
+    Object.assign(this, { dictionary, key })
   }
 }
 
+export class Conditional{
+  constructor(ifStatement, elseIfStatements, elseStatement){
+    Object.assign(this, { ifStatement, elseIfStatements, elseStatement })
+  } 
+}
+
 export class ConditionalIF {
+  constructor(exp, body) {
+    Object.assign(this, { exp, body })
+  }
+}
+
+export class ConditionalELSEIF {
   constructor(exp, body) {
     Object.assign(this, { exp, body })
   }
@@ -180,6 +179,7 @@ export class DoLoop {
     Object.assign(this, { varExp, exp1, exp2, body })
   }
 }
+
 
 function formatAST(node) {
   // Return a compact and pretty string representation of the node graph,
