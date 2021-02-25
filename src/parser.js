@@ -26,11 +26,15 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return new AST.VarDec(type.ast(), id.sourceString)
   },
   Assignment_array(id, _open, comparand, _close, _eq, exp) {
-    return new AST.Assignment( new AST.ArrayVar(id.sourceString, comparand.ast()), exp.ast()
+    return new AST.Assignment(
+      new AST.ArrayVar(id.sourceString, comparand.ast()),
+      exp.ast()
     )
   },
   Assignment_dictAdd(id, _add, key, _bracket, value, _close) {
-    return new AST.Assignment( new AST.DictionaryVar(id.sourceString, key.ast()), value.ast()
+    return new AST.Assignment(
+      new AST.DictionaryVar(id.sourceString, key.ast()),
+      value.ast()
     )
   },
   Assignment_assign(id, _eq, exp) {
@@ -50,7 +54,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   ) {
     var paramList = []
     paramList.push(param1.ast())
-    if(param2 !== undefined){
+    if (param2 !== undefined) {
       paramList.push(param2.ast())
     }
     return new AST.FunDec(
@@ -60,7 +64,6 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
       body.ast()
     )
   },
-  //Need help here multiple comma separated parameters****************************************
   Param_single(type, id) {
     return new AST.Param(type.ast(), id.sourceString)
   },
@@ -85,16 +88,16 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     expList.push(exp2.ast())
     return new AST.FunCall(id.sourceString, expList)
   },
-  Formula_compare(left, op, right){
+  Formula_compare(left, op, right) {
     return new AST.BinaryExpression(op.sourceString, left.ast(), right.ast())
   },
-  Comparand_arithmetic(left, op, right){
+  Comparand_arithmetic(left, op, right) {
     return new AST.BinaryExpression(op.sourceString, left.ast(), right.ast())
   },
-  Term_multiOp(left, op, right){
+  Term_multiOp(left, op, right) {
     return new AST.BinaryExpression(op.sourceString, left.ast(), right.ast())
   },
-  Factor_exponent(left, op, right){
+  Factor_exponent(left, op, right) {
     return new AST.BinaryExpression(op.sourceString, left.ast(), right.ast())
   },
   Primary_postfix(primary, op) {
@@ -121,33 +124,53 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   Primary_parens(_open, exp, _close) {
     return exp.ast()
   },
-  Primary_id(id){
+  Primary_id(id) {
     return new AST.Variable(id.sourceString)
   },
-  Primary_literal(literal){
+  Primary_literal(literal) {
     return new AST.Literal(literal.sourceString)
   },
-  //Need help here with multiple kleene star operators****************************************
-  // Exp_logic(exp, logicOp, formula) {
-
-  // },
-  // ElseIf * how to implement
-  Conditional_condition(_if, _open1, exp1, _close1, body1, _elseif, _open2, exp2, _close2, body2, _else, body3, _endKey){
+  Conditional_condition(
+    _if,
+    _open1,
+    exp1,
+    _close1,
+    body1,
+    _elseif,
+    _open2,
+    exp2,
+    _close2,
+    body2,
+    _else,
+    body3,
+    _endKey
+  ) {
     var ifStatement = new AST.ConditionalIF(exp1.ast(), body1.ast())
     var elseIfStatements = []
-    elseIfStatements.push( new AST.ConditionalELSEIF(exp2.ast(), body2.ast()))
+    elseIfStatements.push(new AST.ConditionalELSEIF(exp2.ast(), body2.ast()))
     var elseStatement = new AST.ConditionalELSE(body3.ast())
     return new AST.Conditional(ifStatement, elseIfStatements, elseStatement)
   },
-  Loop_stepByStep(_do, _open, varExp, _comma1, exp1, _comma2, exp2, _close, body, _endKey){
+  Loop_stepByStep(
+    _do,
+    _open,
+    varExp,
+    _comma1,
+    exp1,
+    _comma2,
+    exp2,
+    _close,
+    body,
+    _endKey
+  ) {
     return new AST.DoLoop(varExp.ast(), exp1.ast(), exp2.ast(), body.ast())
   },
-  Loop_statement(_loop, _open, exp, _close, body, _endKey){
+  Loop_statement(_loop, _open, exp, _close, body, _endKey) {
     return new AST.Loop(exp, body)
   },
-  TypeExp(type){
+  TypeExp(type) {
     return new AST.TypeExp(type.sourceString)
-  }
+  },
 })
 
 export default function parse(sourceCode) {
@@ -155,5 +178,6 @@ export default function parse(sourceCode) {
   if (!match.succeeded()) {
     throw new Error(match.message)
   }
+  console.log(astBuilder(match).ast())
   return astBuilder(match).ast()
 }
