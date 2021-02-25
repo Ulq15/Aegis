@@ -1,5 +1,6 @@
 ## Runs a loop to find and place all factors of y into an array
 ## and prints the array
+
 CLASS Example1:
     factors(NUM y):
         NUM {} results;

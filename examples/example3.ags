@@ -1,0 +1,7 @@
+#Basic Hello World function
+
+CLASS Example3:
+	helloWorld():
+  		OUTPUT("Hello World");
+	END
+END
