@@ -1,29 +1,34 @@
 Aegis {
-  Program         = classKey id ":" ClassBody endKey
+  Program         = classKey id ":" ClassBody endKey                                                     --declare
   ClassBody       = Declaration*
-  Declaration     = VarDec ";"                                                                           --linebreak                                                                         
-                  | FunDec
-  VarDec          = TypeExp id ("=" Exp)?                                                                --declaration
-                  | id (ArrayOp | DictionaryOp)? "=" Exp                                                                           --assign
-  FunDec          = id "(" (TypeExp id ("," TypeExp id)*)? ")" TypeExp? ":" Body endKey                  --declaration
-  Body            = Statement*                                             
+  Declaration     = VarDec ";"                                                                           --var
+                  | FunDec                                                                               --func
+  VarDec          = TypeExp id ("=" Exp)?                                                                --declare
+                  | id ArrayOp  "=" Exp                                                                  --array
+                  | id DictionaryOp "=" Exp                                                              --dictionary
+                  | id "=" Exp                                                                           --assign
+  FunDec          = id "(" ParamList? ")" TypeExp? ":" Body endKey                                       --declare
+  ParamList       = Param ("," Param)*                                                                   --params
+  Param           = TypeExp id                                                                           --single
+  Body            = Statement*
   Statement       = Conditional 
                   | Loop
                   | returnKey Exp ";"                                                                    --return
-                  | printKey "(" Exp ")" ";"                                                             --print        
+                  | printKey "(" Exp ")" ";"                                                             --print
                   | Declaration
-                  | Exp ";"                                                                              --linebreak
+                  | Exp ";"                                                                              --line
                   | FunCall
-  FunCall         = id "("(Exp(","Exp)*)? ")"                                                            --FunCall                                                    
+  FunCall         = id "(" ExpList? ")" ";"                                                              --call
+  ExpList         = Exp ("," Exp)*                                                                       --exps
   Exp             = Formula (logicop Formula)*
   Formula         = Comperand (compareOp Comperand)* 
   Comperand       = Term (addop Term)*
   Term            = Factor (multop Factor)*
-  Factor          = Primary (exponentop Primary)*                                                        --exponent
+  Factor          = Primary (exponentop Primary)*                                                        
   Primary         = Primary crementOp                                                                    --postfix
                   | crementOp Primary                                                                    --prefix
                   | negateOp Primary                                                                     --negate
-                  | "{" (Exp ("," Exp)*)? "}"                                                            --array
+                  | "{" ExpList? "}"                                                                     --array
                   | id ArrayOp                                                                           --accessArray
                   | id DictionaryOp                                                                      --accessDictionary
                   | "(" Exp ")"                                                                          --parens
@@ -41,7 +46,7 @@ Aegis {
   num             = decimal | int
   boolean         = "TRUE" | "FALSE"
   char            = alnum
-                  | space        
+                  | space
   stringLiteral   = "\"" char* "\""
   literal         = num | boolean | stringLiteral
   logicop         = "&" | "|"
