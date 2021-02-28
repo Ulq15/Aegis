@@ -43,13 +43,13 @@ export class VarDec {
 
 export class ReturnStatement {
   constructor(expression) {
-    this.expression = expression
+    Object.assign(this, { expression })
   }
 }
 
 export class PrintStatement {
   constructor(argument) {
-    this.argument = argument
+    Object.assign(this, { argument })
   }
 }
 
@@ -73,19 +73,19 @@ export class PostfixExpression {
 
 export class ArrayLiteral {
   constructor(list) {
-    this.list = list
+    Object.assign(this, { list })
   }
 }
 
 export class Literal {
   constructor(value) {
-    this.value = value
+    Object.assign(this, { value })
   }
 }
 
 export class Variable {
   constructor(name) {
-    this.name = name
+    Object.assign(this, { name })
   }
 }
 
@@ -97,20 +97,19 @@ export class Assignment {
 
 export class TypeExp {
   constructor(type) {
-    this.type = type
+    Object.assign(this, { type })
   }
 }
 
 export class ArrayVar {
   constructor(base, indexExp) {
-    this.base = base
-    this.indexExp = indexExp
+    Object.assign(this, { base, indexExp})
   }
 }
 
 export class ArrayType {
   constructor(base) {
-    this.base = base
+    Object.assign(this, { base })
   }
 }
 
@@ -175,8 +174,8 @@ export class Loop {
 }
 
 export class DoLoop {
-  constructor(varExp, exp1, exp2, body) {
-    Object.assign(this, { varExp, exp1, exp2, body })
+  constructor(exp, exp1, exp2, body) {
+    Object.assign(this, { exp, exp1, exp2, body })
   }
 }
 

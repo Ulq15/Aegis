@@ -1,71 +1,60 @@
 import assert from "assert"
 import parse from "../src/parser.js"
 import fs from "fs"
-var source1 = fs.readFileSync("./examples/example1.ags").toString()
-var source2 = fs.readFileSync("./examples/example2.ags").toString()
-var source3 = fs.readFileSync("./examples/example3.ags").toString()
-var source4 = fs.readFileSync("./examples/example4.ags").toString()
-var source5 = fs.readFileSync("./examples/example5.ags").toString()
 
+var examples = []
+const location = "./examples/example"
+for(var index = 1; index <= 6; index++){
+  const example = location + index + ".ags"
+  const code = fs.readFileSync(example).toString()
+  examples.push({"name": example, "code": code})
+}
+
+const classOpen = "CLASS TestClass:\n"
+const funcOpen = "testMethod():\n"
+const close = "\nEND"
 
 const syntaxChecks = [
-  /*  
-    Examples of scenario and sorce code Here
-    Example case from Ael:
-    [
-        ["all numeric literal forms", "print 8 * 89.123"],
-        ["complex expressions", "print 83 * ((((((((-13 / 21)))))))) + 1 - -0"],
-        ["end of program inside comment", "print 0 // yay"],
-        ["comments with no text", "print 1//\nprint 0//"],
-        ["non-Latin letters in identifiers", "let コンパイラ = 100"]
-    ]
-    */
+  ["all numeric literal forms", "OUTPUT( 8 * 89.123 );"],
+  ["complex expressions", "OUTPUT ( 83 * ((((((((-13 / 21)))))))) + 1 - -0);"],
+  ["single line comment", "OUTPUT( 0 ); ## this is a comment"],
+  ["comments with no text", "OUTPUT(\"SomeString\");##\OUTPUT(TRUE);##"],
+  ["non-Latin letters in identifiers", "NUM コンパイラ = 100;"]
 ]
 
 const syntaxErrors = [
-  /*  
-    Examples of scenario and sorce code Here
-    Example case from Ael:
-    [
-        ["non-letter in an identifier", "let ab😭c = 2", /Line 1, col 7:/],
-        ["malformed number", "let x= 2.", /Line 1, col 10:/],
-        ["a missing right operand", "print 5 -", /Line 1, col 10:/],
-        ["a non-operator", "print 7 * ((2 _ 3)", /Line 1, col 15:/],
-        ["an expression starting with a )", "print )", /Line 1, col 7:/],
-        ["a statement starting with expression", "x * 5", /Line 1, col 3:/],
-        ["an illegal statement on line 2", "print 5\nx * 5", /Line 2, col 3:/],
-        ["a statement starting with a )", "print 5\n) * 5", /Line 2, col 1:/],
-        ["an expression starting with a *", "let x = * 71", /Line 1, col 9:/],
-    ]
-    */
+  ["non-letter in an identifier", "NUM ab😭c = 2;", /Line 3, col 7:/],
+  ["malformed number", "NUM x= 2. ;", /Line 3, col 10:/],
+  ["a missing right operand", "OUTPUT(5 -);", /Line 3, col 11:/],
+  ["a non-operator", "OUTPUT(7 * ((2 _ 3))", /Line 3, col 16:/],
+  ["an expression starting with a )", "OUTPUT )", /Line 3, col 8:/],
+  ["a statement starting with a )", ") * 5;", /Line 3, col 1:/],
+  ["an expression starting with a *", "NUM x = * 71;", /Line 3, col 9:/],
+  
 ]
 
-describe("Example Codes", () => {
-  it(`Successfully parsed ./examples/example1.ags`, () => {
-    assert(parse(source1))
-  })
-  it(`Successfully parsed ./examples/example2.ags`, () => {
-    assert(parse(source2))
-  })
-  it(`Successfully parsed ./examples/example3.ags`, () => {
-    assert(parse(source3))
-  })
-  it(`Successfully parsed ./examples/example4.ags`, () => {
-    assert(parse(source4))
-  })
-  it(`Successfully parsed ./examples/example5.ags`, () => {
-    assert(parse(source5))
-  })
+describe("Example Programs", () => {
+  for(const { name, code } of examples){
+    it(`Parse ${name}`, () =>{
+      assert(parse(code))
+    })
+  }
 })
-/*
+
+describe("Syntax Checks", () => {
   for (const [scenario, source] of syntaxChecks) {
+    const formatted =classOpen+funcOpen+source+close+close
     it(`recognizes that ${scenario}`, () => {
-      assert(parse(source))
+      assert(parse(formatted))
     })
   }
+})
+
+describe("Syntax Errors", () => {
   for (const [scenario, source, errorMessagePattern] of syntaxErrors) {
+    const formatted =classOpen+funcOpen+source+close+close
     it(`throws on ${scenario}`, () => {
-      assert.throws(() => parse(source), errorMessagePattern)
+      assert.throws(() => parse(formatted), errorMessagePattern)
     })
   }
-  */
+})

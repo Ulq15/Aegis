@@ -8,7 +8,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha",
+    "test": "c8 node_modules/.bin/mocha",
     "buildReadMeWIN": "type fragments\\* > README.md",
     "buildReadMeUNIX": "cat fragments/* > README.md"
   },
@@ -48,11 +48,12 @@
   },
   "homepage": "https://github.com/Ulq1517/Aegis#readme",
   "devDependencies": {
+    "c8": "^7.6.0",
+    "mocha": "^8.3.0",
+    "eslint": "^7.21.0",
     "prettier": "2.2.1"
   },
   "dependencies": {
-    "c8": "^7.6.0",
-    "mocha": "^8.3.0",
     "ohm-js": "^15.4.1"
   },
   "type": "module"

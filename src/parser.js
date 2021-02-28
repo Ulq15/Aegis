@@ -40,6 +40,9 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   Assignment_assign(id, _eq, exp) {
     return new AST.Assignment(id.sourceString, exp.ast())
   },
+  Assignment_funCall(id, _eq, funCall) {
+    return new AST.Assignment(id.sourceString, funCall.ast())
+  },
   FunDec_declare(
     id,
     _open,
@@ -69,6 +72,9 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   },
   Body(statements) {
     return statements.ast()
+  },
+  Statement_assign(assignment, _semi) {
+    return assignment.ast()
   },
   Statement_return(_returnKey, exp, _semi) {
     return new AST.ReturnStatement(exp.ast())
@@ -101,13 +107,13 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return new AST.BinaryExpression(op.sourceString, left.ast(), right.ast())
   },
   Primary_postfix(primary, op) {
-    return new AST.PostfixExpression(op, primary)
+    return new AST.PostfixExpression(op.sourceString, primary.ast())
   },
   Primary_prefix(op, primary) {
-    return new AST.PrefixExpression(op, primary)
+    return new AST.PrefixExpression(op.sourceString, primary.ast())
   },
   Primary_negate(op, primary) {
-    return new AST.PostfixExpression(op, primary)
+    return new AST.PrefixExpression(op.sourceCode, primary.ast())
   },
   Primary_arrayLiteral(_open, exp1, _comma, exp2, _close) {
     var expList = []
@@ -130,43 +136,50 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   Primary_literal(literal) {
     return new AST.Literal(literal.sourceString)
   },
-  Conditional_condition(
-    _if,
-    _open1,
-    exp1,
-    _close1,
-    body1,
-    _elseif,
-    _open2,
-    exp2,
-    _close2,
-    body2,
-    _else,
-    body3,
-    _endKey
-  ) {
-    var ifStatement = new AST.ConditionalIF(exp1.ast(), body1.ast())
-    var elseIfStatements = []
-    elseIfStatements.push(new AST.ConditionalELSEIF(exp2.ast(), body2.ast()))
-    var elseStatement = new AST.ConditionalELSE(body3.ast())
-    return new AST.Conditional(ifStatement, elseIfStatements, elseStatement)
+  If(_if, _open, exp, _close, _colon, body) {
+    return new AST.ConditionalIF(exp.ast(), body.ast())
   },
-  Loop_stepByStep(
+  ElseIf(_elseif, _open, exp, _close, _colon, body) {
+    return new AST.ConditionalELSEIF(exp.ast(), body.ast())
+  },
+  Else(_else, _colon, body) {
+    return new AST.ConditionalELSE(body.ast())
+  },
+  Conditional(IF, ELSEIF, ELSE, _endKey) {
+    return new AST.Conditional(IF.ast(), ELSEIF.ast(), ELSE.ast())
+  },
+  DoLoop_declare(
     _do,
     _open,
-    varExp,
+    varDec,
     _comma1,
     exp1,
     _comma2,
     exp2,
     _close,
+    _colon,
     body,
     _endKey
   ) {
-    return new AST.DoLoop(varExp.ast(), exp1.ast(), exp2.ast(), body.ast())
+    return new AST.DoLoop(varDec.ast(), exp1.ast(), exp2.ast(), body.ast())
   },
-  Loop_statement(_loop, _open, exp, _close, body, _endKey) {
-    return new AST.Loop(exp, body)
+  DoLoop_assign(
+    _do,
+    _open,
+    assign,
+    _comma1,
+    exp1,
+    _comma2,
+    exp2,
+    _close,
+    _colon,
+    body,
+    _endKey
+  ) {
+    return new AST.DoLoop(assign.ast(), exp1.ast(), exp2.ast(), body.ast())
+  },
+  Loop_statement(_loop, _open, exp, _close, _colon, body, _endKey) {
+    return new AST.Loop(exp.ast(), body.ast())
   },
   TypeExp(type) {
     return new AST.TypeExp(type.sourceString)

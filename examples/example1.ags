@@ -5,12 +5,14 @@ CLASS Example1:
     factors(NUM y):
         NUM {} results;
         NUM count = 0;
-        DO(NUM x=1, x <= y, x++):
+        NUM x = 1;
+        LOOP(x <= y):
             NUM z = y MOD x;
             IF( z == 0 ):
                 results{count} = x;
                 count++;
             END
+            x++;
         END
         OUTPUT( results );
     END
