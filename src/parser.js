@@ -25,7 +25,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   VarDec_declare(type, id) {
     return new AST.VarDec(type.ast(), id.sourceString)
   },
-  VarDec_funCall(funcall){
+  VarDec_funCall(funcall) {
     return funcall.ast()
   },
   Assignment_array(id, _open, comparand, _close, _eq, exp) {
@@ -46,25 +46,16 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   Assignment_funCall(id, _eq, funCall) {
     return new AST.Assignment(id.sourceString, funCall.ast())
   },
-  FunDec_declare(
-    id,
-    _open,
-    param1,
-    _comma,
-    param2,
-    _close,
-    returnType,
-    _colon,
-    body,
-    _endKey
-  ) {
-    var paramList = [param1.ast(), param2.ast()]
+  FunDec_declare(id, _open, params, _close, returnType, _colon, body, _endKey) {
     return new AST.FunDec(
       id.sourceString,
-      paramList,
+      params.ast(),
       returnType.ast(),
       body.ast()
     )
+  },
+  Params(params) {
+    return params.asIteration().ast()
   },
   Param_single(type, id) {
     return new AST.Param(type.ast(), id.sourceString)
@@ -87,41 +78,35 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   Statement_funcLine(call, _semi) {
     return call.ast()
   },
-  FunCall_call(id, _open, exp1, _comma, exp2, _close) {
-    var expList = []
-    expList.push(exp1.ast())
-    expList.push(exp2.ast())
-    return new AST.FunCall(id.sourceString, expList)
+  FunCall_call(id, _open, expList, _close) {
+    return new AST.FunCall(id.sourceString, expList.asIteration().ast())
   },
   Exp_logic(left, op, right) {
-    return new AST.BinaryExpression(op.sourceString, left.ast(), right.ast())
+    return new AST.BinaryExpression(op.ast(), left.ast(), right.ast())
   },
   Formula_compare(left, op, right) {
-    return new AST.BinaryExpression(op.sourceString, left.ast(), right.ast())
+    return new AST.BinaryExpression(op.ast(), left.ast(), right.ast())
   },
   Comparand_arithmetic(left, op, right) {
-    return new AST.BinaryExpression(op.sourceString, left.ast(), right.ast())
+    return new AST.BinaryExpression(op.ast(), left.ast(), right.ast())
   },
   Term_multiOp(left, op, right) {
-    return new AST.BinaryExpression(op.sourceString, left.ast(), right.ast())
+    return new AST.BinaryExpression(op.ast(), left.ast(), right.ast())
   },
   Factor_exponent(left, op, right) {
-    return new AST.BinaryExpression(op.sourceString, left.ast(), right.ast())
+    return new AST.BinaryExpression(op.ast(), left.ast(), right.ast())
   },
   Primary_postfix(primary, op) {
-    return new AST.PostfixExpression(op.sourceString, primary.ast())
+    return new AST.PostfixExpression(op.ast(), primary.ast())
   },
   Primary_prefix(op, primary) {
-    return new AST.PrefixExpression(op.sourceString, primary.ast())
+    return new AST.PrefixExpression(op.ast(), primary.ast())
   },
   Primary_negate(op, primary) {
-    return new AST.PrefixExpression(op.sourceCode, primary.ast())
+    return new AST.PrefixExpression(op.ast(), primary.ast())
   },
-  Primary_arrayLiteral(_open, exp1, _comma, exp2, _close) {
-    var expList = []
-    expList.push(exp1.ast())
-    expList.push(exp2.ast())
-    return new AST.ArrayLiteral(expList)
+  Primary_arrayLiteral(_open, expList, _close) {
+    return new AST.ArrayLiteral(expList.asIteration().ast())
   },
   Primary_accessArray(id, _open, comparand, _close) {
     return new AST.ArrayVar(id.sourceString, comparand.ast())
@@ -133,10 +118,10 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return exp.ast()
   },
   Primary_id(id) {
-    return new AST.Variable(id.sourceString)
+    return id.sourceString
   },
   Primary_literal(literal) {
-    return new AST.Literal(literal.sourceString)
+    return literal.sourceString
   },
   If(_if, _open, exp, _close, _colon, body) {
     return new AST.ConditionalIF(exp.ast(), body.ast())
@@ -185,6 +170,9 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   },
   TypeExp(type) {
     return type.sourceString
+  },
+  _terminal() {
+    return this.sourceString
   },
 })
 

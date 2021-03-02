@@ -12,8 +12,8 @@ export class Program {
 }
 
 export class FunDec {
-  constructor(id, paramList, returnType, body) {
-    Object.assign(this, { id, paramList, returnType, body })
+  constructor(name, params, returnType, body) {
+    Object.assign(this, { name, params, returnType, body })
   }
 }
 
@@ -24,8 +24,8 @@ export class Param {
 }
 
 export class FunCall {
-  constructor(id, paramList) {
-    Object.assign(this, { id, paramList })
+  constructor(name, params) {
+    Object.assign(this, { name, params })
   }
 }
 
@@ -108,8 +108,8 @@ export class ArrayVar {
 }
 
 export class ArrayType {
-  constructor(base) {
-    Object.assign(this, { base })
+  constructor(type) {
+    Object.assign(this, { type })
   }
 }
 
@@ -126,8 +126,8 @@ export class DictionaryVar {
 }
 
 export class DictionaryType {
-  constructor(type1, type2) {
-    Object.assign(this, { type1, type2 })
+  constructor(keyType, valType) {
+    Object.assign(this, { keyType, valType })
   }
 }
 
@@ -181,9 +181,6 @@ export class DoLoop {
 
 
 function formatAST(node) {
-  // Return a compact and pretty string representation of the node graph,
-  // taking care of cycles. Written here from scratch because the built-in
-  // inspect function, while nice, isn't nice enough.
   const tags = new Map()
 
   function tag(node) {
