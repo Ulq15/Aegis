@@ -1,0 +1,23 @@
+##Function to recursively lists the 1st n fibonacci numbers
+
+CLASS Example7:
+    fibonacci(NUM n):
+        IF(n==0):
+            RETURN 0;
+        ELSEIF(n ==1  | n == 2):
+            RETURN 1;
+        ELSE:
+            RETURN (fibonacci(n-1) + fibonacci(n-2));
+        END
+    END
+    main():
+        CHARS fibList = "";
+        NUM i = 0;
+        LOOP(i<n):
+            fibList = fibList + fibonacci(i)+ " ";
+            i++;
+        END
+        OUTPUT( fibList );
+    END
+    main();
+END

@@ -4,7 +4,8 @@ Aegis {
   Declaration     = VarDec ";"                                                                           --var
                   | FunDec                                                                               --func
   VarDec          = TypeExp Assignment                                                                   --initialize
-                  | TypeExp id                                                                           --declare              
+                  | TypeExp id                                                                           --declare
+                  | FunCall                                                                              --funCall              
   Assignment      = id "{" Comparand "}" "=" Exp                                                         --array
                   | id "ADD[" Exp "][" Exp "]"                                                           --dictAdd
                   | id "=" FunCall                                                                       --funCall
@@ -35,6 +36,7 @@ Aegis {
   Primary         = Primary crementOp                                                                    --postfix
                   | crementOp Primary                                                                    --prefix
                   | negateOp Primary                                                                     --negate
+                  | FunCall
                   | "{" (Exp ("," Exp)*)? "}"                                                            --arrayLiteral
                   | id "{" Comparand "}"                                                                 --accessArray
                   | id "GET[" Exp "]"                                                                    --getDictionary

@@ -25,6 +25,9 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   VarDec_declare(type, id) {
     return new AST.VarDec(type.ast(), id.sourceString)
   },
+  VarDec_funCall(funcall){
+    return funcall.ast()
+  },
   Assignment_array(id, _open, comparand, _close, _eq, exp) {
     return new AST.Assignment(
       new AST.ArrayVar(id.sourceString, comparand.ast()),
@@ -55,11 +58,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     body,
     _endKey
   ) {
-    var paramList = []
-    paramList.push(param1.ast())
-    if (param2 !== undefined) {
-      paramList.push(param2.ast())
-    }
+    var paramList = [param1.ast(), param2.ast()]
     return new AST.FunDec(
       id.sourceString,
       paramList,
@@ -93,6 +92,9 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     expList.push(exp1.ast())
     expList.push(exp2.ast())
     return new AST.FunCall(id.sourceString, expList)
+  },
+  Exp_logic(left, op, right) {
+    return new AST.BinaryExpression(op.sourceString, left.ast(), right.ast())
   },
   Formula_compare(left, op, right) {
     return new AST.BinaryExpression(op.sourceString, left.ast(), right.ast())
@@ -182,7 +184,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return new AST.Loop(exp.ast(), body.ast())
   },
   TypeExp(type) {
-    return new AST.TypeExp(type.sourceString)
+    return type.sourceString
   },
 })
 
@@ -191,6 +193,6 @@ export default function parse(sourceCode) {
   if (!match.succeeded()) {
     throw new Error(match.message)
   }
-  //console.log(astBuilder(match).ast())
+  console.log(astBuilder(match).ast())
   return astBuilder(match).ast()
 }

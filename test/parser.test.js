@@ -4,7 +4,7 @@ import fs from "fs"
 
 var examples = []
 const location = "./examples/example"
-for(var index = 1; index <= 6; index++){
+for(var index = 1; index <= 7; index++){
   const example = location + index + ".ags"
   const code = fs.readFileSync(example).toString()
   examples.push({"name": example, "code": code})
@@ -30,7 +30,6 @@ const syntaxErrors = [
   ["an expression starting with a )", "OUTPUT )", /Line 3, col 8:/],
   ["a statement starting with a )", ") * 5;", /Line 3, col 1:/],
   ["an expression starting with a *", "NUM x = * 71;", /Line 3, col 9:/],
-  
 ]
 
 describe("Example Programs", () => {
