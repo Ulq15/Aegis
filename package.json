@@ -42,15 +42,15 @@
       "url": "https://github.com/thekyletraverse"
     }
   ],
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Ulq1517/Aegis/issues"
   },
   "homepage": "https://github.com/Ulq1517/Aegis#readme",
   "devDependencies": {
     "c8": "^7.6.0",
-    "mocha": "^8.3.0",
     "eslint": "^7.21.0",
+    "mocha": "^8.3.0",
     "prettier": "2.2.1"
   },
   "dependencies": {
