@@ -15,16 +15,18 @@ Aegis {
   Declaration     = VarDec ";"                                                                           --var
                   | FunDec                                                                               --func
   VarDec          = TypeExp Assignment                                                                   --initialize
-                  | TypeExp id                                                                           --declare
-                  | Assignment
+                  | TypeExp id                                                                           --declare              
   Assignment      = id "{" Comparand "}" "=" Exp                                                         --array
                   | id "ADD[" Exp "][" Exp "]"                                                           --dictAdd
+                  | id "=" FunCall                                                                       --funCall
                   | id "=" Exp                                                                           --assign
   FunDec          = id "(" (Param ("," Param)*)? ")" TypeExp? ":" Body endKey                            --declare
   Param           = TypeExp id                                                                           --single
   Body            = Statement*
   Statement       = Conditional 
+                  | DoLoop
                   | Loop
+                  | Assignment ";"                                                                        --assign       
                   | returnKey Exp ";"                                                                    --return
                   | printKey "(" Exp ")" ";"                                                             --print
                   | Declaration
@@ -50,17 +52,22 @@ Aegis {
                   | "(" Exp ")"                                                                          --parens
                   | id                                                                                   --id
                   | literal                                                                              --literal
-  Conditional     = "IF" "(" Exp "):" Body ("ELSEIF" "(" Exp "):" Body)* ("ELSE:" Body)? endKey          --condition
-  Loop            = "DO" "(" VarDec "," Exp "," Exp "):" Body endKey                                     --stepByStep
-                  | "LOOP" "(" Exp "):" Body endKey                                                      --statement
+  Conditional     = If ElseIf* Else? endKey               
+  If              = "IF" "(" Exp ")" ":" Body                
+  ElseIf          = "ELSEIF" "(" Exp ")" ":" Body         
+  Else            = "ELSE" ":" Body                          
+  DoLoop          = "DO" "(" Assignment "," Exp "," Exp ")" ":" Body endKey                              --assign
+                  | "DO" "(" VarDec "," Exp "," Exp ")" ":" Body endKey                                  --declare
+  Loop            = "LOOP" "(" Exp ")" ":" Body endKey                                                   --statement
   crementOp       = "++" | "--"
   int             = digit+
   decimal         = digit+ ("." digit+)
+  negative        = "-" (int | decimal)
   boolean         = "TRUE" | "FALSE"
   char            = alnum
                   | space
   stringLiteral   = "\"" char* "\""
-  literal         = decimal | int | boolean | stringLiteral
+  literal         = negative | decimal | int | boolean | stringLiteral
   logicop         = "&" | "|"
   compareOp       = "==" | "!=" | ">=" | "<=" | "<" | ">" 
   negateOp        = "!"
