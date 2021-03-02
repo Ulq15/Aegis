@@ -15,12 +15,14 @@ Aegis {
   Declaration     = VarDec ";"                                                                           --var
                   | FunDec                                                                               --func
   VarDec          = TypeExp Assignment                                                                   --initialize
-                  | TypeExp id                                                                           --declare              
+                  | TypeExp id                                                                           --declare
+                  | FunCall                                                                              --funCall              
   Assignment      = id "{" Comparand "}" "=" Exp                                                         --array
                   | id "ADD[" Exp "][" Exp "]"                                                           --dictAdd
                   | id "=" FunCall                                                                       --funCall
                   | id "=" Exp                                                                           --assign
-  FunDec          = id "(" (Param ("," Param)*)? ")" TypeExp? ":" Body endKey                            --declare
+  FunDec          = id "(" Params ")" TypeExp? ":" Body endKey                                          --declare
+  Params          = ListOf<Param, ",">
   Param           = TypeExp id                                                                           --single
   Body            = Statement*
   Statement       = Conditional 
@@ -32,7 +34,7 @@ Aegis {
                   | Declaration
                   | Exp ";"                                                                              --expLine
                   | FunCall ";"                                                                          --funcLine
-  FunCall         = id "(" (Exp ("," Exp)*)? ")"                                                         --call
+  FunCall         = id "(" ListOf<Exp, ","> ")"                                                         --call
   Exp             = Exp (logicop Formula)*                                                               --logic
                   | Formula
   Formula         = Formula (compareOp Comparand)*                                                       --compare
@@ -46,7 +48,8 @@ Aegis {
   Primary         = Primary crementOp                                                                    --postfix
                   | crementOp Primary                                                                    --prefix
                   | negateOp Primary                                                                     --negate
-                  | "{" (Exp ("," Exp)*)? "}"                                                            --arrayLiteral
+                  | FunCall
+                  | "{" ListOf<Exp, ","> "}"                                                             --arrayLiteral
                   | id "{" Comparand "}"                                                                 --accessArray
                   | id "GET[" Exp "]"                                                                    --getDictionary
                   | "(" Exp ")"                                                                          --parens
