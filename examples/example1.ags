@@ -16,4 +16,5 @@ CLASS Example1:
         END
         OUTPUT( results );
     END
+    factors(250);
 END

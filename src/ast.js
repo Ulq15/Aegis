@@ -12,20 +12,20 @@ export class Program {
 }
 
 export class FunDec {
-  constructor(name, params, returnType, body) {
-    Object.assign(this, { name, params, returnType, body })
+  constructor(name, parameters, returnType, body) {
+    Object.assign(this, { name, parameters, returnType, body })
   }
 }
 
 export class Param {
-  constructor(type, id) {
-    Object.assign(this, { type, id })
+  constructor(type, name) {
+    Object.assign(this, { type, name })
   }
 }
 
 export class FunCall {
-  constructor(name, params) {
-    Object.assign(this, { name, params })
+  constructor(name, parameters) {
+    Object.assign(this, { name, parameters })
   }
 }
 
@@ -36,8 +36,8 @@ export class VarInitializer {
 }
 
 export class VarDec {
-  constructor(type, id) {
-    Object.assign(this, { type, id })
+  constructor(type, name) {
+    Object.assign(this, { type, name })
   }
 }
 
@@ -55,7 +55,7 @@ export class PrintStatement {
 
 export class BinaryExpression {
   constructor(op, left, right) {
-    Object.assign(this, { op, left, right })
+    Object.assign(this, { left, op, right })
   }
 }
 
@@ -67,7 +67,7 @@ export class PrefixExpression {
 
 export class PostfixExpression {
   constructor(op, operand) {
-    Object.assign(this, { op, operand })
+    Object.assign(this, { operand, op })
   }
 }
 
@@ -77,63 +77,21 @@ export class ArrayLiteral {
   }
 }
 
-export class Literal {
-  constructor(value) {
-    Object.assign(this, { value })
-  }
-}
-
-export class Variable {
-  constructor(name) {
-    Object.assign(this, { name })
-  }
-}
-
 export class Assignment {
   constructor(target, source) {
     Object.assign(this, { target, source })
   }
 }
 
-export class TypeExp {
-  constructor(type) {
-    Object.assign(this, { type })
-  }
-}
-
 export class ArrayVar {
-  constructor(base, indexExp) {
-    Object.assign(this, { base, indexExp})
-  }
-}
-
-export class ArrayType {
-  constructor(type) {
-    Object.assign(this, { type })
-  }
-}
-
-export class ArrayOp {
-  constructor(exp) {
-    Object.assign(this, { exp })
+  constructor(baseName, indexExp) {
+    Object.assign(this, { baseName, indexExp})
   }
 }
 
 export class DictionaryVar {
   constructor(id, key) {
     Object.assign({ id, key })
-  }
-}
-
-export class DictionaryType {
-  constructor(keyType, valType) {
-    Object.assign(this, { keyType, valType })
-  }
-}
-
-export class DictionaryAdd {
-  constructor(dictionary, key, value) {
-    Object.assign(this, { dictionary, key, value })
   }
 }
 
@@ -168,17 +126,16 @@ export class ConditionalELSE {
 }
 
 export class Loop {
-  constructor(exp, body) {
-    Object.assign(this, { exp, body })
+  constructor(condition, body) {
+    Object.assign(this, { condition, body })
   }
 }
 
 export class DoLoop {
-  constructor(exp, exp1, exp2, body) {
-    Object.assign(this, { exp, exp1, exp2, body })
+  constructor(iterator, range, steps, body) {
+    Object.assign(this, { iterator, range, steps, body })
   }
 }
-
 
 function formatAST(node) {
   const tags = new Map()

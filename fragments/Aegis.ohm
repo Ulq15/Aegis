@@ -1,56 +1,55 @@
 Aegis {
-  Program         = classKey id ":" ClassBody endKey                                                     --declare
+  Program         = classKey id ":" ClassBody endKey                                 --declare
   ClassBody       = Declaration*
-  Declaration     = VarDec ";"                                                                           --var
-                  | FunDec                                                                               --func
-  VarDec          = TypeExp Assignment                                                                   --initialize
-                  | TypeExp id                                                                           --declare
-                  | FunCall                                                                              --funCall              
-  Assignment      = id "{" Comparand "}" "=" Exp                                                         --array
-                  | id "ADD[" Exp "][" Exp "]"                                                           --dictAdd
-                  | id "=" FunCall                                                                       --funCall
-                  | id "=" Exp                                                                           --assign
-  FunDec          = id "(" Params ")" TypeExp? ":" Body endKey                                          --declare
+  Declaration     = VarDec ";"                                                       --var
+                  | FunDec                                                           --func
+  VarDec          = TypeExp Assignment                                               --initialize
+                  | TypeExp id                                                       --declare
+                  | FunCall                                                          --funCall              
+  Assignment      = id "{" Comparand "}" "=" Exp                                     --array
+                  | id "ADD[" Exp "][" Exp "]"                                       --dictAdd
+                  | id "=" FunCall                                                   --funCall
+                  | id "=" Exp                                                       --assign
+  FunDec          = id "(" Params ")" TypeExp? ":" Body endKey                       --declare
   Params          = ListOf<Param, ",">
-  Param           = TypeExp id                                                                           --single
+  Param           = TypeExp id                                                       --single
   Body            = Statement*
   Statement       = Conditional 
                   | DoLoop
                   | Loop
-                  | Assignment ";"                                                                        --assign       
-                  | returnKey Exp ";"                                                                    --return
-                  | printKey "(" Exp ")" ";"                                                             --print
+                  | Assignment ";"                                                   --assign       
+                  | returnKey Exp ";"                                                --return
+                  | printKey "(" Exp ")" ";"                                         --print
                   | Declaration
-                  | Exp ";"                                                                              --expLine
-                  | FunCall ";"                                                                          --funcLine
-  FunCall         = id "(" ListOf<Exp, ","> ")"                                                         --call
-  Exp             = Exp (logicop Formula)*                                                               --logic
+                  | Exp ";"                                                          --expLine
+  FunCall         = id "(" ListOf<Exp, ","> ")"                                      --call
+  Exp             = Exp (logicop Formula)*                                           --logic
                   | Formula
-  Formula         = Formula (compareOp Comparand)*                                                       --compare
+  Formula         = Formula (compareOp Comparand)*                                   --compare
                   | Comparand
-  Comparand       = Comparand (addop Term)*                                                              --arithmetic
+  Comparand       = Comparand (addop Term)*                                          --arithmetic
                   | Term
-  Term            = Term (multop Factor)*                                                                --multiOp
+  Term            = Term (multop Factor)*                                            --multiOp
                   | Factor
-  Factor          = Factor (exponentop Primary)*                                                         --exponent
+  Factor          = Factor (exponentop Primary)*                                     --exponent
                   | Primary                                                        
-  Primary         = Primary crementOp                                                                    --postfix
-                  | crementOp Primary                                                                    --prefix
-                  | negateOp Primary                                                                     --negate
+  Primary         = Primary crementOp                                                --postfix
+                  | crementOp Primary                                                --prefix
+                  | negateOp Primary                                                 --negate
                   | FunCall
-                  | "{" ListOf<Exp, ","> "}"                                                             --arrayLiteral
-                  | id "{" Comparand "}"                                                                 --accessArray
-                  | id "GET[" Exp "]"                                                                    --getDictionary
-                  | "(" Exp ")"                                                                          --parens
-                  | id                                                                                   --id
-                  | literal                                                                              --literal
+                  | "{" ListOf<Exp, ","> "}"                                         --arrayLiteral
+                  | id "{" Comparand "}"                                             --accessArray
+                  | id "GET[" Exp "]"                                                --getDictionary
+                  | "(" Exp ")"                                                      --parens
+                  | id                                                               --id
+                  | literal                                                          --literal
   Conditional     = If ElseIf* Else? endKey               
   If              = "IF" "(" Exp ")" ":" Body                
   ElseIf          = "ELSEIF" "(" Exp ")" ":" Body         
   Else            = "ELSE" ":" Body                          
-  DoLoop          = "DO" "(" Assignment "," Exp "," Exp ")" ":" Body endKey                              --assign
-                  | "DO" "(" VarDec "," Exp "," Exp ")" ":" Body endKey                                  --declare
-  Loop            = "LOOP" "(" Exp ")" ":" Body endKey                                                   --statement
+  DoLoop          = "DO" "(" Assignment "," Exp "," Exp ")" ":" Body endKey          --assign
+                  | "DO" "(" VarDec "," Exp "," Exp ")" ":" Body endKey              --declare
+  Loop            = "LOOP" "(" Exp ")" ":" Body endKey                               --statement
   crementOp       = "++" | "--"
   int             = digit+
   decimal         = digit+ ("." digit+)
@@ -90,6 +89,6 @@ Aegis {
                   | moduloKey
                   | classKey
   id              = ~keyword letter alnum*
-  space          += "##" (~"\n" any)* ("\n" | end)                                                       --singleLineComment
-                  | "#*" (~"*#" any)* ("*#" | end)                                                       --multiLineComment
+  space          += "##" (~"\n" any)* ("\n" | end)                                   --singleLineComment
+                  | "#*" (~"*#" any)* ("*#" | end)                                   --multiLineComment
 }
