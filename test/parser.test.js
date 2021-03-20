@@ -3,9 +3,9 @@ import parse from "../src/parser.js"
 import fs from "fs"
 import util from "util"
 
-var examples = []
+const examples = []
 const location = "./examples/example"
-for(var index = 1; index <= 7; index++){
+for (let index = 1; index <= 7; index++) {
   const example = location + index + ".ags"
   const code = fs.readFileSync(example).toString()
   examples.push({"name": example, "code": code})
@@ -36,12 +36,12 @@ const syntaxErrors = [
   ["a non-operator", "OUTPUT(7 * ((2 _ 3))", /Line 3, col 16:/],
   ["an expression starting with a )", "OUTPUT )", /Line 3, col 8:/],
   ["a statement starting with a )", ") * 5;", /Line 3, col 1:/],
-  ["an expression starting with a *", "NUM x = * 71;", /Line 3, col 9:/],
+  ["an expression starting with a *", "NUM x = * 71;", /Line 3, col 9:/]
 ]
 
 const ex1 = fs.readFileSync(location+"1.ags").toString()
 
-  const ex1AST = `   1 | Program id='Example1' programBody=[#2,#22]
+const ex1AST = `   1 | Program id='Example1' programBody=[#2,#22]
    2 | FunDec name='factors' parameters=[#3] returnType=[] body=[#4,#5,#7,#9,#21]
    3 | Param type='NUM' name='y'
    4 | VarDec type='NUM {}' name='results'
@@ -71,7 +71,7 @@ describe("Example AST", () => {
 })
 
 describe("Example Programs", () => {
-  for(const { name, code } of examples){
+  for (const {name, code} of examples) {
     it(`Parse ${name}`, () =>{
       assert(parse(code))
     })

@@ -75,9 +75,9 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   Statement_expLine(exp, _semi) {
     return exp.ast()
   },
-  //Statement_funcLine(call, _semi) {
+  // Statement_funcLine(call, _semi) {
   //  return call.ast()
-  //},
+  // },
   FunCall_call(id, _open, expList, _close) {
     return new AST.FunCall(id.sourceString, expList.asIteration().ast())
   },
@@ -173,7 +173,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   },
   _terminal() {
     return this.sourceString
-  },
+  }
 })
 
 export default function parse(sourceCode) {
@@ -181,6 +181,6 @@ export default function parse(sourceCode) {
   if (!match.succeeded()) {
     throw new Error(match.message)
   }
-  //console.log(astBuilder(match).ast())
+  // console.log(astBuilder(match).ast())
   return astBuilder(match).ast()
 }
