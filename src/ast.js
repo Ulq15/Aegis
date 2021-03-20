@@ -3,8 +3,8 @@
 import util from "util"
 
 export class Program {
-  constructor(id, programBody) {
-    Object.assign(this, { id, programBody })
+  constructor(name, programBody) {
+    Object.assign(this, { name, programBody })
   }
   [util.inspect.custom]() {
     return formatAST(this)
