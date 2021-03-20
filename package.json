@@ -10,7 +10,8 @@
   "scripts": {
     "test": "c8 node_modules/.bin/mocha",
     "buildReadMeWIN": "type fragments\\* > README.md",
-    "buildReadMeUNIX": "cat fragments/* > README.md"
+    "buildReadMeUNIX": "cat fragments/* > README.md",
+    "lint": "./node_modules/.bin/eslint src/*.js test/*.js --fix"
   },
   "repository": {
     "type": "git",
