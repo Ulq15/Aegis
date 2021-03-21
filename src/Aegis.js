@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 import fs from "fs/promises"
 import process from "process"
 import compile from "./compiler.js"
@@ -7,7 +9,12 @@ const help = `Aegis compiler
 Syntax: src/aegis.js <filename> <outputType>
 
 Prints to stdout according to <outputType>, which must be one of:
-    ast     prints a representation of of the abstract syntax tree
+  ast        prints a representation of of the abstract syntax tree
+  analyzed   the semantically analyzed representation
+  optimized  the optimized semantically analyzed representation
+  js         the translation to JavaScript
+  c          the translation to C
+  llvm       the translation to LLVM
 `
 
 async function compileFromFile(filename, outputType) {

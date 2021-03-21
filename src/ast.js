@@ -3,8 +3,8 @@
 import util from "util"
 
 export class Program {
-  constructor(name, programBody) {
-    Object.assign(this, { name, programBody })
+  constructor(id, classBody) {
+    Object.assign(this, { id, classBody })
   }
   [util.inspect.custom]() {
     return formatAST(this)
@@ -12,20 +12,20 @@ export class Program {
 }
 
 export class FunDec {
-  constructor(name, parameters, returnType, body) {
-    Object.assign(this, { name, parameters, returnType, body })
+  constructor(id, parameters, returnType, body) {
+    Object.assign(this, { id, parameters, returnType, body })
   }
 }
 
 export class Param {
-  constructor(type, name) {
-    Object.assign(this, { type, name })
+  constructor(type, id) {
+    Object.assign(this, { type, id })
   }
 }
 
 export class FunCall {
-  constructor(name, parameters) {
-    Object.assign(this, { name, parameters })
+  constructor(id, parameters) {
+    Object.assign(this, { id, parameters })
   }
 }
 
@@ -134,6 +134,18 @@ export class Loop {
 export class DoLoop {
   constructor(iterator, range, steps, body) {
     Object.assign(this, { iterator, range, steps, body })
+  }
+}
+
+export class IdExp{
+  constructor(name){
+    Object.assign(this, {name})
+  }
+}
+
+export class TypeExp{
+  constructor(type){
+    Object.assign(this, {type})
   }
 }
 
