@@ -36,8 +36,8 @@ class Context {
     throw new Error(`Function Identifier ${name} not declared`)
   }
   Program(p) {
+    p.id=p.id.name
     p.classBody.map(body => this.analyze(body))
-    p.id = p.id.name
     this.add(p.id, p.classBody)
     return p
   }
@@ -51,32 +51,29 @@ class Context {
   Param(p) {
     p.variable = new Variable(p.id.name, p.type)
     this.add(p.id.name, p.variable)
-    delete p.id
     delete p.type
+    delete p.id
     return p
   }
   FunCall(c) {
-    c.function = this.lookupFunc(c.id.name)
     c.id = c.id.name
+    c.function = this.lookupFunc(c.id)
     let p = c.parameters.map(params => this.analyze(params))
-    delete c.parameters
     c.parameters = p
     return c
   }
   VarInitializer(v) {
-    v.variable = new Variable(v.assignment.target.name, v.type)
-    this.add(v.assignment.target.name, v.variable)
-    let a = this.analyze(v.assignment)
+    let i = this.analyze(v.assignment.target.name)
+    v.variable = new Variable(i, v.type)
+    this.add(i, v.variable)
+    v.source = this.analyze(v.assignment.source)
     delete v.assignment
     delete v.type
-    v.source = a.source
     return v
   }
   VarDec(d) {
     d.variable = new Variable(d.id.name, d.type)
     this.add(d.id.name, d.variable)
-    delete d.id
-    delete d.type
     return d
   }
   ReturnStatement(r) {
@@ -104,7 +101,7 @@ class Context {
     return e
   }
   ArrayLiteral(a) {
-    return a.map(item => this.analyze(item))
+    return a.list.map(item => this.analyze(item))
   }
   Assignment(a) {
     a.target = this.analyze(a.target)
@@ -112,14 +109,15 @@ class Context {
     return a
   }
   ArrayVar(a) {
+    this.lookup(a.id.name)
     a.id = this.analyze(a.id)
     a.indexExp = this.analyze(a.indexExp)
     return a
   }
   DictionaryVar(d) {
-    d.variable = new Variable(d.id, "DICT")
+    d.variable = new Variable(d.id.name, "DICT")
     d.key = this.analyze(d.key)
-    this.add(d.id, d.variable)
+    this.add(d.id.name, d.variable)
     return d
   }
   DictionaryGet(g) {
@@ -162,21 +160,14 @@ class Context {
   Array(a) {
     return a.map(item => this.analyze(item))
   }
-  TypeExp(t) {
-    return t
+  IdExp(i){
+    return this.lookup(i.name)
   }
-  Number(i) {
-    return i
-  }
-  IdExp(node) {
-    return this.lookup(node.name)
-  }
-  String(s) {
-    return s
+  String(node) {
+    return node
   }
 }
 
 export default function analyze(node) {
-  // Analyze in a fresh global context
   return new Context().analyze(node)
 }
