@@ -1,13 +1,13 @@
 ##Function to recursively lists the 1st n fibonacci numbers
 
 CLASS Example7:
-    fibonacci(NUM n):
+    fibonacci(NUM n) NUM:
         IF(n==0):
             RETURN 0;
         ELSEIF(n ==1  | n == 2):
             RETURN 1;
         ELSE:
-            RETURN (fibonacci(n-1) + fibonacci(n-2));
+            RETURN fibonacci(n-1) + fibonacci(n-2) ;
         END
     END
     main():

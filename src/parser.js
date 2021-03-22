@@ -8,7 +8,7 @@ const aegisGrammar = ohm.grammar(
 
 const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   Program_declare(_classKey, id, _colon, classBody, _endKey) {
-    return new AST.Program(new AST.IdExp(id.sourceString), classBody.ast())
+    return new AST.Program(id.ast(), classBody.ast())
   },
   ClassBody(declarations) {
     return declarations.ast()
@@ -23,32 +23,32 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return new AST.VarInitializer(type.ast(), assignment.ast())
   },
   VarDec_declare(type, id) {
-    return new AST.VarDec(type.ast(), new AST.IdExp(id.sourceString))
+    return new AST.VarDec(type.ast(), id.ast())
   },
   VarDec_funCall(funcall) {
     return funcall.ast()
   },
   Assignment_array(id, _open, comparand, _close, _eq, exp) {
     return new AST.Assignment(
-      new AST.ArrayVar(new AST.IdExp(id.sourceString), comparand.ast()),
+      new AST.ArrayVar(id.ast(), comparand.ast()),
       exp.ast()
     )
   },
   Assignment_dictAdd(id, _add, key, _bracket, value, _close) {
     return new AST.Assignment(
-      new AST.DictionaryVar(new AST.IdExp(id.sourceString), key.ast()),
+      new AST.DictionaryVar(id.ast(), key.ast()),
       value.ast()
     )
   },
   Assignment_assign(id, _eq, exp) {
-    return new AST.Assignment(new AST.IdExp(id.sourceString), exp.ast())
+    return new AST.Assignment(id.ast(), exp.ast())
   },
   Assignment_funCall(id, _eq, funCall) {
-    return new AST.Assignment(new AST.IdExp(id.sourceString), funCall.ast())
+    return new AST.Assignment(id.ast(), funCall.ast())
   },
   FunDec_declare(id, _open, params, _close, returnType, _colon, body, _endKey) {
     return new AST.FunDec(
-      new AST.IdExp(id.sourceString),
+      id.ast(),
       params.ast(),
       returnType.ast(),
       body.ast()
@@ -58,7 +58,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return params.asIteration().ast()
   },
   Param_single(type, id) {
-    return new AST.Param(type.ast(), new AST.IdExp(id.sourceString))
+    return new AST.Param(type.ast(), id.ast())
   },
   Body(statements) {
     return statements.ast()
@@ -76,7 +76,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return exp.ast()
   },
   FunCall_call(id, _open, expList, _close) {
-    return new AST.FunCall(new AST.IdExp(id.sourceString), expList.asIteration().ast())
+    return new AST.FunCall(id.ast(), expList.asIteration().ast())
   },
   Exp_logic(left, op, right) {
     return new AST.BinaryExpression(op.ast(), left.ast(), right.ast())
@@ -106,16 +106,16 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return new AST.ArrayLiteral(expList.asIteration().ast())
   },
   Primary_accessArray(id, _open, comparand, _close) {
-    return new AST.ArrayVar(new AST.IdExp(id.sourceString), comparand.ast())
+    return new AST.ArrayVar(id.ast(), comparand.ast())
   },
   Primary_getDictionary(id, _get, exp, _close) {
-    return new AST.DictionaryGet(new AST.IdExp(id.sourceString), exp.ast())
+    return new AST.DictionaryGet(id.ast(), exp.ast())
   },
   Primary_parens(_open, exp, _close) {
     return exp.ast()
   },
   Primary_id(id) {
-    return new AST.IdExp(id.sourceString)
+    return id.ast()
   },
   Primary_literal(literal) {
     return literal.sourceString
@@ -167,6 +167,9 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   },
   TypeExp(type) {
     return type.sourceString
+  },
+  id(first, sub){
+    return new AST.IdExp(first.sourceString+sub.sourceString)
   },
   _terminal() {
     return this.sourceString

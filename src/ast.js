@@ -36,8 +36,8 @@ export class VarInitializer {
 }
 
 export class VarDec {
-  constructor(type, name) {
-    Object.assign(this, { type, name })
+  constructor(type, id) {
+    Object.assign(this, { type, id })
   }
 }
 
@@ -84,8 +84,8 @@ export class Assignment {
 }
 
 export class ArrayVar {
-  constructor(baseName, indexExp) {
-    Object.assign(this, { baseName, indexExp })
+  constructor(id, indexExp) {
+    Object.assign(this, { id, indexExp })
   }
 }
 
@@ -96,8 +96,8 @@ export class DictionaryVar {
 }
 
 export class DictionaryGet {
-  constructor(dictionary, key) {
-    Object.assign(this, { dictionary, key })
+  constructor(id, key) {
+    Object.assign(this, { id, key })
   }
 }
 
@@ -143,9 +143,9 @@ export class IdExp{
   }
 }
 
-export class TypeExp{
-  constructor(type){
-    Object.assign(this, {type})
+export class Variable {
+  constructor(id, type) {
+    Object.assign(this, {id, type})
   }
 }
 
