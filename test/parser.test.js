@@ -26,7 +26,8 @@ const syntaxChecks = [
   ["array literal assignment", "NUM{} arr = {1,2,3,4,5};"],
   ["dictionary get", "dictionary GET[1];"],
   ["Do loop with internal assignment", "NUM i; DO(i = 0, i < 10, i++): OUTPUT(i); END"],
-  ["dictionary add", "dictionary ADD[\"SomeKey\"][\"SomeValue\"];"]
+  ["dictionary add", "dictionary ADD[\"SomeKey\"][\"SomeValue\"];"],
+  ["dictionary declare", "[NUM][BOOL] dictionary;"],
 ]
 
 const syntaxErrors = [
@@ -41,36 +42,55 @@ const syntaxErrors = [
 
 const ex1 = fs.readFileSync(location+"1.ags").toString()
 
-const ex1AST = `   1 | Program id='Example1' programBody=[#2,#22]
-   2 | FunDec name='factors' parameters=[#3] returnType=[] body=[#4,#5,#7,#9,#21]
-   3 | Param type='NUM' name='y'
-   4 | VarDec type='NUM {}' name='results'
-   5 | VarInitializer type='NUM' assignment=#6
-   6 | Assignment target='count' source='0'
-   7 | VarInitializer type='NUM' assignment=#8
-   8 | Assignment target='x' source='1'
-   9 | Loop condition=#10 body=[#11,#14,#20]
-  10 | BinaryExpression left='x' op=['<='] right=['y']
-  11 | VarInitializer type='NUM' assignment=#12
-  12 | Assignment target='z' source=#13
-  13 | BinaryExpression left='y' op=['MOD'] right=['x']
-  14 | Conditional ifStatement=#15 elseIfStatements=[] elseStatement=[]
-  15 | ConditionalIF exp=#16 body=[#17,#19]
-  16 | BinaryExpression left='z' op=['=='] right=['0']
-  17 | Assignment target=#18 source='x'
-  18 | ArrayVar baseName='results' indexExp='count'
-  19 | PostfixExpression operand='count' op='++'
-  20 | PostfixExpression operand='x' op='++'
-  21 | PrintStatement argument='results'
-  22 | FunCall name='factors' parameters=['250']`
+const ex1AST = `   1 | Program id=#2 classBody=[#3,#40]
+   2 | IdExp name='Example1'
+   3 | FunDec id=#4 parameters=[#5] returnType=[] body=[#7,#9,#12,#15,#38]
+   4 | IdExp name='factors'
+   5 | Param type='NUM' id=#6
+   6 | IdExp name='y'
+   7 | VarDec type='NUM {}' id=#8
+   8 | IdExp name='results'
+   9 | VarInitializer type='NUM' assignment=#10
+  10 | Assignment target=#11 source='0'
+  11 | IdExp name='count'
+  12 | VarInitializer type='NUM' assignment=#13
+  13 | Assignment target=#14 source='1'
+  14 | IdExp name='x'
+  15 | Loop condition=#16 body=[#19,#25,#36]
+  16 | BinaryExpression left=#17 op=['<='] right=[#18]
+  17 | IdExp name='x'
+  18 | IdExp name='y'
+  19 | VarInitializer type='NUM' assignment=#20
+  20 | Assignment target=#21 source=#22
+  21 | IdExp name='z'
+  22 | BinaryExpression left=#23 op=['MOD'] right=[#24]
+  23 | IdExp name='y'
+  24 | IdExp name='x'
+  25 | Conditional ifStatement=#26 elseIfStatements=[] elseStatement=[]
+  26 | ConditionalIF exp=#27 body=[#29,#34]
+  27 | BinaryExpression left=#28 op=['=='] right=['0']
+  28 | IdExp name='z'
+  29 | Assignment target=#30 source=#33
+  30 | ArrayVar id=#31 indexExp=#32
+  31 | IdExp name='results'
+  32 | IdExp name='count'
+  33 | IdExp name='x'
+  34 | PostfixExpression operand=#35 op='++'
+  35 | IdExp name='count'
+  36 | PostfixExpression operand=#37 op='++'
+  37 | IdExp name='x'
+  38 | PrintStatement argument=#39
+  39 | IdExp name='results'
+  40 | FunCall id=#41 parameters=['250']
+  41 | IdExp name='factors'`
 
-describe("Example AST", () => {
+describe("Parsing Example AST", () => {
   it("Successfuly Built Expected AST for example1.ags", ()=>{
     assert.deepStrictEqual(util.format(parse(ex1)), ex1AST)
   })
 })
 
-describe("Example Programs", () => {
+describe("Parsing Example Programs", () => {
   for (const {name, code} of examples) {
     it(`Parse ${name}`, () =>{
       assert(parse(code))
