@@ -36,7 +36,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   },
   Assignment_dictAdd(id, _add, key, _bracket, value, _close) {
     return new AST.Assignment(
-      new AST.DictionaryVar(id.ast(), key.ast()),
+      new AST.DictionaryAccess(id.ast(), key.ast()),
       value.ast()
     )
   },
@@ -109,7 +109,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return new AST.ArrayVar(id.ast(), comparand.ast())
   },
   Primary_getDictionary(id, _get, exp, _close) {
-    return new AST.DictionaryGet(id.ast(), exp.ast())
+    return new AST.DictionaryAccess(id.ast(), exp.ast())
   },
   Primary_parens(_open, exp, _close) {
     return exp.ast()

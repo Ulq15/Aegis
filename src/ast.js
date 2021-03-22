@@ -89,13 +89,7 @@ export class ArrayVar {
   }
 }
 
-export class DictionaryVar {
-  constructor(id, key) {
-    Object.assign({ id, key })
-  }
-}
-
-export class DictionaryGet {
+export class DictionaryAccess {
   constructor(id, key) {
     Object.assign(this, { id, key })
   }

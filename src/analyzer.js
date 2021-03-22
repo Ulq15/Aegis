@@ -114,13 +114,7 @@ class Context {
     a.indexExp = this.analyze(a.indexExp)
     return a
   }
-  DictionaryVar(d) {
-    d.variable = new Variable(d.id.name, "DICT")
-    d.key = this.analyze(d.key)
-    this.add(d.id.name, d.variable)
-    return d
-  }
-  DictionaryGet(g) {
+  DictionaryAccess(g) {
     g.id = this.analyze(g.id)
     g.key = this.analyze(g.key)
     return g
