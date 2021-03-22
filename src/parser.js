@@ -181,6 +181,5 @@ export default function parse(sourceCode) {
   if (!match.succeeded()) {
     throw new Error(match.message)
   }
-  // console.log(astBuilder(match).ast())
   return astBuilder(match).ast()
 }
