@@ -27,7 +27,7 @@ const syntaxChecks = [
   ["dictionary get", "dictionary GET[1];"],
   ["Do loop with internal assignment", "NUM i; DO(i = 0, i < 10, i++): OUTPUT(i); END"],
   ["dictionary add", "dictionary ADD[\"SomeKey\"][\"SomeValue\"];"],
-  ["dictionary declare", "[NUM][BOOL] dictionary;"],
+  ["dictionary declare", "[NUM][BOOL] dictionary;"]
 ]
 
 const syntaxErrors = [

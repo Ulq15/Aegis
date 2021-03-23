@@ -1,4 +1,4 @@
-import { Variable } from "./ast.js"
+import {Variable} from "./ast.js"
 
 class Context {
   constructor(context) {
@@ -6,7 +6,7 @@ class Context {
     this.localFuncs = new Map()
   }
   analyze(node) {
-    //console.log(node)
+    // console.log(node)
     return this[node.constructor.name](node)
   }
   add(name, entity) {
@@ -37,15 +37,15 @@ class Context {
   }
   Program(p) {
     p.id=p.id.name
-    p.classBody.map(body => this.analyze(body))
+    p.classBody.map((body) => this.analyze(body))
     this.add(p.id, p.classBody)
     return p
   }
   FunDec(f) {
     f.id = f.id.name
     this.addFunc(f.id, f)
-    f.parameters.map(params => this.analyze(params))
-    f.body.map(stmnt => this.analyze(stmnt))
+    f.parameters.map((params) => this.analyze(params))
+    f.body.map((stmnt) => this.analyze(stmnt))
     return f
   }
   Param(p) {
@@ -58,12 +58,12 @@ class Context {
   FunCall(c) {
     c.id = c.id.name
     c.function = this.lookupFunc(c.id)
-    let p = c.parameters.map(params => this.analyze(params))
+    const p = c.parameters.map((params) => this.analyze(params))
     c.parameters = p
     return c
   }
   VarInitializer(v) {
-    let i = this.analyze(v.assignment.target.name)
+    const i = this.analyze(v.assignment.target.name)
     v.variable = new Variable(i, v.type)
     this.add(i, v.variable)
     v.source = this.analyze(v.assignment.source)
@@ -101,7 +101,7 @@ class Context {
     return e
   }
   ArrayLiteral(a) {
-    return a.list.map(item => this.analyze(item))
+    return a.list.map((item) => this.analyze(item))
   }
   Assignment(a) {
     a.target = this.analyze(a.target)
@@ -152,9 +152,9 @@ class Context {
     return d
   }
   Array(a) {
-    return a.map(item => this.analyze(item))
+    return a.map((item) => this.analyze(item))
   }
-  IdExp(i){
+  IdExp(i) {
     return this.lookup(i.name)
   }
   String(node) {

@@ -16,7 +16,7 @@ const classOpen = "CLASS TestClass:\n"
 const funcOpen = "testMethod():\n"
 const close = "\nEND"
 
-const source =  fs.readFileSync(location+"7.ags").toString()
+const source = fs.readFileSync(location+"7.ags").toString()
 
 const expectedAst = String.raw`   1 | Program id='Example7' classBody=[#2,#21,#33]
    2 | FunDec id='fibonacci' parameters=[#3] returnType=['NUM'] body=[#5]
@@ -56,7 +56,7 @@ const errorFixture = [
   ["using undeclared ids", "id + 1;", /Identifier id not declared/],
   ["redeclared ids", "NUM x = 1;\nNUM x = 1;", /Identifier x already declared/],
   ["calling nondeclared functions", "NUM x = fibonacci(13);", /Function Identifier fibonacci not declared/],
-  ["redeclaring functions", "END\ntestMethod():", /Function Identifier testMethod already declared/],
+  ["redeclaring functions", "END\ntestMethod():", /Function Identifier testMethod already declared/]
 ]
 
 const syntaxChecks = [
@@ -71,15 +71,15 @@ const syntaxChecks = [
   ["dictionary get", "[NUM][CHARS] dic;\ndic GET[1];"],
   ["Do loop with internal assignment", "NUM i; DO(i = 0, i < 10, i++): OUTPUT(i); END"],
   ["dictionary add", "[NUM][CHARS] dic;\n dic ADD[0][\"SomeValue\"];"],
-  ["dictionary declare", "[NUM][BOOL] dictionary;"],
+  ["dictionary declare", "[NUM][BOOL] dictionary;"]
 ]
 
-function format(test){
+function format(test) {
   return classOpen+funcOpen+test+close+close
 }
 
 describe("The Analyzer", () => {
-  it("Can Analyze all the nodes", done => {
+  it("Can Analyze all the nodes", (done) => {
     assert.deepStrictEqual(util.format(analyze(parse(source))), expectedAst)
     done()
   })
@@ -94,7 +94,7 @@ describe("The Analyzer", () => {
     })
   }
   for (const [scenario, source, errorMessagePattern] of errorFixture) {
-    it(`throws on ${scenario}`, done => {
+    it(`throws on ${scenario}`, (done) => {
       // let p = parse(format(source))
       // console.log(p)
       // console.log(analyze(p))
