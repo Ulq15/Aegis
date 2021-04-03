@@ -47,12 +47,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return new AST.Assignment(id.ast(), funCall.ast())
   },
   FunDec_declare(id, _open, params, _close, returnType, _colon, body, _endKey) {
-    return new AST.FunDec(
-      id.ast(),
-      params.ast(),
-      returnType.ast(),
-      body.ast()
-    )
+    return new AST.FunDec(id.ast(), params.ast(), returnType.ast(), body.ast())
   },
   Params(params) {
     return params.asIteration().ast()
@@ -169,7 +164,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return type.sourceString
   },
   id(first, sub) {
-    return new AST.IdExp(first.sourceString+sub.sourceString)
+    return new AST.IdExp(first.sourceString + sub.sourceString)
   },
   _terminal() {
     return this.sourceString
