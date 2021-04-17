@@ -9,14 +9,14 @@ const location = "./examples/example"
 for (let index = 1; index <= 7; index++) {
   const example = location + index + ".ags"
   const code = fs.readFileSync(example).toString()
-  examples.push({"name": example, "code": code})
+  examples.push({ name: example, code: code })
 }
 
 const classOpen = "CLASS TestClass:\n"
 const funcOpen = "testMethod():\n"
 const close = "\nEND"
 
-const source = fs.readFileSync(location+"7.ags").toString()
+const source = fs.readFileSync(location + "7.ags").toString()
 
 const expectedAst = String.raw`   1 | Program id='Example7' classBody=[#2,#21,#33]
    2 | FunDec id='fibonacci' parameters=[#3] returnType=['NUM'] body=[#5]
@@ -63,28 +63,28 @@ const syntaxChecks = [
   ["all numeric literal forms", "OUTPUT( 8 * 89.123 );"],
   ["complex expressions", "OUTPUT ( 83 * ((((((((-13 / 21)))))))) + 1 ** 2  - -0);"],
   ["single line comment", "OUTPUT( 0 ); ## this is a comment"],
-  ["comments with no text", "OUTPUT(\"SomeString\");##\OUTPUT(TRUE);##"],
+  ["comments with no text", 'OUTPUT("SomeString");##OUTPUT(TRUE);##'],
   ["non-Latin letters in identifiers", "NUM コンパイラ = 100;"],
   ["variable prefix increment", "NUM x = 0;\nNUM y = ++x;"],
   ["logical negate", "BOOL x; OUTPUT(!x);"],
   ["array literal assignment", "NUM{} arr = {1,2,3,4,5};"],
   ["dictionary get", "[NUM][CHARS] dic;\ndic GET[1];"],
   ["Do loop with internal assignment", "NUM i; DO(i = 0, i < 10, i++): OUTPUT(i); END"],
-  ["dictionary add", "[NUM][CHARS] dic;\n dic ADD[0][\"SomeValue\"];"],
+  ["dictionary add", '[NUM][CHARS] dic;\n dic ADD[0]["SomeValue"];'],
   ["dictionary declare", "[NUM][BOOL] dictionary;"]
 ]
 
 function format(test) {
-  return classOpen+funcOpen+test+close+close
+  return classOpen + funcOpen + test + close + close
 }
 
 describe("The Analyzer", () => {
-  it("Can Analyze all the nodes", (done) => {
+  it("Can Analyze all the nodes", done => {
     assert.deepStrictEqual(util.format(analyze(parse(source))), expectedAst)
     done()
   })
-  for (const {name, code} of examples) {
-    it(`Analyze ${name}`, () =>{
+  for (const { name, code } of examples) {
+    it(`Analyze ${name}`, () => {
       assert(analyze(parse(code)))
     })
   }
@@ -94,10 +94,7 @@ describe("The Analyzer", () => {
     })
   }
   for (const [scenario, source, errorMessagePattern] of errorFixture) {
-    it(`throws on ${scenario}`, (done) => {
-      // let p = parse(format(source))
-      // console.log(p)
-      // console.log(analyze(p))
+    it(`throws on ${scenario}`, done => {
       assert.throws(() => analyze(parse(format(source))), errorMessagePattern)
       done()
     })

@@ -161,10 +161,10 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return new AST.Loop(exp.ast(), body.ast())
   },
   TypeExp(type) {
-    return type.sourceString
+    return Symbol(type.sourceString)
   },
   id(first, sub) {
-    return new AST.IdExp(first.sourceString + sub.sourceString)
+    return Symbol(first.sourceString + sub.sourceString)
   },
   _terminal() {
     return this.sourceString

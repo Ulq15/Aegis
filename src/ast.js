@@ -131,11 +131,11 @@ export class DoLoop {
   }
 }
 
-export class IdExp {
-  constructor(name) {
-    Object.assign(this, { name })
-  }
-}
+// export class IdExp {
+//   constructor(name) {
+//     Object.assign(this, { name })
+//   }
+// }
 
 export class Variable {
   constructor(id, type) {

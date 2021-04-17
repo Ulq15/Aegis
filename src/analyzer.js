@@ -1,4 +1,4 @@
-import {Variable} from "./ast.js"
+import { Variable } from "./ast.js"
 
 class Context {
   constructor(context) {
@@ -6,7 +6,6 @@ class Context {
     this.localFuncs = new Map()
   }
   analyze(node) {
-    // console.log(node)
     return this[node.constructor.name](node)
   }
   add(name, entity) {
@@ -36,35 +35,36 @@ class Context {
     throw new Error(`Function Identifier ${name} not declared`)
   }
   Program(p) {
-    p.id=p.id.name
-    p.classBody.map((body) => this.analyze(body))
+    p.id = p.id.description
+    p.classBody.map(body => this.analyze(body))
     this.add(p.id, p.classBody)
     return p
   }
   FunDec(f) {
-    f.id = f.id.name
+    f.id = f.id.description
+    f.returnType = f.returnType.map(type => type.description)
     this.addFunc(f.id, f)
-    f.parameters.map((params) => this.analyze(params))
-    f.body.map((stmnt) => this.analyze(stmnt))
+    f.parameters.map(params => this.analyze(params))
+    f.body.map(stmnt => this.analyze(stmnt))
     return f
   }
   Param(p) {
-    p.variable = new Variable(p.id.name, p.type)
-    this.add(p.id.name, p.variable)
+    p.variable = new Variable(p.id.description, p.type.description)
+    this.add(p.id.description, p.variable)
     delete p.type
     delete p.id
     return p
   }
   FunCall(c) {
-    c.id = c.id.name
+    c.id = c.id.description
     c.function = this.lookupFunc(c.id)
-    const p = c.parameters.map((params) => this.analyze(params))
+    const p = c.parameters.map(params => this.analyze(params))
     c.parameters = p
     return c
   }
   VarInitializer(v) {
-    const i = this.analyze(v.assignment.target.name)
-    v.variable = new Variable(i, v.type)
+    const i = this.analyze(v.assignment.target.description)
+    v.variable = new Variable(i, v.type.description)
     this.add(i, v.variable)
     v.source = this.analyze(v.assignment.source)
     delete v.assignment
@@ -72,8 +72,8 @@ class Context {
     return v
   }
   VarDec(d) {
-    d.variable = new Variable(d.id.name, d.type)
-    this.add(d.id.name, d.variable)
+    d.variable = new Variable(d.id.name, d.type.description)
+    this.add(d.id.description, d.variable)
     return d
   }
   ReturnStatement(r) {
@@ -101,7 +101,7 @@ class Context {
     return e
   }
   ArrayLiteral(a) {
-    return a.list.map((item) => this.analyze(item))
+    return a.list.map(item => this.analyze(item))
   }
   Assignment(a) {
     a.target = this.analyze(a.target)
@@ -109,8 +109,8 @@ class Context {
     return a
   }
   ArrayVar(a) {
-    this.lookup(a.id.name)
-    a.id = this.analyze(a.id)
+    this.lookup(a.id.description)
+    a.id = this.analyze(a.id.description)
     a.indexExp = this.analyze(a.indexExp)
     return a
   }
@@ -152,10 +152,10 @@ class Context {
     return d
   }
   Array(a) {
-    return a.map((item) => this.analyze(item))
+    return a.map(item => this.analyze(item))
   }
-  IdExp(i) {
-    return this.lookup(i.name)
+  Symbol(node) {
+    return this.lookup(node.description)
   }
   String(node) {
     return node
