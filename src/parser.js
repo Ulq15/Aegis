@@ -1,10 +1,9 @@
 import ohm from "ohm-js"
 import * as AST from "./ast.js"
 import fs from "fs"
+import { SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG } from "constants"
 
-const aegisGrammar = ohm.grammar(
-  fs.readFileSync("./fragments/Aegis.ohm").toString()
-)
+const aegisGrammar = ohm.grammar(fs.readFileSync("./fragments/Aegis.ohm").toString())
 
 const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   Program_declare(_classKey, id, _colon, classBody, _endKey) {
@@ -29,16 +28,10 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return funcall.ast()
   },
   Assignment_array(id, _open, comparand, _close, _eq, exp) {
-    return new AST.Assignment(
-      new AST.ArrayVar(id.ast(), comparand.ast()),
-      exp.ast()
-    )
+    return new AST.Assignment(new AST.ArrayVar(id.ast(), comparand.ast()), exp.ast())
   },
   Assignment_dictAdd(id, _add, key, _bracket, value, _close) {
-    return new AST.Assignment(
-      new AST.DictionaryAccess(id.ast(), key.ast()),
-      value.ast()
-    )
+    return new AST.Assignment(new AST.DictionaryAccess(id.ast(), key.ast()), value.ast())
   },
   Assignment_assign(id, _eq, exp) {
     return new AST.Assignment(id.ast(), exp.ast())
@@ -127,34 +120,10 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   Conditional(IF, ELSEIF, ELSE, _endKey) {
     return new AST.Conditional(IF.ast(), ELSEIF.ast(), ELSE.ast())
   },
-  DoLoop_declare(
-    _do,
-    _open,
-    varDec,
-    _comma1,
-    exp1,
-    _comma2,
-    exp2,
-    _close,
-    _colon,
-    body,
-    _endKey
-  ) {
+  DoLoop_declare(_do, _open, varDec, _comma1, exp1, _comma2, exp2, _close, _colon, body, _endKey) {
     return new AST.DoLoop(varDec.ast(), exp1.ast(), exp2.ast(), body.ast())
   },
-  DoLoop_assign(
-    _do,
-    _open,
-    assign,
-    _comma1,
-    exp1,
-    _comma2,
-    exp2,
-    _close,
-    _colon,
-    body,
-    _endKey
-  ) {
+  DoLoop_assign(_do, _open, assign, _comma1, exp1, _comma2, exp2, _close, _colon, body, _endKey) {
     return new AST.DoLoop(assign.ast(), exp1.ast(), exp2.ast(), body.ast())
   },
   Loop_statement(_loop, _open, exp, _close, _colon, body, _endKey) {
@@ -166,7 +135,25 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   id(first, sub) {
     return Symbol(first.sourceString + sub.sourceString)
   },
-  _terminal() {
+  logicop(_) {
+    return this.sourceString
+  },
+  compareOp(_) {
+    return this.sourceString
+  },
+  negateOp(_) {
+    return this.sourceString
+  },
+  addop(_) {
+    return this.sourceString
+  },
+  multop(_) {
+    return this.sourceString
+  },
+  exponentop(_) {
+    return this.sourceString
+  },
+  crementOp(_) {
     return this.sourceString
   }
 })

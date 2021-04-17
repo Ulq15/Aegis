@@ -4,7 +4,7 @@ CLASS Example7:
     fibonacci(NUM n) NUM:
         IF(n==0):
             RETURN 0;
-        ELSEIF(n ==1  | n == 2):
+        ELSEIF(n == 1  | n == 2):
             RETURN 1;
         ELSE:
             RETURN fibonacci(n-1) + fibonacci(n-2) ;

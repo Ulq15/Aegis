@@ -49,10 +49,12 @@ class Context {
     return f
   }
   Param(p) {
-    p.variable = new Variable(p.id.description, p.type.description)
-    this.add(p.id.description, p.variable)
-    delete p.type
+    p.id = p.id.description
+    p.type = p.type.description
+    p.variable = new Variable(p.type, p.id)
+    this.add(p.id, p.variable)
     delete p.id
+    delete p.type
     return p
   }
   FunCall(c) {
@@ -64,7 +66,7 @@ class Context {
   }
   VarInitializer(v) {
     const i = this.analyze(v.assignment.target.description)
-    v.variable = new Variable(i, v.type.description)
+    v.variable = new Variable(v.type.description, i)
     this.add(i, v.variable)
     v.source = this.analyze(v.assignment.source)
     delete v.assignment
@@ -72,7 +74,7 @@ class Context {
     return v
   }
   VarDec(d) {
-    d.variable = new Variable(d.id.name, d.type.description)
+    d.variable = new Variable(d.type.description, d.id.description)
     this.add(d.id.description, d.variable)
     return d
   }

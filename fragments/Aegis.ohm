@@ -50,21 +50,24 @@ Aegis {
   DoLoop          = "DO" "(" Assignment "," Exp "," Exp ")" ":" Body endKey          --assign
                   | "DO" "(" VarDec "," Exp "," Exp ")" ":" Body endKey              --declare
   Loop            = "LOOP" "(" Exp ")" ":" Body endKey                               --statement
-  crementOp       = "++" | "--"
   int             = digit+
   decimal         = digit+ ("." digit+)
   negative        = "-" (int | decimal)
-  boolean         = "TRUE" | "FALSE"
+  true            = "TRUE" ~alnum
+  false           = "FALSE" ~alnum
+  boolean         = true | false
   char            = alnum
                   | space
   stringLiteral   = "\"" char* "\""
   literal         = negative | decimal | int | boolean | stringLiteral
+  operators       = logicop | compareOp | negateOp | addop | multop | exponentop | crementOp
   logicop         = "&" | "|"
   compareOp       = "==" | "!=" | ">=" | "<=" | "<" | ">" 
   negateOp        = "!"
   addop           = "+" | "-" 
   multop          = "*" | "/" | moduloKey
   exponentop      = "**"
+  crementOp       = "++" | "--"
   numType         = "NUM"
   decimalType     = "DECI"
   booleanType     = "BOOL"
@@ -88,6 +91,12 @@ Aegis {
                   | returnKey
                   | moduloKey
                   | classKey
+                  | true
+                  | false
+                  | numType
+                  | decimalType
+                  | booleanType
+                  | stringType
   id              = ~keyword letter alnum*
   space          += "##" (~"\n" any)* ("\n" | end)                                   --singleLineComment
                   | "#*" (~"*#" any)* ("*#" | end)                                   --multiLineComment
