@@ -22,35 +22,29 @@ class Context {
     throw new Error(`Identifier ${name} not declared`)
   }
   Program(p) {
+    p.id = p.id.description
     p.classBody.map(body => this.analyze(body))
-    this.add(p.id.description, p.classBody)
+    this.add(p.id, p.classBody)
     return p
   }
   FunDec(f) {
-    //f.returnType = f.returnType.map(type => type.description)
-    this.add(f.id.description, f)
+    f.id = f.id.description
+    f.returnType = f.returnType.map(type => type.description)
+    this.add(f.id, f)
     f.parameters.map(params => this.analyze(params))
     f.body.map(stmnt => this.analyze(stmnt))
     return f
   }
-  Param(p) {
-    p.variable = new Variable(p.type, p.id)
-    this.add(p.id.description, p.variable)
-    delete p.id
-    delete p.type
-    return p
-  }
   FunCall(c) {
-    
-    c.function = this.lookup(c.id.description)
-    const p = c.parameters.map(params => this.analyze(params))
-    c.parameters = p
+    c.id = c.id.description
+    c.id = this.lookup(c.id)
+    c.parameters = c.parameters.map(params => this.analyze(params))
     return c
   }
   VarInitializer(v) {
-    const i = this.analyze(v.assignment.target.description)
-    v.variable = new Variable(v.type, v.assignment.target)
-    this.add(i, v.variable)
+    let i = v.assignment.target
+    v.target = new Variable(v.type, i)
+    v.target = this.analyze(v.target)
     v.source = this.analyze(v.assignment.source)
     delete v.assignment
     delete v.type
@@ -135,6 +129,12 @@ class Context {
     d.steps = this.analyze(d.steps)
     d.body = this.analyze(d.body)
     return d
+  }
+  Variable(v) {
+    v.id = v.id.description
+    v.type = v.type.description
+    this.add(v.id, v)
+    return this.lookup(v.id)
   }
   Array(a) {
     return a.map(item => this.analyze(item))

@@ -2,7 +2,9 @@
 
 import fs from "fs/promises"
 import process from "process"
-import compile from "./compiler.js"
+import parse from "./parser.js"
+import analyze from "./analyzer.js"
+import generate from "./generator.js"
 
 const help = `Aegis compiler
 
@@ -13,13 +15,37 @@ Prints to stdout according to <outputType>, which must be one of:
   analyzed   the semantically analyzed representation
   js         the translation to JavaScript
 `
+/**
+  optimized  the optimized semantically analyzed representation
+  c          the translation to C
+  llvm       the translation to LLVM
+ */
+
+function compile(source, outputType) {
+  outputType = outputType.toLowerCase()
+  if (outputType === "ast") {
+    return parse(source)
+  } else if (outputType === "analyzed") {
+    return analyze(parse(source))
+  } else if ("js"===outputType) {
+    return generate(analyze(parse(source)))
+  } else {
+    return "Unknown output type"
+  }
+}
+
+/*
+else if (outputType === "optimized") {
+  return optimize(analyze(parse(source)))
+} 
+*/
 
 async function compileFromFile(filename, outputType) {
   try {
     const buffer = await fs.readFile(filename)
     console.log(compile(buffer.toString(), outputType))
   } catch (e) {
-    console.error(`${e}`)
+    console.error(e)
     process.exitCode = 1
   }
 }
@@ -29,8 +55,3 @@ if (process.argv.length !== 4) {
 } else {
   compileFromFile(process.argv[2], process.argv[3])
 }
-/**
-  optimized  the optimized semantically analyzed representation
-  c          the translation to C
-  llvm       the translation to LLVM
- */

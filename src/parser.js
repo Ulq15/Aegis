@@ -45,7 +45,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return params.asIteration().ast()
   },
   Param_single(type, id) {
-    return new AST.Param(type.ast(), id.ast())
+    return new AST.Variable(type.ast(), id.ast())
   },
   Body(statements) {
     return statements.ast()
