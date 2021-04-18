@@ -19,7 +19,7 @@ export class FunDec {
 
 export class Param {
   constructor(type, id) {
-    Object.assign(this, { type, id })
+    Object.assign(this, { id, type })
   }
 }
 

@@ -1,7 +1,6 @@
 import ohm from "ohm-js"
 import * as AST from "./ast.js"
 import fs from "fs"
-import { SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG } from "constants"
 
 const aegisGrammar = ohm.grammar(fs.readFileSync("./fragments/Aegis.ohm").toString())
 
@@ -103,7 +102,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return exp.ast()
   },
   Primary_id(id) {
-    return id.ast()
+    return Symbol(id.sourceString)
   },
   Primary_literal(literal) {
     return literal.sourceString
@@ -132,8 +131,8 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   TypeExp(type) {
     return Symbol(type.sourceString)
   },
-  id(first, sub) {
-    return Symbol(first.sourceString + sub.sourceString)
+  id(first, sec) {
+    return Symbol(first.sourceString + sec.sourceString)
   },
   logicop(_) {
     return this.sourceString
@@ -155,7 +154,28 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   },
   crementOp(_) {
     return this.sourceString
-  }
+  },
+  int(_digits){
+    return BigInt(this.sourceString)
+  },
+  decimal(_integer , _dot, _fraction){
+    return Number(this.sourceString)
+  },
+  negative(_sign, _num){
+    return (-1) * Number(num.sourceString)
+  },
+  false(_){
+    return false
+  },
+  true(_){
+    return true
+  },
+  char(_){
+    return this.sourceString
+  },
+  stringLiteral(_open, chars, _close){
+    return chars.sourceString
+  },
 })
 
 export default function parse(sourceCode) {

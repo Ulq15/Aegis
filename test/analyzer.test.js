@@ -18,10 +18,10 @@ const close = "\nEND"
 
 const source = fs.readFileSync(location + "7.ags").toString()
 
-const expectedAst = String.raw`   1 | Program id='Example7' classBody=[#2,#21,#33]
-   2 | FunDec id='fibonacci' parameters=[#3] returnType=['NUM'] body=[#5]
+const expectedAst = String.raw`   1 | Program id=Symbol(Example7) classBody=[#2,#21,#33]
+   2 | FunDec id=Symbol(fibonacci) parameters=[#3] returnType=[Symbol(NUM)] body=[#5]
    3 | Param variable=#4
-   4 | Variable id='n' type='NUM'
+   4 | Variable id=Symbol(n) type=Symbol(NUM)
    5 | Conditional ifStatement=#6 elseIfStatements=[#9] elseStatement=[#14]
    6 | ConditionalIF exp=#7 body=[#8]
    7 | BinaryExpression left=#4 op=['=='] right=['0']
@@ -34,29 +34,29 @@ const expectedAst = String.raw`   1 | Program id='Example7' classBody=[#2,#21,#3
   14 | ConditionalELSE body=[#15]
   15 | ReturnStatement expression=#16
   16 | BinaryExpression left=#17 op=['+'] right=[#19]
-  17 | FunCall id='fibonacci' parameters=[#18] function=#2
+  17 | FunCall id=Symbol(fibonacci) parameters=[#18] function=#2
   18 | BinaryExpression left=#4 op=['-'] right=['1']
-  19 | FunCall id='fibonacci' parameters=[#20] function=#2
+  19 | FunCall id=Symbol(fibonacci) parameters=[#20] function=#2
   20 | BinaryExpression left=#4 op=['-'] right=['2']
-  21 | FunDec id='main' parameters=[] returnType=[] body=[#22,#24,#26,#32]
+  21 | FunDec id=Symbol(main) parameters=[] returnType=[] body=[#22,#24,#26,#32]
   22 | VarInitializer variable=#23 source='""'
-  23 | Variable id='fibList' type='CHARS'
+  23 | Variable id=Symbol(fibList) type=Symbol(CHARS)
   24 | VarInitializer variable=#25 source='0'
-  25 | Variable id='i' type='NUM'
+  25 | Variable id=Symbol(i) type=Symbol(NUM)
   26 | Loop condition=#27 body=[#28,#31]
   27 | BinaryExpression left=#25 op=['<'] right=[#4]
   28 | Assignment target=#23 source=#29
   29 | BinaryExpression left=#23 op=['+','+'] right=[#30,'" "']
-  30 | FunCall id='fibonacci' parameters=[#25] function=#2
+  30 | FunCall id=Symbol(fibonacci) parameters=[#25] function=#2
   31 | PostfixExpression operand=#25 op='++'
   32 | PrintStatement argument=#23
-  33 | FunCall id='main' parameters=[] function=#21`
+  33 | FunCall id=Symbol(main) parameters=[] function=#21`
 
 const errorFixture = [
   ["using undeclared ids", "id + 1;", /Identifier id not declared/],
   ["redeclared ids", "NUM x = 1;\nNUM x = 1;", /Identifier x already declared/],
-  ["calling nondeclared functions", "NUM x = fibonacci(13);", /Function Identifier fibonacci not declared/],
-  ["redeclaring functions", "END\ntestMethod():", /Function Identifier testMethod already declared/]
+  ["calling nondeclared functions", "NUM x = fibonacci(13);", /Identifier fibonacci not declared/],
+  ["redeclaring functions", "END\ntestMethod():", /Identifier testMethod already declared/]
 ]
 
 const syntaxChecks = [

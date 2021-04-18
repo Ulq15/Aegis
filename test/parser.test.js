@@ -44,7 +44,7 @@ const ex1 = fs.readFileSync(location + "1.ags").toString()
 
 const ex1AST = `   1 | Program id=Symbol(Example1) classBody=[#2,#22]
    2 | FunDec id=Symbol(factors) parameters=[#3] returnType=[] body=[#4,#5,#7,#9,#21]
-   3 | Param type=Symbol(NUM) id=Symbol(y)
+   3 | Param id=Symbol(y) type=Symbol(NUM)
    4 | VarDec type=Symbol(NUM {}) id=Symbol(results)
    5 | VarInitializer type=Symbol(NUM) assignment=#6
    6 | Assignment target=Symbol(count) source='0'

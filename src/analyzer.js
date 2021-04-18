@@ -3,12 +3,12 @@ import { Variable } from "./ast.js"
 class Context {
   constructor(context) {
     this.localVars = new Map()
-    this.localFuncs = new Map()
   }
   analyze(node) {
     return this[node.constructor.name](node)
   }
   add(name, entity) {
+    //console.log(`Added ${name}`)
     if (this.localVars.has(name)) {
       throw new Error(`Identifier ${name} already declared`)
     }
@@ -21,52 +21,35 @@ class Context {
     }
     throw new Error(`Identifier ${name} not declared`)
   }
-  addFunc(name, entity) {
-    if (this.localFuncs.has(name)) {
-      throw new Error(`Function Identifier ${name} already declared`)
-    }
-    this.localFuncs.set(name, entity)
-  }
-  lookupFunc(name) {
-    const entity = this.localFuncs.get(name)
-    if (entity) {
-      return entity
-    }
-    throw new Error(`Function Identifier ${name} not declared`)
-  }
   Program(p) {
-    p.id = p.id.description
     p.classBody.map(body => this.analyze(body))
-    this.add(p.id, p.classBody)
+    this.add(p.id.description, p.classBody)
     return p
   }
   FunDec(f) {
-    f.id = f.id.description
-    f.returnType = f.returnType.map(type => type.description)
-    this.addFunc(f.id, f)
+    //f.returnType = f.returnType.map(type => type.description)
+    this.add(f.id.description, f)
     f.parameters.map(params => this.analyze(params))
     f.body.map(stmnt => this.analyze(stmnt))
     return f
   }
   Param(p) {
-    p.id = p.id.description
-    p.type = p.type.description
     p.variable = new Variable(p.type, p.id)
-    this.add(p.id, p.variable)
+    this.add(p.id.description, p.variable)
     delete p.id
     delete p.type
     return p
   }
   FunCall(c) {
-    c.id = c.id.description
-    c.function = this.lookupFunc(c.id)
+    
+    c.function = this.lookup(c.id.description)
     const p = c.parameters.map(params => this.analyze(params))
     c.parameters = p
     return c
   }
   VarInitializer(v) {
     const i = this.analyze(v.assignment.target.description)
-    v.variable = new Variable(v.type.description, i)
+    v.variable = new Variable(v.type, v.assignment.target)
     this.add(i, v.variable)
     v.source = this.analyze(v.assignment.source)
     delete v.assignment
@@ -157,6 +140,7 @@ class Context {
     return a.map(item => this.analyze(item))
   }
   Symbol(node) {
+    //console.log(node)
     return this.lookup(node.description)
   }
   String(node) {
@@ -165,5 +149,6 @@ class Context {
 }
 
 export default function analyze(node) {
+  //console.log(node)
   return new Context().analyze(node)
 }
