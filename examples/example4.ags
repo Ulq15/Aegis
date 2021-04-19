@@ -2,13 +2,13 @@
 
 CLASS Example4:
 	iterativeFib(NUM n):
-  		NUM a = 0;
-        NUM b = 1;
-        DO(NUM i = 0, i < n, i++):
-        	NUM temp = a;
-            a = b;
-            b = temp + b;
-        END
-        RETURN a;
+  	NUM a = 0;
+    NUM b = 1;
+    DO(NUM i = 0, i < n, i++):
+      NUM temp = a;
+      a = b;
+      b = temp + b;
+    END
+    RETURN a;
 	END
 END

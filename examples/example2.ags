@@ -6,4 +6,5 @@ CLASS Example2:
       RETURN j;
     END
   END
+  findMax(2,3);
 END
