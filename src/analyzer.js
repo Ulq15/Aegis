@@ -1,5 +1,5 @@
 import { Variable, Type, ArrayType, DictionaryType } from "./ast.js"
-/*
+
 function must(condition, errorMessage) {
   if (!condition) {
     throw new Error(errorMessage)
@@ -8,7 +8,7 @@ function must(condition, errorMessage) {
 
 Object.assign(Type.prototype, {
   isEquivalentTo(target) {
-    return this == target
+    return this.description == target.description
   },
   isAssignableTo(target) {
     return this.isEquivalentTo(target)
@@ -41,6 +41,7 @@ Type.BOOL = Object.assign(new Type(), { description: "BOOL" })
 Type.NUM = Object.assign(new Type(), { description: "NUM" })
 Type.DECI = Object.assign(new Type(), { description: "DECI" })
 Type.CHARS = Object.assign(new Type(), { description: "CHARS" })
+Type.VOID = Object.assign(new Type(), { description: "VOID" })
 
 const check = self => ({
   isNumeric() {
@@ -95,7 +96,7 @@ const check = self => ({
     check(self).match(calleeType.parameters)
   }
 })
-*/
+
 class Context {
   constructor(context) {
     this.localVars = new Map()
@@ -129,10 +130,10 @@ class Context {
   }
   FunDec(f) {
     f.id = f.id.description
-    f.returnType = f.returnType.map(type => type.description)
-    f.parameters.map(params => this.analyze(params))
+    f.returnType = this.analyze(f.returnType)
+    f.parameters = f.parameters.map(params => this.analyze(params))
     this.add(f.id, f)
-    f.body.map(stmnt => this.analyze(stmnt))
+    f.body = f.body.map(stmnt => this.analyze(stmnt))
     return f
   }
   FunCall(c) {
@@ -143,7 +144,7 @@ class Context {
   }
   VarInitializer(v) {
     let i = v.assignment.target
-    v.target = new Variable(v.type, i)
+    v.target = new Variable(new Type(v.type), i)
     v.target = this.analyze(v.target)
     v.source = this.analyze(v.assignment.source)
     delete v.assignment
@@ -182,21 +183,29 @@ class Context {
     return e
   }
   ArrayLiteral(a) {
-    return a.list.map(item => this.analyze(item))
+    a.list = a.list.map(item => this.analyze(item))
+    check(a.list).allHaveSameType()
+    a.type = new ArrayType(a.list[0].type)
+    return a
   }
   Assignment(a) {
     a.target = this.analyze(a.target)
     a.source = this.analyze(a.source)
+    console.log("Source = "+JSON.stringify(a.source))
+    console.log("target = "+JSON.stringify(a.target))
+    check(a.source).isAssignableTo(a.target.type)
     return a
   }
   ArrayAccess(a) {
-    a.id = this.analyze(a.id)
+    a.arrayVar = this.analyze(a.arrayVar)
     a.indexExp = this.analyze(a.indexExp)
+    a.type = this.analyze(a.arrayVar.type).baseType
     return a
   }
   DictionaryAccess(g) {
-    g.id = this.analyze(g.id)
+    g.dictionaryVar = this.analyze(g.dictionaryVar)
     g.key = this.analyze(g.key)
+    g.type = dictionaryVar.type.storedType
     return g
   }
   Conditional(c) {
@@ -238,7 +247,8 @@ class Context {
     return this.lookup(v.id)
   }
   Array(a) {
-    return a.map(item => this.analyze(item))
+    a = a.map(item => this.analyze(item))
+    return a
   }
   Symbol(node) {
     //console.log(node)
@@ -248,13 +258,13 @@ class Context {
     return node.op
   }
   ArrayType(node) {
-    return node.description
+    return node
   }
   DictionaryType(node) {
-    return node.description
+    return node
   }
   Type(node) {
-    return node.description
+    return node
   }
   String(node) {
     return node
