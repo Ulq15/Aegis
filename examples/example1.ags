@@ -2,7 +2,7 @@
 ## and prints the array
 
 CLASS Example1:
-    factors(NUM y) VOID:
+    factors(NUM y):
         NUM {} results;
         NUM count = 0;
         NUM x = 1;

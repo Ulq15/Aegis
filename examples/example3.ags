@@ -1,7 +1,7 @@
 ##Basic Hello World function
 
 CLASS Example3:
-	helloWorld() VOID:
+	helloWorld():
   		OUTPUT("Hello World");
 	END
 END

@@ -10,7 +10,7 @@ Aegis {
                   | id "ADD[" Exp "][" Exp "]"                                       --dictAdd
                   | id "=" FunCall                                                   --funCall
                   | id "=" Exp                                                       --assign
-  FunDec          = id "(" ListOf<Param, ","> ")" TypeExp ":" Body endKey            --declare
+  FunDec          = id "(" ListOf<Param, ","> ")" TypeExp? ":" Body endKey           --declare
   Param           = TypeExp id                                                       --single
   Body            = Statement*
   Statement       = Conditional 
@@ -57,7 +57,7 @@ Aegis {
   char            = alnum
                   | space
   stringLiteral   = "\"" char* "\""
-  literal         = negative | int | decimal | true | false | stringLiteral
+  literal         = negative | decimal | int | true | false | stringLiteral
   logicop         = "&" | "|"
   compareOp       = "==" | "!=" | ">=" | "<=" | "<" | ">" 
   negateOp        = "!"
@@ -69,14 +69,12 @@ Aegis {
   decimalType     = "DECI"
   booleanType     = "BOOL"
   charsType       = "CHARS"
-  voidType        = "VOID"
   TypeExp         = TypeExp "{" "}"                                                  --array
                   | "[" TypeExp "]" "[" TypeExp "]"                                  --dictionary
                   | numType                                                          --numType
                   | decimalType                                                      --deciType
                   | booleanType                                                      --boolType
                   | charsType                                                        --charsType
-                  | voidType                                                         --voidType
   moduloKey       = "MOD"
   conditionalKey  = "IF" | "ELSE" | "ELSEIF"
   loopKey         = "LOOP" | "DO"
@@ -97,7 +95,6 @@ Aegis {
                   | decimalType
                   | booleanType
                   | charsType
-                  | voidType
   id              = ~keyword letter alnum*
   space          += "##" (~"\n" any)* ("\n" | end)                                   --singleLineComment
                   | "#*" (~"*#" any)* ("*#" | end)                                   --multiLineComment

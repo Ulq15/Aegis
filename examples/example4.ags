@@ -1,7 +1,7 @@
 ##Function to iteratively find the nth fibonacci number
 
 CLASS Example4:
-	iterativeFib(NUM n) NUM:
+	iterativeFib(NUM n):
   	NUM a = 0;
     NUM b = 1;
     DO(NUM i = 0, i < n, i++):
