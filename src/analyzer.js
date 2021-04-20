@@ -314,6 +314,9 @@ class Context {
   String(node) {
     return node
   }
+  Literal(node){
+    return node
+  }
 }
 
 export default function analyze(node) {

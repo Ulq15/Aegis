@@ -158,6 +158,13 @@ export class Operator {
   }
 }
 
+export class Literal {
+  constructor(value, type) {
+    this.value = value
+    this.type = type
+  }
+}
+
 function formatAST(node) {
   const tags = new Map()
 

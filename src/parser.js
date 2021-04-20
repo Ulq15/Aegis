@@ -170,27 +170,27 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   crementOp(_) {
     return new AST.Operator(this.sourceString)
   },
-  // int(_digits){
-  //   return BigInt(this.sourceString)
-  // },
-  // decimal(_integer , _dot, _fraction){
-  //   return Number(this.sourceString)
-  // },
-  // negative(_sign, _num){
-  //   return (-1) * Number(num.sourceString)
-  // },
-  // false(_){
-  //   return false
-  // },
-  // true(_){
-  //   return true
-  // },
-  // char(_){
-  //   return this.sourceString
-  // },
-  // stringLiteral(_open, chars, _close){
-  //   return chars.sourceString
-  // },
+  int(_digits){
+    return new AST.Literal(this.sourceString, new AST.Type("NUM"))
+  },
+  decimal(_integer , _dot, _fraction){
+    return new AST.Literal(this.sourceString, new AST.Type("DECI"))
+  },
+  negative(_sign, num){
+    return new AST.Literal((-1) * Number(num.sourceString), new AST.Type("DECI"))
+  },
+  false(_){
+    return new AST.Literal(false, new AST.Type("BOOL"))
+  },
+  true(_){
+    return new AST.Literal(true, new AST.Type("BOOL"))
+  },
+  char(_){
+    return new AST.Literal(this.sourceString, new AST.Type("CHARS"))
+  },
+  stringLiteral(_open, chars, _close){
+    return new AST.Literal(chars.sourceString, new AST.Type("CHARS"))
+  },
 })
 
 export default function parse(sourceCode) {
