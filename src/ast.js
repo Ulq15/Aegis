@@ -71,27 +71,9 @@ export class PostfixExpression {
   }
 }
 
-export class ArrayLiteral {
-  constructor(list) {
-    Object.assign(this, { list })
-  }
-}
-
 export class Assignment {
   constructor(target, source) {
     Object.assign(this, { target, source })
-  }
-}
-
-export class ArrayAccess {
-  constructor(id, indexExp) {
-    Object.assign(this, { id, indexExp })
-  }
-}
-
-export class DictionaryAccess {
-  constructor(id, key) {
-    Object.assign(this, { id, key })
   }
 }
 
@@ -131,21 +113,27 @@ export class DoLoop {
   }
 }
 
+export class Type {
+  constructor(description) {
+    this.description = description
+  }
+}
+
 export class Variable {
   constructor(type, id) {
     Object.assign(this, { id, type })
   }
 }
 
-export class Operator {
-  constructor(op) {
-    this.op = op
+export class ArrayLiteral {
+  constructor(list) {
+    Object.assign(this, { list })
   }
 }
 
-export class Type {
-  constructor(description) {
-    this.description = description
+export class ArrayAccess {
+  constructor(arrayVar, indexExp) {
+    Object.assign(this, { arrayVar, indexExp })
   }
 }
 
@@ -156,6 +144,12 @@ export class ArrayType extends Type {
   }
 }
 
+export class DictionaryAccess {
+  constructor(dictionaryVar, key) {
+    Object.assign(this, { dictionaryVar, key })
+  }
+}
+
 export class DictionaryType extends Type {
   constructor(keyType, storedType) {
     super(`[${keyType.description}][${storedType.description}]`)
@@ -163,6 +157,13 @@ export class DictionaryType extends Type {
     this.storedType = storedType
   }
 }
+
+export class Operator {
+  constructor(op) {
+    this.op = op
+  }
+}
+
 
 
 

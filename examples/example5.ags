@@ -1,7 +1,7 @@
 ##Function to iteratively find the factorial of n
 
 CLASS Example5:
-	iterativeFactorial(NUM n):
+	iterativeFactorial(NUM n) NUM:
   	NUM total = 1;
     DO(NUM i = 1, i <= n, i++):
      	total = total * i;

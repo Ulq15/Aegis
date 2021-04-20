@@ -1,6 +1,6 @@
 
 CLASS ArraySorter:
-    len(NUM{} arr)NUM:
+    len(NUM{} arr) NUM:
         NUM count = 0;
         LOOP(arr{count} != 0):
             count++;

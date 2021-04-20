@@ -29,7 +29,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   Assignment_array(id, _open, comparand, _close, _eq, exp) {
     return new AST.Assignment(new AST.ArrayAccess(id.ast(), comparand.ast()), exp.ast())
   },
-  Assignment_dictAdd(id, _add, key, _bracket, value, _close) {
+  Assignment_dictAdd(id, _addKey, _open, key, _mid , value, _close) {
     return new AST.Assignment(new AST.DictionaryAccess(id.ast(), key.ast()), value.ast())
   },
   Assignment_assign(id, _eq, exp) {
@@ -92,7 +92,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   Primary_accessArray(id, _open, comparand, _close) {
     return new AST.ArrayAccess(id.ast(), comparand.ast())
   },
-  Primary_getDictionary(id, _get, exp, _close) {
+  Primary_getDictionary(id, _get, _open, exp, _close) {
     return new AST.DictionaryAccess(id.ast(), exp.ast())
   },
   Primary_parens(_open, exp, _close) {
@@ -134,9 +134,12 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   TypeExp_numType(type) {
     return new AST.Type(type.sourceString)
   },
-  // TypeExp_deciType(type) {
-  //   return new AST.Type(type.sourceString)
-  // },  
+  TypeExp_voidType(type){
+    return new AST.Type(type.sourceString)
+  },
+  TypeExp_deciType(type) {
+    return new AST.Type(type.sourceString)
+  },  
   TypeExp_boolType(type) {
     return new AST.Type(type.sourceString)
   },

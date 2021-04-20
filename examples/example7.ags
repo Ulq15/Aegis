@@ -10,7 +10,7 @@ CLASS Example7:
             RETURN fibonacci(n-1) + fibonacci(n-2) ;
         END
     END
-    main():
+    main() VOID:
         CHARS fibList = "";
         NUM i = 0;
         LOOP(i<n & i!=n):
