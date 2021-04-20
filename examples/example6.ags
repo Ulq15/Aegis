@@ -1,22 +1,22 @@
 
 CLASS ArraySorter:
-    len(NUM{} arr) NUM:
-        NUM count = 0;
-        LOOP(arr{count} != 0):
-            count++;
-        END
-        RETURN count;
+  len(NUM{} arr) NUM:
+    NUM count = 0;
+    LOOP(arr{count} != 0):
+      count++;
     END
-    bubbleSorter(NUM{} array) NUM{} :
-        NUM size = len( array );
-        DO(NUM i = 0, i < size-1, i++):
-            DO(NUM j = 0, j < size-i-1, j++):
-                IF(array{j} > array{j+1}):
-                    NUM{} temp = array{j};
-                    array{j} = array{j+1};
-                    array{j+1} = temp;
-                END
-            END
+    RETURN count;
+  END
+  bubbleSorter(NUM{} array) NUM{} :
+    NUM size = len( array );
+    DO(NUM i = 0, i < size-1, i++):
+      DO(NUM j = 0, j < size-i-1, j++):
+        IF(array{j} > array{j+1}):
+          NUM temp = array{j};
+          array{j} = array{j+1};
+          array{j+1} = temp;
+          END
         END
+      END
     END
 END

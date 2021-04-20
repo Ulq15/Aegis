@@ -17,12 +17,6 @@ export class FunDec {
   }
 }
 
-// export class Param {
-//   constructor(type, id) {
-//     Object.assign(this, { id, type })
-//   }
-// }
-
 export class FunCall {
   constructor(callee, parameters) {
     Object.assign(this, { callee, parameters })
@@ -159,13 +153,10 @@ export class DictionaryType extends Type {
 }
 
 export class Operator {
-  constructor(op) {
-    this.op = op
+  constructor(symbol) {
+    this.symbol = symbol
   }
 }
-
-
-
 
 function formatAST(node) {
   const tags = new Map()

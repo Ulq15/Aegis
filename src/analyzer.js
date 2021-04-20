@@ -8,7 +8,7 @@ function must(condition, errorMessage) {
 
 Object.assign(Type.prototype, {
   isEquivalentTo(target) {
-    return this.description == target.description
+    return this.description === target.description
   },
   isAssignableTo(target) {
     return this.isEquivalentTo(target)
@@ -36,63 +36,73 @@ Object.assign(DictionaryType.prototype, {
     return this.isEquivalentTo(target)
   }
 })
-
 Type.BOOL = Object.assign(new Type(), { description: "BOOL" })
 Type.NUM = Object.assign(new Type(), { description: "NUM" })
 Type.DECI = Object.assign(new Type(), { description: "DECI" })
 Type.CHARS = Object.assign(new Type(), { description: "CHARS" })
 Type.VOID = Object.assign(new Type(), { description: "VOID" })
+const PRIMITIVES = {
+  BOOL: Type.BOOL,
+  NUM: Type.NUM,
+  DECI: Type.DECI,
+  CHARS: Type.CHARS,
+  VOID: Type.VOID,
+  number:Type.NUM,
+  string:Type.CHARS,
+  boolean:Type.BOOL,
+  isIn(type){
+    return this[type] != undefined
+  }
+}
 
 const check = self => ({
   isNumeric() {
-    must([Type.NUM, Type.DECI].includes(self.type), `Expected a number, found ${self.type.description}`)
+    must(
+      [Type.NUM.description, Type.DECI.description].includes(self.type.description),
+      `Expected a number, found ${self.type.description}`
+    )
   },
   isNumericOrString() {
     must(
-      [Type.NUM, Type.DECI, Type.CHARS].includes(self.type),
+      [Type.NUM.description, Type.DECI.description, Type.CHARS.description].includes(self.type.description),
       `Expected a number or string, found ${self.type.description}`
     )
   },
-  isBoolean(){
-    must([Type.BOOL].includes(self.type), `Expected a boolean, found ${self.type.description}`)
+  isBoolean() {
+    must([Type.BOOL.description].includes(self.type.description), `Expected a boolean, found ${self.type.description}`)
   },
-  isInteger(){
-    must([Type.NUM].includes(self.type), `Expected an integer, found ${self.type.description}`)
+  isInteger() {
+    must([Type.NUM.description].includes(self.type.description), `Expected an integer, found ${self.type.description}`)
   },
-  isAType(){
+  isAType() {
     must(self instanceof Type, "Type expected")
   },
-  isAnArray(){
+  isAnArray() {
     must(self.type.constructor === ArrayType, "Array expected")
   },
-  isDictionary(){
+  isDictionary() {
     must(self.type.constructor === DictionaryType, "Dictionary expected")
   },
-  hasSameTypeAs(other){
+  hasSameTypeAs(other) {
     must(self.type.isEquivalentTo(other.type), "Operands do not have the same type")
   },
-  allHaveSameType(){
+  allHaveSameType() {
     must(
       self.slice(1).every(e => e.type.isEquivalentTo(self[0].type)),
       "Not all elements have the same type"
     )
   },
-  isInsideAFunction(context){
+  isInsideAFunction(context) {
     must(self.function, "Return can only appear in a function")
   },
-  match(targetTypes){
-    must(
-      targetTypes.length === self.length,
-      `${targetTypes.length} argument(s) required but ${self.length} passed`
-    )
-    targetTypes.forEach((type, i)=>check(self[i]).isAssignableTo(type))
+  match(targetTypes) {
+    must(targetTypes.length === self.length, `${targetTypes.length} argument(s) required but ${self.length} passed`)
+    targetTypes.forEach((type, i) => check(self[i]).isAssignableTo(type))
   },
-  isAssignableTo(type){
-    must(
-      self.type.isEquivalentTo(type), `Cannot assign a ${self.type.description} to a ${type.description}`
-    )
-  },//CHECK BELOW 4 PROBLEMS
-  matchParametersOf(calleeType){
+  isAssignableTo(type) {
+    must(self.type.isEquivalentTo(type), `Cannot assign a ${self.type.description} to a ${type.description}`)
+  }, //CHECK BELOW 4 PROBLEMS
+  matchParametersOf(calleeType) {
     check(self).match(calleeType.parameters)
   }
 })
@@ -100,6 +110,7 @@ const check = self => ({
 class Context {
   constructor(context) {
     this.localVars = new Map()
+    this.primitives = PRIMITIVES
   }
   analyze(node) {
     return this[node.constructor.name](node)
@@ -137,14 +148,13 @@ class Context {
     return f
   }
   FunCall(c) {
-    c.callee = c.callee.description
-    c.callee = this.lookup(c.callee)
+    c.callee = this.lookup(c.callee.description)
     c.parameters = c.parameters.map(params => this.analyze(params))
+    c.type = c.callee.returnType
     return c
   }
   VarInitializer(v) {
-    let i = v.assignment.target
-    v.target = new Variable(new Type(v.type), i)
+    v.target = new Variable(v.type, v.assignment.target)
     v.target = this.analyze(v.target)
     v.source = this.analyze(v.assignment.source)
     delete v.assignment
@@ -159,7 +169,10 @@ class Context {
     return d
   }
   ReturnStatement(r) {
+    //check(this).isInsideAFunction()
+    //check(this.function).returnsSomething()
     r.expression = this.analyze(r.expression)
+    //check(r.expression).isReturnableFrom(this.function)
     return r
   }
   PrintStatement(p) {
@@ -168,9 +181,32 @@ class Context {
   }
   BinaryExpression(e) {
     e.left = this.analyze(e.left)
-    e.right = this.analyze(e.right)
-    e.op = this.analyze(e.op)
-    return e
+    e.right = e.right.map(right => this.analyze(right))
+    e.op = e.op.map(op => this.analyze(op))
+    //check(e.right).allHaveSameType()
+    for (let i = 0; i < e.right.length; i++) {
+      if (["+"].includes(e.op[i])) {
+        check(e.left).isNumericOrString()
+        e.type = e.left.type
+      } else if (["-", "*", "/", "MOD", "**"].includes(e.op[i])) {
+        check(e.left).isNumeric()
+        e.type = e.left.type
+      } else if (["<", ">", "<=", ">="].includes(e.op[i])) {
+        check(e.left).isNumericOrString()
+        e.type = Type.BOOL
+      } else if (["==", "!="].includes(e.op[i])) {
+        e.type = Type.BOOL
+      } else if (["&", "|"].includes(e.op[i])) {
+        check(e.left).isBoolean()
+        check(e.right[i]).isBoolean()
+        e.type = Type.BOOL
+      }
+    }
+    if (e.type != undefined) {
+      return e
+    } else {
+      throw new Error("Type of binary expression undefined")
+    }
   }
   PrefixExpression(e) {
     e.operand = this.analyze(e.operand)
@@ -184,22 +220,20 @@ class Context {
   }
   ArrayLiteral(a) {
     a.list = a.list.map(item => this.analyze(item))
-    check(a.list).allHaveSameType()
-    a.type = new ArrayType(a.list[0].type)
+    //check(a.list).allHaveSameType()
+    
     return a
   }
   Assignment(a) {
     a.target = this.analyze(a.target)
     a.source = this.analyze(a.source)
-    console.log("Source = "+JSON.stringify(a.source))
-    console.log("target = "+JSON.stringify(a.target))
     check(a.source).isAssignableTo(a.target.type)
     return a
   }
   ArrayAccess(a) {
     a.arrayVar = this.analyze(a.arrayVar)
     a.indexExp = this.analyze(a.indexExp)
-    a.type = this.analyze(a.arrayVar.type).baseType
+    a.type = this.analyze(a.arrayVar.type.baseType)
     return a
   }
   DictionaryAccess(g) {
@@ -242,29 +276,40 @@ class Context {
   }
   Variable(v) {
     v.id = v.id.description
-    v.type = v.type.description
+    v.type = this.analyze(v.type)
     this.add(v.id, v)
     return this.lookup(v.id)
   }
   Array(a) {
-    a = a.map(item => this.analyze(item))
-    return a
+    return a.map(item => this.analyze(item))
   }
   Symbol(node) {
-    //console.log(node)
     return this.lookup(node.description)
   }
   Operator(node) {
-    return node.op
+    return node.symbol
   }
   ArrayType(node) {
+    if(this.primitives.isIn(node.baseType.description)){
+      node.baseType = this.primitives[node.baseType.description]
+    }
     return node
   }
   DictionaryType(node) {
+    if(this.primitives.isIn(node.keyType.description)){
+      node.keyType = this.primitives[node.keyType.description]
+    }
+    if(this.primitives.isIn(node.storedType.description)){
+      node.storedType = this.primitives[node.storedType.description]
+    }
     return node
   }
   Type(node) {
-    return node
+    if(this.primitives.isIn(node.description)){
+      return this.primitives[node.description]
+    } else{
+      return node
+    }
   }
   String(node) {
     return node
@@ -272,6 +317,5 @@ class Context {
 }
 
 export default function analyze(node) {
-  //console.log(node)
   return new Context().analyze(node)
 }

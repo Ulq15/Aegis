@@ -2,6 +2,15 @@
 // Call the generate(program) function with a program's root node to
 // get a JS translation as a String
 
+const makeTabs = (num, line) => {
+  let tabs = ""
+  for (let i = 0; i < num; i++) {
+    tabs += "  "
+  }
+  line = tabs + line
+  return line
+}
+
 export default function generate(program) {
   const output = []
 
@@ -17,15 +26,7 @@ export default function generate(program) {
     }
   })(new Map())
 
-  const makeTabs = (num, line) => {
-    let tabs = ""
-    for (let i = 0; i < num; i++) {
-      tabs += "  "
-    }
-    line = tabs + line
-    return line
-  }
-  let inLine = 0
+  let inLine = false
   const generators = {
     tabNum: 0,
     Program(node) {
@@ -45,18 +46,20 @@ export default function generate(program) {
     },
     FunCall(node) {
       let line = `${targetName(node.callee)}(${node.parameters.map(param => gen(param)).join(", ")})`
-      if (inLine === 1) {
+      if (inLine) {
         return line
+      }else {
+        output.push(makeTabs(this.tabNum, line + ";"))
       }
-      output.push(makeTabs(this.tabNum, line + ";"))
     },
     VarInitializer(node) {
-      let t = gen(node.target)
-      let s = gen(node.source)
-      if (inLine === 1) {
-        return `let ${t} = ${s}`
+      if (inLine) {
+        return `let ${gen(node.target)} = ${gen(node.source)}`
       } else {
-        output.push(makeTabs(this.tabNum, `let ${t} = ${s};`))
+        let prev = inLine
+        inLine=true
+        output.push(makeTabs(this.tabNum, `let ${gen(node.target)} = ${gen(node.source)};`))
+        inLine = prev
       }
     },
     VarDec(node) {
@@ -71,7 +74,7 @@ export default function generate(program) {
     BinaryExpression(node) {
       let line = `${gen(node.left)}`
       let prevInLine = inLine
-      inLine = 1
+      inLine = true
       for (let index = 0; index < node.op.length; index++) {
         line += ` ${node.op[index]} ${gen(node.right[index])}`
       }
@@ -80,7 +83,7 @@ export default function generate(program) {
     },
     PrefixExpression(node) {
       let line = `${node.op}${gen(node.operand)}`
-      if (inLine === 1) {
+      if (inLine) {
         return line
       } else {
         output.push(makeTabs(this.tabNum, line + ";"))
@@ -88,28 +91,28 @@ export default function generate(program) {
     },
     PostfixExpression(node) {
       let line = `${gen(node.operand)}${node.op}`
-      if (inLine === 1) {
+      if (inLine) {
         return line
       } else {
         output.push(makeTabs(this.tabNum, line + ";"))
       }
     },
     Assignment(node) {
-      let line = `${gen(node.target)} = ${gen(node.source)}`
-      if (inLine === 1) {
-        return line
+      let line = `${gen(node.target)} = `
+      if (inLine) {
+        return line+` ${gen(node.source)}`
       } else {
-        output.push(makeTabs(this.tabNum, line + ";"))
+        output.push(makeTabs(this.tabNum, line+` ${gen(node.source)};`))
       }
     },
     ArrayLiteral(node) {
       return `[${gen(node.list).join(", ")}]`
     },
     ArrayAccess(node) {
-      return `${gen(node.id)}[${gen(node.indexExp)}]`
+      return `${gen(node.arrayVar)}[${gen(node.indexExp)}]`
     },
     DictionaryAccess(node) {
-      return `${targetName(node.id)}.${gen(node.key)}`
+      return `${targetName(node.dictionaryVar)}.${gen(node.key)}`
     },
     Conditional(node) {
       gen(node.ifStatement)
@@ -145,11 +148,12 @@ export default function generate(program) {
       output.push(makeTabs(this.tabNum, "}"))
     },
     DoLoop(node) {
-      inLine = 1
+      let prevInLine = inLine
+      inLine = true
       let line = `for(${gen(node.iterator)}; `
       line += gen(node.range) +"; "
       line += gen(node.steps) + ") {"
-      inLine = 0
+      inLine = prevInLine
       output.push(makeTabs(this.tabNum, line))
       this.tabNum++
       node.body.map(stmnt => gen(stmnt))
@@ -161,9 +165,14 @@ export default function generate(program) {
     },
     String(node) {
       return node
+    },
+    Array(node){
+      return node.map(item => gen(item))
     }
   }
 
   gen(program)
   return output.join("\n")
 }
+
+export {makeTabs}
