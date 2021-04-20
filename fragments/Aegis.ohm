@@ -10,8 +10,7 @@ Aegis {
                   | id "ADD[" Exp "][" Exp "]"                                       --dictAdd
                   | id "=" FunCall                                                   --funCall
                   | id "=" Exp                                                       --assign
-  FunDec          = id "(" Params ")" TypeExp? ":" Body endKey                       --declare
-  Params          = ListOf<Param, ",">
+  FunDec          = id "(" ListOf<Param, ","> ")" TypeExp? ":" Body endKey           --declare
   Param           = TypeExp id                                                       --single
   Body            = Statement*
   Statement       = Conditional 
@@ -55,12 +54,10 @@ Aegis {
   negative        = "-" (int | decimal)
   true            = "TRUE" ~alnum
   false           = "FALSE" ~alnum
-  boolean         = true | false
   char            = alnum
                   | space
   stringLiteral   = "\"" char* "\""
-  literal         = negative | decimal | int | boolean | stringLiteral
-  operators       = logicop | compareOp | negateOp | addop | multop | exponentop | crementOp
+  literal         = negative | decimal | int | true | false | stringLiteral
   logicop         = "&" | "|"
   compareOp       = "==" | "!=" | ">=" | "<=" | "<" | ">" 
   negateOp        = "!"
@@ -71,11 +68,13 @@ Aegis {
   numType         = "NUM"
   decimalType     = "DECI"
   booleanType     = "BOOL"
-  stringType      = "CHARS"
-  TypeExp         = ArrayType | DictionaryType | literalType
-  literalType     = numType | decimalType | booleanType | stringType
-  ArrayType       = TypeExp "{" Comparand? "}" 
-  DictionaryType  = "[" TypeExp "][" TypeExp "]" 
+  charsType       = "CHARS"
+  TypeExp         = TypeExp "{" "}"                                                  --array
+                  | "[" TypeExp "]" "[" TypeExp "]"                                  --dictionary
+                  | numType                                                          --numType
+                  | decimalType                                                      --deciType
+                  | booleanType                                                      --boolType
+                  | charsType                                                        --charsType
   moduloKey       = "MOD"
   conditionalKey  = "IF" | "ELSE" | "ELSEIF"
   loopKey         = "LOOP" | "DO"
@@ -83,8 +82,7 @@ Aegis {
   endKey          = "END"
   returnKey       = "RETURN"
   classKey        = "CLASS"
-  keyword         = literalType
-                  | conditionalKey
+  keyword         = conditionalKey
                   | loopKey
                   | printKey
                   | endKey
@@ -96,7 +94,7 @@ Aegis {
                   | numType
                   | decimalType
                   | booleanType
-                  | stringType
+                  | charsType
   id              = ~keyword letter alnum*
   space          += "##" (~"\n" any)* ("\n" | end)                                   --singleLineComment
                   | "#*" (~"*#" any)* ("*#" | end)                                   --multiLineComment

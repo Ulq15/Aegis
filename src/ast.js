@@ -24,8 +24,8 @@ export class Param {
 }
 
 export class FunCall {
-  constructor(id, parameters) {
-    Object.assign(this, { id, parameters })
+  constructor(callee, parameters) {
+    Object.assign(this, { callee, parameters })
   }
 }
 
@@ -83,7 +83,7 @@ export class Assignment {
   }
 }
 
-export class ArrayVar {
+export class ArrayAccess {
   constructor(id, indexExp) {
     Object.assign(this, { id, indexExp })
   }
@@ -136,6 +136,35 @@ export class Variable {
     Object.assign(this, { id, type })
   }
 }
+
+export class Operator {
+  constructor(op) {
+    this.op = op
+  }
+}
+
+export class Type {
+  constructor(description) {
+    this.description = description
+  }
+}
+
+export class ArrayType extends Type {
+  constructor(baseType) {
+    super(`${baseType.description}{}`)
+    this.baseType = baseType
+  }
+}
+
+export class DictionaryType extends Type {
+  constructor(keyType, storedType) {
+    super(`[${keyType.description}][${storedType.description}]`)
+    this.keyType = keyType
+    this.storedType = storedType
+  }
+}
+
+
 
 function formatAST(node) {
   const tags = new Map()

@@ -13,7 +13,7 @@ CLASS Example7:
     main():
         CHARS fibList = "";
         NUM i = 0;
-        LOOP(i<n):
+        LOOP(i<n & i!=n):
             fibList = fibList + fibonacci(i)+ " ";
             i++;
         END

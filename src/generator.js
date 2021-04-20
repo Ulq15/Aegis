@@ -6,7 +6,7 @@ export default function generate(program) {
   const output = []
 
   const gen = node => generators[node.constructor.name](node)
-  
+
   const targetName = (mapping => {
     return entity => {
       if (!mapping.has(entity)) {
@@ -16,24 +16,23 @@ export default function generate(program) {
       return `${entity.id.description ?? entity.id}_${mapping.get(entity)}`
     }
   })(new Map())
-  
-  const makeTabs = ((num, line) =>{
-    let tabs = ""
-    for(let i =0; i<num; i++){
-      tabs+="  "
-    }
-    line = tabs+line
-    return line
-  })
 
+  const makeTabs = (num, line) => {
+    let tabs = ""
+    for (let i = 0; i < num; i++) {
+      tabs += "  "
+    }
+    line = tabs + line
+    return line
+  }
+  let inLine = 0
   const generators = {
-    inLine: 0,
-    tabNum:0,
+    tabNum: 0,
     Program(node) {
       node.classBody.map(body => gen(body))
     },
     FunDec(node) {
-      let line = `let ${targetName(node)} = function (${node.parameters.map(params => gen(params))}) {`
+      let line = `let ${targetName(node)} = (${node.parameters.map(params => gen(params))}) => {`
       line = makeTabs(this.tabNum, line)
       output.push(line)
       this.tabNum++
@@ -45,23 +44,18 @@ export default function generate(program) {
       return targetName(node)
     },
     FunCall(node) {
-      let line = `${targetName(node.id)}(${node.parameters.map(param=>gen(param)).join(", ")})`
-      if(this.inLine===1){
+      let line = `${targetName(node.callee)}(${node.parameters.map(param => gen(param)).join(", ")})`
+      if (inLine === 1) {
         return line
-      }      
-      output.push(makeTabs(this.tabNum,line+";"))
+      }
+      output.push(makeTabs(this.tabNum, line + ";"))
     },
     VarInitializer(node) {
-      if (this.inLine === 1){
-        let t = gen(node.target)
-        let s = gen(node.source)
-        return(`let ${t} = ${s}`)
-      }
-      else{
-        this.inLine = 1
-        let t = gen(node.target)
-        let s = gen(node.source)
-        this.inLine = 0
+      let t = gen(node.target)
+      let s = gen(node.source)
+      if (inLine === 1) {
+        return `let ${t} = ${s}`
+      } else {
         output.push(makeTabs(this.tabNum, `let ${t} = ${s};`))
       }
     },
@@ -75,42 +69,43 @@ export default function generate(program) {
       output.push(makeTabs(this.tabNum, `console.log(${gen(node.argument)});`))
     },
     BinaryExpression(node) {
-      let line =`${gen(node.left)} `
-     
-      this.inLine=1
-      for(let index =0; index < node.op.length; index++){
-        line += `${node.op[index]} ${gen(node.right[index])}`
+      let line = `${gen(node.left)}`
+      let prevInLine = inLine
+      inLine = 1
+      for (let index = 0; index < node.op.length; index++) {
+        line += ` ${node.op[index]} ${gen(node.right[index])}`
       }
-      this.inLine =0
+      inLine = prevInLine
       return line
     },
     PrefixExpression(node) {
-      let line = `${gen(node.op)}${gen(node.operand)}`
-      if(this.inLine===1)
+      let line = `${node.op}${gen(node.operand)}`
+      if (inLine === 1) {
         return line
-      else
-        output.push(makeTabs(this.tabNum, line+";"))
+      } else {
+        output.push(makeTabs(this.tabNum, line + ";"))
+      }
     },
     PostfixExpression(node) {
-      let line = `${gen(node.operand)}${gen(node.op)}`
-      if(this.inLine===1)
+      let line = `${gen(node.operand)}${node.op}`
+      if (inLine === 1) {
         return line
-      else
-        output.push(makeTabs(this.tabNum, line+";"))
+      } else {
+        output.push(makeTabs(this.tabNum, line + ";"))
+      }
     },
     Assignment(node) {
       let line = `${gen(node.target)} = ${gen(node.source)}`
-      if(this.inLine===1){
+      if (inLine === 1) {
         return line
-      }
-      else{
-        output.push(makeTabs(this.tabNum, line+";"))
+      } else {
+        output.push(makeTabs(this.tabNum, line + ";"))
       }
     },
     ArrayLiteral(node) {
       return `[${gen(node.list).join(", ")}]`
     },
-    ArrayVar(node) {
+    ArrayAccess(node) {
       return `${gen(node.id)}[${gen(node.indexExp)}]`
     },
     DictionaryAccess(node) {
@@ -118,8 +113,8 @@ export default function generate(program) {
     },
     Conditional(node) {
       gen(node.ifStatement)
-      node.elseIfStatements.map(block=>gen(block))
-      node.elseStatement.map(block=>gen(block))
+      node.elseIfStatements.map(block => gen(block))
+      node.elseStatement.map(block => gen(block))
     },
     ConditionalIF(node) {
       output.push(makeTabs(this.tabNum, `if(${gen(node.exp)}) {`))
@@ -150,10 +145,13 @@ export default function generate(program) {
       output.push(makeTabs(this.tabNum, "}"))
     },
     DoLoop(node) {
-      this.inLine = 1
-      output.push(makeTabs(this.tabNum, `for(${gen(node.iterator)}; ${gen(node.range)}; ${gen(node.steps)}) {`))
+      inLine = 1
+      let line = `for(${gen(node.iterator)}; `
+      line += gen(node.range) +"; "
+      line += gen(node.steps) + ") {"
+      inLine = 0
+      output.push(makeTabs(this.tabNum, line))
       this.tabNum++
-      this.inLine = 0
       node.body.map(stmnt => gen(stmnt))
       this.tabNum--
       output.push(makeTabs(this.tabNum, "}"))
@@ -163,7 +161,7 @@ export default function generate(program) {
     },
     String(node) {
       return node
-    },
+    }
   }
 
   gen(program)

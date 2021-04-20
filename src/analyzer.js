@@ -1,4 +1,100 @@
-import { Variable } from "./ast.js"
+import { Variable, Type, ArrayType, DictionaryType } from "./ast.js"
+
+function must(condition, errorMessage) {
+  if (!condition) {
+    throw new Error(errorMessage)
+  }
+}
+
+Object.assign(Type.prototype, {
+  isEquivalentTo(target) {
+    return this == target
+  },
+  isAssignableTo(target) {
+    return this.isEquivalentTo(target)
+  }
+})
+
+Object.assign(ArrayType.prototype, {
+  isEquivalentTo(target) {
+    return target.constructor === ArrayType && this.baseType.isEquivalentTo(target.baseType)
+  },
+  isAssignableTo(target) {
+    return this.isEquivalentTo(target)
+  }
+})
+
+Object.assign(DictionaryType.prototype, {
+  isEquivalentTo(target) {
+    return (
+      target.constructor === DictionaryType &&
+      this.keyType.isEquivalentTo(target.keyType) &&
+      this.storedType.isEquivalentTo(target.storedType)
+    )
+  },
+  isAssignableTo(target) {
+    return this.isEquivalentTo(target)
+  }
+})
+
+Type.BOOL = Object.assign(new Type(), { description: "BOOL" })
+Type.NUM = Object.assign(new Type(), { description: "NUM" })
+Type.DECI = Object.assign(new Type(), { description: "DECI" })
+Type.CHARS = Object.assign(new Type(), { description: "CHARS" })
+
+const check = self => ({
+  isNumeric() {
+    must([Type.NUM, Type.DECI].includes(self.type), `Expected a number, found ${self.type.description}`)
+  },
+  isNumericOrString() {
+    must(
+      [Type.NUM, Type.DECI, Type.CHARS].includes(self.type),
+      `Expected a number or string, found ${self.type.description}`
+    )
+  },
+  isBoolean(){
+    must([Type.BOOL].includes(self.type), `Expected a boolean, found ${self.type.description}`)
+  },
+  isInteger(){
+    must([Type.NUM].includes(self.type), `Expected an integer, found ${self.type.description}`)
+  },
+  isAType(){
+    must(self instanceof Type, "Type expected")
+  },
+  isAnArray(){
+    must(self.type.constructor === ArrayType, "Array expected")
+  },
+  isDictionary(){
+    must(self.type.constructor === DictionaryType, "Dictionary expected")
+  },
+  hasSameTypeAs(other){
+    must(self.type.isEquivalentTo(other.type), "Operands do not have the same type")
+  },
+  allHaveSameType(){
+    must(
+      self.slice(1).every(e => e.type.isEquivalentTo(self[0].type)),
+      "Not all elements have the same type"
+    )
+  },
+  isInsideAFunction(context){
+    must(self.function, "Return can only appear in a function")
+  },
+  match(targetTypes){
+    must(
+      targetTypes.length === self.length,
+      `${targetTypes.length} argument(s) required but ${self.length} passed`
+    )
+    targetTypes.forEach((type, i)=>check(self[i]).isAssignableTo(type))
+  },
+  isAssignableTo(type){
+    must(
+      self.type.isEquivalentTo(type), `Cannot assign a ${self.type.description} to a ${type.description}`
+    )
+  },//CHECK BELOW 4 PROBLEMS
+  matchParametersOf(calleeType){
+    check(self).match(calleeType.parameters)
+  }
+})
 
 class Context {
   constructor(context) {
@@ -23,21 +119,25 @@ class Context {
   }
   Program(p) {
     p.id = p.id.description
-    p.classBody.map(body => this.analyze(body))
+    let size = p.classBody.length
+    for (let i = 0; i < size; i++) {
+      p.classBody[i] = this.analyze(p.classBody[i])
+    }
+    ///p.classBody.map(bodyStmnts => this.analyze(bodyStmnts))
     this.add(p.id, p.classBody)
     return p
   }
   FunDec(f) {
     f.id = f.id.description
     f.returnType = f.returnType.map(type => type.description)
-    this.add(f.id, f)
     f.parameters.map(params => this.analyze(params))
+    this.add(f.id, f)
     f.body.map(stmnt => this.analyze(stmnt))
     return f
   }
   FunCall(c) {
-    c.id = c.id.description
-    c.id = this.lookup(c.id)
+    c.callee = c.callee.description
+    c.callee = this.lookup(c.callee)
     c.parameters = c.parameters.map(params => this.analyze(params))
     return c
   }
@@ -51,8 +151,10 @@ class Context {
     return v
   }
   VarDec(d) {
-    d.variable = new Variable(d.type.description, d.id.description)
+    d.variable = new Variable(this.analyze(d.type), d.id.description)
     this.add(d.id.description, d.variable)
+    delete d.id
+    delete d.type
     return d
   }
   ReturnStatement(r) {
@@ -87,9 +189,8 @@ class Context {
     a.source = this.analyze(a.source)
     return a
   }
-  ArrayVar(a) {
-    this.lookup(a.id.description)
-    a.id = this.analyze(a.id.description)
+  ArrayAccess(a) {
+    a.id = this.analyze(a.id)
     a.indexExp = this.analyze(a.indexExp)
     return a
   }
@@ -142,6 +243,18 @@ class Context {
   Symbol(node) {
     //console.log(node)
     return this.lookup(node.description)
+  }
+  Operator(node) {
+    return node.op
+  }
+  ArrayType(node) {
+    return node.description
+  }
+  DictionaryType(node) {
+    return node.description
+  }
+  Type(node) {
+    return node.description
   }
   String(node) {
     return node

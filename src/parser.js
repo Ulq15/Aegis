@@ -27,7 +27,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return funcall.ast()
   },
   Assignment_array(id, _open, comparand, _close, _eq, exp) {
-    return new AST.Assignment(new AST.ArrayVar(id.ast(), comparand.ast()), exp.ast())
+    return new AST.Assignment(new AST.ArrayAccess(id.ast(), comparand.ast()), exp.ast())
   },
   Assignment_dictAdd(id, _add, key, _bracket, value, _close) {
     return new AST.Assignment(new AST.DictionaryAccess(id.ast(), key.ast()), value.ast())
@@ -39,10 +39,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return new AST.Assignment(id.ast(), funCall.ast())
   },
   FunDec_declare(id, _open, params, _close, returnType, _colon, body, _endKey) {
-    return new AST.FunDec(id.ast(), params.ast(), returnType.ast(), body.ast())
-  },
-  Params(params) {
-    return params.asIteration().ast()
+    return new AST.FunDec(id.ast(), params.asIteration().ast(), returnType.ast(), body.ast())
   },
   Param_single(type, id) {
     return new AST.Variable(type.ast(), id.ast())
@@ -93,7 +90,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return new AST.ArrayLiteral(expList.asIteration().ast())
   },
   Primary_accessArray(id, _open, comparand, _close) {
-    return new AST.ArrayVar(id.ast(), comparand.ast())
+    return new AST.ArrayAccess(id.ast(), comparand.ast())
   },
   Primary_getDictionary(id, _get, exp, _close) {
     return new AST.DictionaryAccess(id.ast(), exp.ast())
@@ -128,32 +125,47 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   Loop_statement(_loop, _open, exp, _close, _colon, body, _endKey) {
     return new AST.Loop(exp.ast(), body.ast())
   },
-  TypeExp(type) {
-    return Symbol(type.sourceString)
+  TypeExp_array(type, _open, _close) {
+    return new AST.ArrayType(new AST.Type(type.sourceString))
+  },
+  TypeExp_dictionary(_open1, type1, _close1, _open2, type2, _close2) {
+    return new AST.DictionaryType(new AST.Type(type1.sourceString), new AST.Type(type2.sourceString))
+  },
+  TypeExp_numType(type) {
+    return new AST.Type(type.sourceString)
+  },
+  TypeExp_deciType(type) {
+    return new AST.Type(type.sourceString)
+  },  
+  TypeExp_boolType(type) {
+    return new AST.Type(type.sourceString)
+  },
+  TypeExp_charsType(type) {
+    return new AST.Type(type.sourceString)
   },
   id(first, sec) {
     return Symbol(first.sourceString + sec.sourceString)
   },
   logicop(_) {
-    return this.sourceString
+    return new AST.Operator(this.sourceString)
   },
   compareOp(_) {
-    return this.sourceString
+    return new AST.Operator(this.sourceString)
   },
   negateOp(_) {
-    return this.sourceString
+    return new AST.Operator(this.sourceString)
   },
   addop(_) {
-    return this.sourceString
+    return new AST.Operator(this.sourceString)
   },
   multop(_) {
-    return this.sourceString
+    return new AST.Operator(this.sourceString)
   },
   exponentop(_) {
-    return this.sourceString
+    return new AST.Operator(this.sourceString)
   },
   crementOp(_) {
-    return this.sourceString
+    return new AST.Operator(this.sourceString)
   },
   int(_digits){
     return BigInt(this.sourceString)
