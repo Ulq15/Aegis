@@ -88,7 +88,7 @@ const check = self => ({
     targetTypes.forEach((type, i) => check(self[i]).isAssignableTo(type))
   },
   isAssignableTo(type) {
-    console.log("****" + type + "****")
+    console.log("****" + type.description + "****")
     must(self.type.isAssignableTo(type), `Cannot assign a ${self.type.description} to a ${type.description}`)
   }, //CHECK BELOW 4 PROBLEMS
   matchParametersOf(calleeType) {
@@ -127,11 +127,7 @@ class Context {
     return new Context(this, config)
   }
   Program(p) {
-    //p.id = p.id.description
-    // let size = p.classBody.length
-    // for (let i = 0; i < size; i++) {
-    //   p.classBody[i] = this.analyze(p.classBody[i])
-    // }
+    p.id = p.id.description
     p.classBody.map(bodyStmnts => this.analyze(bodyStmnts))
     //this.add(p.id.description, p.classBody)
     return p
@@ -219,12 +215,16 @@ class Context {
     return e
   }
   ArrayLiteral(a) {
-    return a.list.map(item => this.analyze(item))
+    a.list = a.list.map(item => this.analyze(item))
+    check(a.list).allHaveSameType()
+    a.type = new ArrayType(a.list[0].type)
+    return a
   }
   Assignment(a) {
     a.target = this.analyze(a.target)
     a.source = this.analyze(a.source)
-    console.log(a.source.type.description + " = " + a.target.type)
+    console.log("Source ="+JSON.stringify(a.source))
+    console.log("target = "+JSON.stringify(a.target))
     check(a.source).isAssignableTo(a.target.type)
     return a
   }
@@ -261,8 +261,9 @@ class Context {
     return d
   }
   ArrayAccess(a) {
-    a.id = this.analyze(a.id)
+    a.array = this.analyze(a.array)
     a.indexExp = this.analyze(a.indexExp)
+    a.type = a.array.type
     return a
   }
   DictionaryAccess(g) {

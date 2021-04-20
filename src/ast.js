@@ -84,14 +84,14 @@ export class Assignment {
 }
 
 export class ArrayAccess {
-  constructor(id, indexExp) {
-    Object.assign(this, { id, indexExp })
+  constructor(array, indexExp) {
+    Object.assign(this, { array, indexExp })
   }
 }
 
 export class DictionaryAccess {
-  constructor(id, key) {
-    Object.assign(this, { id, key })
+  constructor(dictionary, key) {
+    Object.assign(this, { dictionary, key })
   }
 }
 
