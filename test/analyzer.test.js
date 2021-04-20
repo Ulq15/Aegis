@@ -18,39 +18,40 @@ const close = "\nEND"
 
 const source = fs.readFileSync(location + "7.ags").toString()
 
-const expectedAst = String.raw`   1 | Program id=Symbol(Example7) classBody=[#2,#21,#33]
-   2 | FunDec id=Symbol(fibonacci) parameters=[#3] returnType=[Symbol(NUM)] body=[#5]
-   3 | Param variable=#4
-   4 | Variable id=Symbol(n) type=Symbol(NUM)
-   5 | Conditional ifStatement=#6 elseIfStatements=[#9] elseStatement=[#14]
-   6 | ConditionalIF exp=#7 body=[#8]
-   7 | BinaryExpression left=#4 op=['=='] right=['0']
-   8 | ReturnStatement expression='0'
-   9 | ConditionalELSEIF exp=#10 body=[#13]
-  10 | BinaryExpression left=#11 op=['|'] right=[#12]
-  11 | BinaryExpression left=#4 op=['=='] right=['1']
-  12 | BinaryExpression left=#4 op=['=='] right=['2']
-  13 | ReturnStatement expression='1'
-  14 | ConditionalELSE body=[#15]
-  15 | ReturnStatement expression=#16
-  16 | BinaryExpression left=#17 op=['+'] right=[#19]
-  17 | FunCall id=Symbol(fibonacci) parameters=[#18] function=#2
-  18 | BinaryExpression left=#4 op=['-'] right=['1']
-  19 | FunCall id=Symbol(fibonacci) parameters=[#20] function=#2
-  20 | BinaryExpression left=#4 op=['-'] right=['2']
-  21 | FunDec id=Symbol(main) parameters=[] returnType=[] body=[#22,#24,#26,#32]
-  22 | VarInitializer variable=#23 source='""'
-  23 | Variable id=Symbol(fibList) type=Symbol(CHARS)
-  24 | VarInitializer variable=#25 source='0'
-  25 | Variable id=Symbol(i) type=Symbol(NUM)
-  26 | Loop condition=#27 body=[#28,#31]
-  27 | BinaryExpression left=#25 op=['<'] right=[#4]
-  28 | Assignment target=#23 source=#29
-  29 | BinaryExpression left=#23 op=['+','+'] right=[#30,'" "']
-  30 | FunCall id=Symbol(fibonacci) parameters=[#25] function=#2
-  31 | PostfixExpression operand=#25 op='++'
-  32 | PrintStatement argument=#23
-  33 | FunCall id=Symbol(main) parameters=[] function=#21`
+const expectedAst = String.raw`   1 | Program id='Example7' classBody=[#2,#20,#34]
+   2 | FunDec id='fibonacci' parameters=[#3] returnType=['NUM'] body=[#4]
+   3 | Variable id='n' type='NUM'
+   4 | Conditional ifStatement=#5 elseIfStatements=[#8] elseStatement=[#13]
+   5 | ConditionalIF exp=#6 body=[#7]
+   6 | BinaryExpression left=#3 op=['=='] right=['0']
+   7 | ReturnStatement expression='0'
+   8 | ConditionalELSEIF exp=#9 body=[#12]
+   9 | BinaryExpression left=#10 op=['|'] right=[#11]
+  10 | BinaryExpression left=#3 op=['=='] right=['1']
+  11 | BinaryExpression left=#3 op=['=='] right=['2']
+  12 | ReturnStatement expression='1'
+  13 | ConditionalELSE body=[#14]
+  14 | ReturnStatement expression=#15
+  15 | BinaryExpression left=#16 op=['+'] right=[#18]
+  16 | FunCall callee=#2 parameters=[#17]
+  17 | BinaryExpression left=#3 op=['-'] right=['1']
+  18 | FunCall callee=#2 parameters=[#19]
+  19 | BinaryExpression left=#3 op=['-'] right=['2']
+  20 | FunDec id='main' parameters=[] returnType=[] body=[#21,#23,#25,#33]
+  21 | VarInitializer target=#22 source='""'
+  22 | Variable id='fibList' type='CHARS'
+  23 | VarInitializer target=#24 source='0'
+  24 | Variable id='i' type='NUM'
+  25 | Loop condition=#26 body=[#29,#32]
+  26 | BinaryExpression left=#27 op=['&'] right=[#28]
+  27 | BinaryExpression left=#24 op=['<'] right=[#3]
+  28 | BinaryExpression left=#24 op=['!='] right=[#3]
+  29 | Assignment target=#22 source=#30
+  30 | BinaryExpression left=#22 op=['+','+'] right=[#31,'" "']
+  31 | FunCall callee=#2 parameters=[#24]
+  32 | PostfixExpression operand=#24 op='++'
+  33 | PrintStatement argument=#22
+  34 | FunCall callee=#20 parameters=[]`
 
 const errorFixture = [
   ["using undeclared ids", "id + 1;", /Identifier id not declared/],

@@ -1,5 +1,5 @@
 import { Variable, Type, ArrayType, DictionaryType } from "./ast.js"
-
+/*
 function must(condition, errorMessage) {
   if (!condition) {
     throw new Error(errorMessage)
@@ -95,7 +95,7 @@ const check = self => ({
     check(self).match(calleeType.parameters)
   }
 })
-
+*/
 class Context {
   constructor(context) {
     this.localVars = new Map()

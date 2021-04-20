@@ -134,9 +134,9 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   TypeExp_numType(type) {
     return new AST.Type(type.sourceString)
   },
-  TypeExp_deciType(type) {
-    return new AST.Type(type.sourceString)
-  },  
+  // TypeExp_deciType(type) {
+  //   return new AST.Type(type.sourceString)
+  // },  
   TypeExp_boolType(type) {
     return new AST.Type(type.sourceString)
   },
@@ -167,27 +167,27 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   crementOp(_) {
     return new AST.Operator(this.sourceString)
   },
-  int(_digits){
-    return BigInt(this.sourceString)
-  },
-  decimal(_integer , _dot, _fraction){
-    return Number(this.sourceString)
-  },
-  negative(_sign, _num){
-    return (-1) * Number(num.sourceString)
-  },
-  false(_){
-    return false
-  },
-  true(_){
-    return true
-  },
-  char(_){
-    return this.sourceString
-  },
-  stringLiteral(_open, chars, _close){
-    return chars.sourceString
-  },
+  // int(_digits){
+  //   return BigInt(this.sourceString)
+  // },
+  // decimal(_integer , _dot, _fraction){
+  //   return Number(this.sourceString)
+  // },
+  // negative(_sign, _num){
+  //   return (-1) * Number(num.sourceString)
+  // },
+  // false(_){
+  //   return false
+  // },
+  // true(_){
+  //   return true
+  // },
+  // char(_){
+  //   return this.sourceString
+  // },
+  // stringLiteral(_open, chars, _close){
+  //   return chars.sourceString
+  // },
 })
 
 export default function parse(sourceCode) {

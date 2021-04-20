@@ -3,6 +3,10 @@ import parse from "../src/parser.js"
 import analyze from "../src/analyzer.js"
 import generate from "../src/generator.js"
 
+const classOpen = "CLASS TestClass:\n"
+const funcOpen = "testMethod():\n"
+const close = "\nEND"
+
 function dedent(s) {
   return `${s}`.replace(/(?<=\n)\s+/g, "").trim()
 }

@@ -17,11 +17,11 @@ export class FunDec {
   }
 }
 
-export class Param {
-  constructor(type, id) {
-    Object.assign(this, { id, type })
-  }
-}
+// export class Param {
+//   constructor(type, id) {
+//     Object.assign(this, { id, type })
+//   }
+// }
 
 export class FunCall {
   constructor(callee, parameters) {
