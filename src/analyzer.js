@@ -1,5 +1,11 @@
 import { Variable, Type, ArrayType, DictionaryType } from "./ast.js"
 
+Type.BOOL = Object.assign(new Type(), { description: "BOOL" })
+Type.NUM = Object.assign(new Type(), { description: "NUM" })
+Type.DECI = Object.assign(new Type(), { description: "DECI" })
+Type.CHARS = Object.assign(new Type(), { description: "CHARS" })
+Type.VOID = Object.assign(new Type(), { description: "void" })
+
 function must(condition, errorMessage) {
   if (!condition) {
     throw new Error(errorMessage)
@@ -8,7 +14,7 @@ function must(condition, errorMessage) {
 
 Object.assign(Type.prototype, {
   isEquivalentTo(target) {
-    return this == target
+    return this.description == target.description
   },
   isAssignableTo(target) {
     return this.isEquivalentTo(target)
@@ -37,75 +43,73 @@ Object.assign(DictionaryType.prototype, {
   }
 })
 
-Type.BOOL = Object.assign(new Type(), { description: "BOOL" })
-Type.NUM = Object.assign(new Type(), { description: "NUM" })
-Type.DECI = Object.assign(new Type(), { description: "DECI" })
-Type.CHARS = Object.assign(new Type(), { description: "CHARS" })
-
 const check = self => ({
   isNumeric() {
-    must([Type.NUM, Type.DECI].includes(self.type), `Expected a number, found ${self.type.description}`)
+    must(
+      [Type.NUM.description, Type.DECI.description].includes(self.type.description),
+      `Expected a number, found ${self.type.description}`
+    )
   },
   isNumericOrString() {
     must(
-      [Type.NUM, Type.DECI, Type.CHARS].includes(self.type),
-      `Expected a number or string, found ${self.type.description}`
+      [Type.NUM.description, Type.DECI.description, Type.CHARS.description].includes(self.type.description),
+      `Expected a NUM or DECI or CHARS, found ${self.type.description}`
     )
   },
-  isBoolean(){
+  isBoolean() {
     must([Type.BOOL].includes(self.type), `Expected a boolean, found ${self.type.description}`)
   },
-  isInteger(){
+  isInteger() {
     must([Type.NUM].includes(self.type), `Expected an integer, found ${self.type.description}`)
   },
-  isAType(){
+  isAType() {
     must(self instanceof Type, "Type expected")
   },
-  isAnArray(){
+  isAnArray() {
     must(self.type.constructor === ArrayType, "Array expected")
   },
-  isDictionary(){
+  isDictionary() {
     must(self.type.constructor === DictionaryType, "Dictionary expected")
   },
-  hasSameTypeAs(other){
+  hasSameTypeAs(other) {
     must(self.type.isEquivalentTo(other.type), "Operands do not have the same type")
   },
-  allHaveSameType(){
+  allHaveSameType() {
     must(
       self.slice(1).every(e => e.type.isEquivalentTo(self[0].type)),
       "Not all elements have the same type"
     )
   },
-  isInsideAFunction(context){
+  isInsideAFunction() {
     must(self.function, "Return can only appear in a function")
   },
-  match(targetTypes){
-    must(
-      targetTypes.length === self.length,
-      `${targetTypes.length} argument(s) required but ${self.length} passed`
-    )
-    targetTypes.forEach((type, i)=>check(self[i]).isAssignableTo(type))
+  match(targetTypes) {
+    must(targetTypes.length === self.length, `${targetTypes.length} argument(s) required but ${self.length} passed`)
+    targetTypes.forEach((type, i) => check(self[i]).isAssignableTo(type))
   },
-  isAssignableTo(type){
-    must(
-      self.type.isEquivalentTo(type), `Cannot assign a ${self.type.description} to a ${type.description}`
-    )
-  },//CHECK BELOW 4 PROBLEMS
-  matchParametersOf(calleeType){
+  isAssignableTo(type) {
+    console.log("****" + type + "****")
+    must(self.type.isAssignableTo(type), `Cannot assign a ${self.type.description} to a ${type.description}`)
+  }, //CHECK BELOW 4 PROBLEMS
+  matchParametersOf(calleeType) {
     check(self).match(calleeType.parameters)
   }
 })
 
 class Context {
-  constructor(context) {
+  constructor(parent = null, config = {}) {
+    this.parent = parent
     this.localVars = new Map()
+    this.function = config.forFunction ?? parent?.function ?? null
+  }
+  sees(name) {
+    return this.localVars.has(name) || this.parent?.sees(name)
   }
   analyze(node) {
     return this[node.constructor.name](node)
   }
   add(name, entity) {
-    //console.log(`Added ${name}`)
-    if (this.localVars.has(name)) {
+    if (this.sees(name)) {
       throw new Error(`Identifier ${name} already declared`)
     }
     this.localVars.set(name, entity)
@@ -114,22 +118,28 @@ class Context {
     const entity = this.localVars.get(name)
     if (entity) {
       return entity
+    } else if (this.parent) {
+      return this.parent.lookup(name)
     }
     throw new Error(`Identifier ${name} not declared`)
   }
+  newChild(config = {}) {
+    return new Context(this, config)
+  }
   Program(p) {
-    p.id = p.id.description
-    let size = p.classBody.length
-    for (let i = 0; i < size; i++) {
-      p.classBody[i] = this.analyze(p.classBody[i])
-    }
-    ///p.classBody.map(bodyStmnts => this.analyze(bodyStmnts))
-    this.add(p.id, p.classBody)
+    //p.id = p.id.description
+    // let size = p.classBody.length
+    // for (let i = 0; i < size; i++) {
+    //   p.classBody[i] = this.analyze(p.classBody[i])
+    // }
+    p.classBody.map(bodyStmnts => this.analyze(bodyStmnts))
+    //this.add(p.id.description, p.classBody)
     return p
   }
   FunDec(f) {
     f.id = f.id.description
-    f.returnType = f.returnType.map(type => type.description)
+    //f.returnType = f.returnType[0]
+    //f.returnType = f.returnType.map(type => type.description)
     f.parameters.map(params => this.analyze(params))
     this.add(f.id, f)
     f.body.map(stmnt => this.analyze(stmnt))
@@ -142,23 +152,22 @@ class Context {
     return c
   }
   VarInitializer(v) {
-    let i = v.assignment.target
-    v.target = new Variable(v.type, i)
-    v.target = this.analyze(v.target)
-    v.source = this.analyze(v.assignment.source)
-    delete v.assignment
-    delete v.type
+    v.target = new Variable(v.type, v.assignment.target.description)
+    this.add(v.target.id, v.target)
+    v.assignment = this.analyze(v.assignment)
+    v.source = v.assignment.source
     return v
   }
   VarDec(d) {
     d.variable = new Variable(this.analyze(d.type), d.id.description)
     this.add(d.id.description, d.variable)
-    delete d.id
-    delete d.type
     return d
   }
   ReturnStatement(r) {
+    check(this).isInsideAFunction()
+    check(this.function).returnsSomething()
     r.expression = this.analyze(r.expression)
+    check(r.expression).isReturnableFrom(this.function)
     return r
   }
   PrintStatement(p) {
@@ -167,9 +176,37 @@ class Context {
   }
   BinaryExpression(e) {
     e.left = this.analyze(e.left)
-    e.right = this.analyze(e.right)
-    e.op = this.analyze(e.op)
-    return e
+    e.right = e.right.map(right => this.analyze(right))
+    e.op.map(op => this.analyze(op))
+    check(e.right).allHaveSameType()
+    let size = e.right.length
+    for (let i = 0; i < size; i++) {
+      if (e.op[i].symbol === "+") {
+        check(e.left).isNumericOrString()
+        check(e.left).hasSameTypeAs(e.right[i])
+        e.type = e.left.type
+      } else if (["-", "*", "/", "MOD", "**"].includes(e.op[i].symbol)) {
+        check(e.left).isNumeric()
+        check(e.left).hasSameTypeAs(e.right[i])
+        e.type = e.left.type
+      } else if (["<", ">", "<=", ">="].includes(e.op[i].symbol)) {
+        check(e.left).isNumericOrString()
+        check(e.left).hasSameTypeAs(e.right[i])
+        e.type = Type.BOOL
+      } else if (["==", "!="].includes(e.op[i].symbol)) {
+        check(e.left).hasSameTypeAs(e.right[i])
+        e.type = Type.BOOL
+      } else if (["&", "|"].includes(e.op[i].symbol)) {
+        check(e.left).isBoolean()
+        check(e.right[i]).isBoolean()
+        e.type = Type.BOOL
+      }
+    }
+    if (e.type != undefined) {
+      return e
+    } else {
+      throw new Error("Type of binary expression undefined")
+    }
   }
   PrefixExpression(e) {
     e.operand = this.analyze(e.operand)
@@ -187,17 +224,9 @@ class Context {
   Assignment(a) {
     a.target = this.analyze(a.target)
     a.source = this.analyze(a.source)
+    console.log(a.source.type.description + " = " + a.target.type)
+    check(a.source).isAssignableTo(a.target.type)
     return a
-  }
-  ArrayAccess(a) {
-    a.id = this.analyze(a.id)
-    a.indexExp = this.analyze(a.indexExp)
-    return a
-  }
-  DictionaryAccess(g) {
-    g.id = this.analyze(g.id)
-    g.key = this.analyze(g.key)
-    return g
   }
   Conditional(c) {
     c.ifStatement = this.analyze(c.ifStatement)
@@ -231,30 +260,44 @@ class Context {
     d.body = this.analyze(d.body)
     return d
   }
+  ArrayAccess(a) {
+    a.id = this.analyze(a.id)
+    a.indexExp = this.analyze(a.indexExp)
+    return a
+  }
+  DictionaryAccess(g) {
+    g.id = this.analyze(g.id)
+    g.key = this.analyze(g.key)
+    return g
+  }
+  Param(v) {
+    let p = new Variable(v.type, v.id)
+    this.add(p.id.description, p)
+    return this.analyze(p)
+  }
   Variable(v) {
-    v.id = v.id.description
-    v.type = v.type.description
-    this.add(v.id, v)
-    return this.lookup(v.id)
+    return this.lookup(v.id.description)
   }
   Array(a) {
     return a.map(item => this.analyze(item))
   }
   Symbol(node) {
-    //console.log(node)
     return this.lookup(node.description)
   }
   Operator(node) {
-    return node.op
+    return node
   }
   ArrayType(node) {
-    return node.description
+    return node.baseType
   }
   DictionaryType(node) {
-    return node.description
+    return node
   }
   Type(node) {
-    return node.description
+    return node
+  }
+  Literal(node) {
+    return node
   }
   String(node) {
     return node

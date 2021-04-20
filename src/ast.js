@@ -138,8 +138,8 @@ export class Variable {
 }
 
 export class Operator {
-  constructor(op) {
-    this.op = op
+  constructor(symbol) {
+    Object.assign(this,{symbol})
   }
 }
 
@@ -164,7 +164,12 @@ export class DictionaryType extends Type {
   }
 }
 
-
+export class Literal {
+  constructor(value, type) {
+    this.value = value
+    this.type = type
+  }
+}
 
 function formatAST(node) {
   const tags = new Map()

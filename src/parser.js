@@ -42,7 +42,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return new AST.FunDec(id.ast(), params.asIteration().ast(), returnType.ast(), body.ast())
   },
   Param_single(type, id) {
-    return new AST.Variable(type.ast(), id.ast())
+    return new AST.Param(type.ast(), id.ast())
   },
   Body(statements) {
     return statements.ast()
@@ -102,7 +102,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return Symbol(id.sourceString)
   },
   Primary_literal(literal) {
-    return literal.sourceString
+    return literal.ast()
   },
   If(_if, _open, exp, _close, _colon, body) {
     return new AST.ConditionalIF(exp.ast(), body.ast())
@@ -143,8 +143,11 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   TypeExp_charsType(type) {
     return new AST.Type(type.sourceString)
   },
-  id(first, sec) {
-    return Symbol(first.sourceString + sec.sourceString)
+  TypeExp_voidType(type) {
+    return new AST.Type(type.sourceString)
+  },
+  id(first, sub) {
+    return Symbol(first.sourceString + sub.sourceString)
   },
   logicop(_) {
     return new AST.Operator(this.sourceString)
@@ -168,25 +171,25 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return new AST.Operator(this.sourceString)
   },
   int(_digits){
-    return BigInt(this.sourceString)
+    return new AST.Literal(this.sourceString, new AST.Type("NUM"))
   },
   decimal(_integer , _dot, _fraction){
-    return Number(this.sourceString)
+    return new AST.Literal(this.sourceString, new AST.Type("DECI"))
   },
-  negative(_sign, _num){
-    return (-1) * Number(num.sourceString)
+  negative(_sign, num){
+    return new AST.Literal((-1) * Number(num.sourceString), new AST.Type("DECI"))
   },
   false(_){
-    return false
+    return new AST.Literal(false, new AST.Type("BOOL"))
   },
   true(_){
-    return true
+    return new AST.Literal(true, new AST.Type("BOOL"))
   },
   char(_){
-    return this.sourceString
+    return new AST.Literal(this.sourceString, new AST.Type("CHARS"))
   },
   stringLiteral(_open, chars, _close){
-    return chars.sourceString
+    return new AST.Literal(chars.sourceString, new AST.Type("CHARS"))
   },
 })
 

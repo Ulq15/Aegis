@@ -161,6 +161,16 @@ export default function generate(program) {
     },
     String(node) {
       return node
+    },
+    Operator(node){
+      if(node.op === "MOD"){
+        node.op = "%"
+      } else if(node.op === "&"){
+        node.op = "&&"
+      } else if(node.op === "|"){
+        node.op = "||"
+      }
+      return node.op
     }
   }
 
