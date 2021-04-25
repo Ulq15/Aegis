@@ -27,7 +27,10 @@ const syntaxChecks = [
   ["dictionary get", "dictionary GET[1];"],
   ["Do loop with internal assignment", "NUM i; DO(i = 0, i < 10, i++): OUTPUT(i); END"],
   ["dictionary add", 'dictionary ADD["SomeKey"]["SomeValue"];'],
-  ["dictionary declare", "[NUM][BOOL] dictionary;"]
+  ["dictionary declare", "[NUM][BOOL] dictionary;"],
+  ["boolean initialization", "BOOL x = FALSE;"],
+  ["Decimal initialization", "DECI d = 3.14;"],
+  ["strings", "CHARS c  = \"strings are cool\";"]
 ]
 
 const syntaxErrors = [
@@ -42,8 +45,8 @@ const syntaxErrors = [
 
 const ex1 = fs.readFileSync(location + "1.ags").toString()
 
-const ex1AST = `   1 | Program id=Symbol(Example1) classBody=[#2,#34]
-   2 | FunDec id=Symbol(factors) parameters=[#3] returnType=#5 body=[#6,#9,#12,#15,#33]
+const ex1AST = `   1 | Program id=Symbol(Example1) classBody=[#2,#40]
+   2 | FunDec id=Symbol(factors) parameters=[#3] returnType=#5 body=[#6,#9,#14,#19,#39]
    3 | Variable id=Symbol(y) type=#4
    4 | Type description='NUM'
    5 | Type description='VOID'
@@ -52,30 +55,38 @@ const ex1AST = `   1 | Program id=Symbol(Example1) classBody=[#2,#34]
    8 | Type description='NUM'
    9 | VarInitializer type=#10 assignment=#11
   10 | Type description='NUM'
-  11 | Assignment target=Symbol(count) source='0'
-  12 | VarInitializer type=#13 assignment=#14
+  11 | Assignment target=Symbol(count) source=#12
+  12 | Literal value='0' type=#13
   13 | Type description='NUM'
-  14 | Assignment target=Symbol(x) source='1'
-  15 | Loop condition=#16 body=[#18,#23,#31]
-  16 | BinaryExpression left=Symbol(x) op=[#17] right=[Symbol(y)]
-  17 | Operator symbol='<='
-  18 | VarInitializer type=#19 assignment=#20
-  19 | Type description='NUM'
-  20 | Assignment target=Symbol(z) source=#21
-  21 | BinaryExpression left=Symbol(y) op=[#22] right=[Symbol(x)]
-  22 | Operator symbol='MOD'
-  23 | Conditional ifStatement=#24 elseIfStatements=[] elseStatement=[]
-  24 | ConditionalIF exp=#25 body=[#27,#29]
-  25 | BinaryExpression left=Symbol(z) op=[#26] right=['0']
-  26 | Operator symbol='=='
-  27 | Assignment target=#28 source=Symbol(x)
-  28 | ArrayAccess arrayVar=Symbol(results) indexExp=Symbol(count)
-  29 | PostfixExpression operand=Symbol(count) op=#30
-  30 | Operator symbol='++'
-  31 | PostfixExpression operand=Symbol(x) op=#32
-  32 | Operator symbol='++'
-  33 | PrintStatement argument=Symbol(results)
-  34 | FunCall callee=Symbol(factors) parameters=['250']`
+  14 | VarInitializer type=#15 assignment=#16
+  15 | Type description='NUM'
+  16 | Assignment target=Symbol(x) source=#17
+  17 | Literal value='1' type=#18
+  18 | Type description='NUM'
+  19 | Loop condition=#20 body=[#22,#27,#37]
+  20 | BinaryExpression left=Symbol(x) op=[#21] right=[Symbol(y)]
+  21 | Operator symbol='<='
+  22 | VarInitializer type=#23 assignment=#24
+  23 | Type description='NUM'
+  24 | Assignment target=Symbol(z) source=#25
+  25 | BinaryExpression left=Symbol(y) op=[#26] right=[Symbol(x)]
+  26 | Operator symbol='MOD'
+  27 | Conditional ifStatement=#28 elseIfStatements=[] elseStatement=[]
+  28 | ConditionalIF exp=#29 body=[#33,#35]
+  29 | BinaryExpression left=Symbol(z) op=[#30] right=[#31]
+  30 | Operator symbol='=='
+  31 | Literal value='0' type=#32
+  32 | Type description='NUM'
+  33 | Assignment target=#34 source=Symbol(x)
+  34 | ArrayAccess arrayVar=Symbol(results) indexExp=Symbol(count)
+  35 | PostfixExpression operand=Symbol(count) op=#36
+  36 | Operator symbol='++'
+  37 | PostfixExpression operand=Symbol(x) op=#38
+  38 | Operator symbol='++'
+  39 | PrintStatement argument=Symbol(results)
+  40 | FunCall callee=Symbol(factors) parameters=[#41]
+  41 | Literal value='250' type=#42
+  42 | Type description='NUM'`
 
 describe("Parsing Example AST", () => {
   it("Successfuly Built Expected AST for example1.ags", () => {

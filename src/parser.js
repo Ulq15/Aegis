@@ -102,7 +102,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return Symbol(id.sourceString)
   },
   Primary_literal(literal) {
-    return literal.sourceString
+    return literal.ast()
   },
   If(_if, _open, exp, _close, _colon, body) {
     return new AST.ConditionalIF(exp.ast(), body.ast())
@@ -170,13 +170,13 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   crementOp(_) {
     return new AST.Operator(this.sourceString)
   },
-  int(_digits){
+  int(_){
     return new AST.Literal(this.sourceString, new AST.Type("NUM"))
   },
   decimal(_integer , _dot, _fraction){
     return new AST.Literal(this.sourceString, new AST.Type("DECI"))
   },
-  negative(_sign, num){
+  negative(_, num){
     return new AST.Literal((-1) * Number(num.sourceString), new AST.Type("DECI"))
   },
   false(_){
@@ -184,9 +184,6 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   },
   true(_){
     return new AST.Literal(true, new AST.Type("BOOL"))
-  },
-  char(_){
-    return new AST.Literal(this.sourceString, new AST.Type("CHARS"))
   },
   stringLiteral(_open, chars, _close){
     return new AST.Literal(chars.sourceString, new AST.Type("CHARS"))

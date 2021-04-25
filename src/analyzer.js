@@ -10,46 +10,46 @@ Object.assign(Type.prototype, {
   isEquivalentTo(target) {
     return this.description === target.description
   },
-  isAssignableTo(target) {
-    return this.isEquivalentTo(target)
-  }
+  // isAssignableTo(target) {
+  //   return this.isEquivalentTo(target)
+  // }
 })
 
-Object.assign(ArrayType.prototype, {
-  isEquivalentTo(target) {
-    return target.constructor === ArrayType && this.baseType.isEquivalentTo(target.baseType)
-  },
-  isAssignableTo(target) {
-    return this.isEquivalentTo(target)
-  }
-})
+// Object.assign(ArrayType.prototype, {
+//   isEquivalentTo(target) {
+//     return target.constructor === ArrayType && this.baseType.isEquivalentTo(target.baseType)
+//   },
+//   isAssignableTo(target) {
+//     return this.isEquivalentTo(target)
+//   }
+// })
 
-Object.assign(DictionaryType.prototype, {
-  isEquivalentTo(target) {
-    return (
-      target.constructor === DictionaryType &&
-      this.keyType.isEquivalentTo(target.keyType) &&
-      this.storedType.isEquivalentTo(target.storedType)
-    )
-  },
-  isAssignableTo(target) {
-    return this.isEquivalentTo(target)
-  }
-})
+// Object.assign(DictionaryType.prototype, {
+//   isEquivalentTo(target) {
+//     return (
+//       target.constructor === DictionaryType &&
+//       this.keyType.isEquivalentTo(target.keyType) &&
+//       this.storedType.isEquivalentTo(target.storedType)
+//     )
+//   },
+//   isAssignableTo(target) {
+//     return this.isEquivalentTo(target)
+//   }
+// })
 Type.BOOL = Object.assign(new Type(), { description: "BOOL" })
 Type.NUM = Object.assign(new Type(), { description: "NUM" })
 Type.DECI = Object.assign(new Type(), { description: "DECI" })
 Type.CHARS = Object.assign(new Type(), { description: "CHARS" })
 Type.VOID = Object.assign(new Type(), { description: "VOID" })
 const PRIMITIVES = {
-  BOOL: Type.BOOL,
-  NUM: Type.NUM,
-  DECI: Type.DECI,
-  CHARS: Type.CHARS,
-  VOID: Type.VOID,
-  number:Type.NUM,
-  string:Type.CHARS,
-  boolean:Type.BOOL,
+  "BOOL": Type.BOOL,
+  "NUM": Type.NUM,
+  "DECI": Type.DECI,
+  "CHARS": Type.CHARS,
+  "VOID": Type.VOID,
+  "number":Type.NUM,
+  "string":Type.CHARS,
+  "boolean":Type.BOOL,
   isIn(type){
     return this[type] != undefined
   }
@@ -71,40 +71,40 @@ const check = self => ({
   isBoolean() {
     must([Type.BOOL.description].includes(self.type.description), `Expected a boolean, found ${self.type.description}`)
   },
-  isInteger() {
-    must([Type.NUM.description].includes(self.type.description), `Expected an integer, found ${self.type.description}`)
-  },
-  isAType() {
-    must(self instanceof Type, "Type expected")
-  },
-  isAnArray() {
-    must(self.type.constructor === ArrayType, "Array expected")
-  },
-  isDictionary() {
-    must(self.type.constructor === DictionaryType, "Dictionary expected")
-  },
-  hasSameTypeAs(other) {
-    must(self.type.isEquivalentTo(other.type), "Operands do not have the same type")
-  },
-  allHaveSameType() {
-    must(
-      self.slice(1).every(e => e.type.isEquivalentTo(self[0].type)),
-      "Not all elements have the same type"
-    )
-  },
-  isInsideAFunction(context) {
-    must(self.function, "Return can only appear in a function")
-  },
-  match(targetTypes) {
-    must(targetTypes.length === self.length, `${targetTypes.length} argument(s) required but ${self.length} passed`)
-    targetTypes.forEach((type, i) => check(self[i]).isAssignableTo(type))
-  },
+  // isInteger() {
+  //   must([Type.NUM.description].includes(self.type.description), `Expected an integer, found ${self.type.description}`)
+  // },
+  // isAType() {
+  //   must(self instanceof Type, "Type expected")
+  // },
+  // isAnArray() {
+  //   must(self.type.constructor === ArrayType, "Array expected")
+  // },
+  // isDictionary() {
+  //   must(self.type.constructor === DictionaryType, "Dictionary expected")
+  // },
+  // hasSameTypeAs(other) {
+  //   must(self.type.isEquivalentTo(other.type), "Operands do not have the same type")
+  // },
+  // allHaveSameType() {
+  //   must(
+  //     self.slice(1).every(e => e.type.isEquivalentTo(self[0].type)),
+  //     "Not all elements have the same type"
+  //   )
+  // },
+  // isInsideAFunction(context) {
+  //   must(self.function, "Return can only appear in a function")
+  // },
   isAssignableTo(type) {
     must(self.type.isEquivalentTo(type), `Cannot assign a ${self.type.description} to a ${type.description}`)
-  }, //CHECK BELOW 4 PROBLEMS
-  matchParametersOf(calleeType) {
-    check(self).match(calleeType.parameters)
-  }
+  },
+  // match(targetTypes) {
+  //   must(targetTypes.length === self.length, `${targetTypes.length} argument(s) required but ${self.length} passed`)
+  //   targetTypes.forEach((type, i) => check(self[i]).isAssignableTo(type))
+  // }, //CHECK BELOW 4 PROBLEMS
+  // matchParametersOf(calleeType) {
+  //   check(self).match(calleeType.parameters)
+  // }
 })
 
 class Context {
@@ -116,7 +116,6 @@ class Context {
     return this[node.constructor.name](node)
   }
   add(name, entity) {
-    //console.log(`Added ${name}`)
     if (this.localVars.has(name)) {
       throw new Error(`Identifier ${name} already declared`)
     }
@@ -131,11 +130,7 @@ class Context {
   }
   Program(p) {
     p.id = p.id.description
-    let size = p.classBody.length
-    for (let i = 0; i < size; i++) {
-      p.classBody[i] = this.analyze(p.classBody[i])
-    }
-    ///p.classBody.map(bodyStmnts => this.analyze(bodyStmnts))
+    p.classBody = p.classBody.map(bodyStmnts => this.analyze(bodyStmnts))
     this.add(p.id, p.classBody)
     return p
   }
@@ -202,11 +197,7 @@ class Context {
         e.type = Type.BOOL
       }
     }
-    if (e.type != undefined) {
-      return e
-    } else {
-      throw new Error("Type of binary expression undefined")
-    }
+    return e
   }
   PrefixExpression(e) {
     e.operand = this.analyze(e.operand)
@@ -221,7 +212,6 @@ class Context {
   ArrayLiteral(a) {
     a.list = a.list.map(item => this.analyze(item))
     //check(a.list).allHaveSameType()
-    
     return a
   }
   Assignment(a) {
@@ -239,7 +229,7 @@ class Context {
   DictionaryAccess(g) {
     g.dictionaryVar = this.analyze(g.dictionaryVar)
     g.key = this.analyze(g.key)
-    g.type = dictionaryVar.type.storedType
+    g.type = g.dictionaryVar.type.storedType
     return g
   }
   Conditional(c) {
@@ -307,14 +297,12 @@ class Context {
   Type(node) {
     if(this.primitives.isIn(node.description)){
       return this.primitives[node.description]
-    } else{
-      return node
     }
   }
-  String(node) {
-    return node
-  }
   Literal(node){
+    if(this.primitives.isIn(node.type.description)){
+      node.type = this.primitives[node.type.description]
+    }
     return node
   }
 }
