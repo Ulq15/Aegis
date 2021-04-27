@@ -1,6 +1,7 @@
 Aegis {
-  Program         = classKey id ":" ClassBody endKey                                 --declare
-  ClassBody       = Declaration*
+  Program         = classKey id ":" ClassBody* endKey                                --declare
+  ClassBody       = Declaration
+                  | Statement
   Declaration     = VarDec ";"                                                       --var
                   | FunDec                                                           --func
   VarDec          = TypeExp Assignment                                               --initialize

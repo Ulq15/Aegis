@@ -11,6 +11,21 @@ const makeTabs = (num, line) => {
   return line
 }
 
+const translateOperator = operator => {
+  if(operator === "MOD"){
+    return "%"
+  }
+  else if(operator === "&"){
+    return "&&"
+  }
+  else if( operator === "|"){
+    return "||"
+  }
+  else{
+    return operator
+  }
+}
+
 export default function generate(program) {
   const output = []
 
@@ -34,8 +49,7 @@ export default function generate(program) {
     },
     FunDec(node) {
       let line = `let ${targetName(node)} = (${node.parameters.map(params => gen(params))}) => {`
-      line = makeTabs(this.tabNum, line)
-      output.push(line)
+      output.push(makeTabs(this.tabNum, line))
       this.tabNum++
       node.body.map(statement => gen(statement))
       this.tabNum--
@@ -66,17 +80,25 @@ export default function generate(program) {
       output.push(makeTabs(this.tabNum, `let ${gen(node.variable)};`))
     },
     ReturnStatement(node) {
-      output.push(makeTabs(this.tabNum, `return ${gen(node.expression)};`))
+      let prev = inLine
+      inLine = true
+      let exp = gen(node.expression)
+      inLine = prev
+      output.push(makeTabs(this.tabNum, `return ${exp};`))
     },
     PrintStatement(node) {
-      output.push(makeTabs(this.tabNum, `console.log(${gen(node.argument)});`))
+      let prev = inLine
+      inLine = true
+      let exp = gen(node.argument)
+      inLine = prev
+      output.push(makeTabs(this.tabNum, `console.log(${exp});`))
     },
     BinaryExpression(node) {
-      let line = `${gen(node.left)}`
+      let line = `${gen(node.left)} `
       let prevInLine = inLine
       inLine = true
       for (let index = 0; index < node.op.length; index++) {
-        line += ` ${node.op[index]} ${gen(node.right[index])}`
+        line += `${translateOperator(node.op[index])} ${gen(node.right[index])} `
       }
       inLine = prevInLine
       return line
@@ -100,9 +122,9 @@ export default function generate(program) {
     Assignment(node) {
       let line = `${gen(node.target)} = `
       if (inLine) {
-        return line+` ${gen(node.source)}`
+        return line+`${gen(node.source)}`
       } else {
-        output.push(makeTabs(this.tabNum, line+` ${gen(node.source)};`))
+        output.push(makeTabs(this.tabNum, line+`${gen(node.source)};`))
       }
     },
     ArrayLiteral(node) {
@@ -168,7 +190,15 @@ export default function generate(program) {
     },
     Array(node){
       return node.map(item => gen(item))
-    }
+    },
+    Literal(node){
+      if(node.type.description == "CHARS"){
+        return "\""+node.value+"\""
+      }
+      else{
+        return node.value
+      }
+    },
   }
 
   gen(program)

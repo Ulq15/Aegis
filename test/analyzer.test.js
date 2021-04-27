@@ -67,14 +67,14 @@ const expectedAst = String.raw`   1 | Program id='Example7' classBody=[#2,#29,#4
   47 | PrintStatement argument=#32
   48 | FunCall callee=#29 parameters=[] type=#30`
 
-const errorFixture = [
+const semanticErrors  = [
   ["using undeclared ids", "id + 1;", /Identifier id not declared/],
   ["redeclared ids", "NUM x = 1;\nNUM x = 1;", /Identifier x already declared/],
   ["calling nondeclared functions", "NUM x = fibonacci(13);", /Identifier fibonacci not declared/],
   ["redeclaring functions", "END\ntestMethod()VOID:", /Identifier testMethod already declared/]
 ]
 
-const syntaxChecks = [
+const semanticChecks = [
   ["all numeric literal forms", "OUTPUT( 8 * 89.123 );"],
   ["complex expressions", "OUTPUT ( 83 * ((((((((-13 / 21)))))))) + 1 ** 2  - -0);"],
   ["single line comment", "OUTPUT( 0 ); ## this is a comment"],
@@ -94,22 +94,25 @@ function format(test) {
 }
 
 describe("The Analyzer", () => {
-  it("Can Analyze all the nodes", done => {
+  it("Can Analyze all the nodes of Example7.ags as expected", done => {
     assert.deepStrictEqual(util.format(analyze(parse(source))), expectedAst)
     done()
   })
+})
+
+describe("Tha Analyzer", () => {
   for (const { name, code } of examples) {
-    it(`Analyze ${name}`, () => {
+    it(`Can analyze ${name}`, () => {
       assert(analyze(parse(code)))
     })
   }
-  for (const [scenario, source] of syntaxChecks) {
-    it(`recognizes that ${scenario}`, () => {
+  for (const [scenario, source] of semanticChecks) {
+    it(`Can recognize that ${scenario}`, () => {
       assert(analyze(parse(format(source))))
     })
   }
-  for (const [scenario, source, errorMessagePattern] of errorFixture) {
-    it(`throws on ${scenario}`, done => {
+  for (const [scenario, source, errorMessagePattern] of semanticErrors ) {
+    it(`Throws on ${scenario}`, done => {
       assert.throws(() => analyze(parse(format(source))), errorMessagePattern)
       done()
     })

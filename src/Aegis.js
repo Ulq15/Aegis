@@ -27,7 +27,7 @@ function compile(source, outputType) {
     return parse(source)
   } else if (outputType === "analyzed") {
     return analyze(parse(source))
-  } else if ("js"===outputType) {
+  } else if ("js"=== outputType) {
     return generate(analyze(parse(source)))
   } else {
     return "Unknown output type"

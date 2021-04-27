@@ -145,7 +145,3 @@
 | Map<Integer, String> myMap = new HashMap<Integer, String>(); | myMap[NUM][chars];          |
 | myMap.put(1, “SomeString”);                                  | myMap ADD[1][“somestring”]; |
 | myMap.get(1);                                                | myMap GET[1];               |
-
-```
-
-```

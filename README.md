@@ -14,19 +14,19 @@ Aegis, a word that is derived from Greek mythology is defined as protection, bac
 
 ```
 Aegis {
-  Program         = classKey id ":" ClassBody endKey                                 --declare
-  ClassBody       = Declaration*
+  Program         = classKey id ":" ClassBody* endKey                                --declare
+  ClassBody       = Declaration
+                  | Statement
   Declaration     = VarDec ";"                                                       --var
                   | FunDec                                                           --func
   VarDec          = TypeExp Assignment                                               --initialize
                   | TypeExp id                                                       --declare
                   | FunCall                                                          --funCall              
   Assignment      = id "{" Comparand "}" "=" Exp                                     --array
-                  | id "ADD[" Exp "][" Exp "]"                                       --dictAdd
+                  | id addKey "[" Exp "][" Exp "]"                                   --dictAdd
                   | id "=" FunCall                                                   --funCall
                   | id "=" Exp                                                       --assign
-  FunDec          = id "(" Params ")" TypeExp? ":" Body endKey                       --declare
-  Params          = ListOf<Param, ",">
+  FunDec          = id "(" ListOf<Param, ","> ")" TypeExp ":" Body endKey            --declare
   Param           = TypeExp id                                                       --single
   Body            = Statement*
   Statement       = Conditional 
@@ -54,7 +54,7 @@ Aegis {
                   | FunCall
                   | "{" ListOf<Exp, ","> "}"                                         --arrayLiteral
                   | id "{" Comparand "}"                                             --accessArray
-                  | id "GET[" Exp "]"                                                --getDictionary
+                  | id getKey "[" Exp "]"                                            --getDictionary
                   | "(" Exp ")"                                                      --parens
                   | id                                                               --id
                   | literal                                                          --literal
@@ -65,29 +65,34 @@ Aegis {
   DoLoop          = "DO" "(" Assignment "," Exp "," Exp ")" ":" Body endKey          --assign
                   | "DO" "(" VarDec "," Exp "," Exp ")" ":" Body endKey              --declare
   Loop            = "LOOP" "(" Exp ")" ":" Body endKey                               --statement
-  crementOp       = "++" | "--"
   int             = digit+
   decimal         = digit+ ("." digit+)
   negative        = "-" (int | decimal)
-  boolean         = "TRUE" | "FALSE"
+  true            = "TRUE" ~alnum
+  false           = "FALSE" ~alnum
   char            = alnum
                   | space
   stringLiteral   = "\"" char* "\""
-  literal         = negative | decimal | int | boolean | stringLiteral
+  literal         = negative | decimal | int | true | false | stringLiteral
   logicop         = "&" | "|"
   compareOp       = "==" | "!=" | ">=" | "<=" | "<" | ">" 
   negateOp        = "!"
   addop           = "+" | "-" 
   multop          = "*" | "/" | moduloKey
   exponentop      = "**"
+  crementOp       = "++" | "--"
   numType         = "NUM"
   decimalType     = "DECI"
   booleanType     = "BOOL"
-  stringType      = "CHARS"
-  TypeExp         = ArrayType | DictionaryType | literalType
-  literalType     = numType | decimalType | booleanType | stringType
-  ArrayType       = TypeExp "{" Comparand? "}" 
-  DictionaryType  = "[" TypeExp "][" TypeExp "]" 
+  charsType       = "CHARS"
+  voidType        = "VOID"
+  TypeExp         = TypeExp "{" "}"                                                  --array
+                  | "[" TypeExp "]" "[" TypeExp "]"                                  --dictionary
+                  | numType                                                          --numType
+                  | decimalType                                                      --deciType
+                  | booleanType                                                      --boolType
+                  | charsType                                                        --charsType
+                  | voidType                                                         --voidType
   moduloKey       = "MOD"
   conditionalKey  = "IF" | "ELSE" | "ELSEIF"
   loopKey         = "LOOP" | "DO"
@@ -95,14 +100,24 @@ Aegis {
   endKey          = "END"
   returnKey       = "RETURN"
   classKey        = "CLASS"
-  keyword         = literalType
-                  | conditionalKey
+  addKey          = "ADD"
+  getKey          = "GET"
+  keyword         = conditionalKey
                   | loopKey
                   | printKey
                   | endKey
                   | returnKey
                   | moduloKey
                   | classKey
+                  | true
+                  | false
+                  | numType
+                  | decimalType
+                  | booleanType
+                  | charsType
+                  | voidType
+                  | addKey
+                  | getKey
   id              = ~keyword letter alnum*
   space          += "##" (~"\n" any)* ("\n" | end)                                   --singleLineComment
                   | "#*" (~"*#" any)* ("*#" | end)                                   --multiLineComment
@@ -253,7 +268,3 @@ Aegis {
 | Map<Integer, String> myMap = new HashMap<Integer, String>(); | myMap[NUM][chars];          |
 | myMap.put(1, “SomeString”);                                  | myMap ADD[1][“somestring”]; |
 | myMap.get(1);                                                | myMap GET[1];               |
-
-```
-
-```

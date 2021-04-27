@@ -9,7 +9,7 @@ function must(condition, errorMessage) {
 Object.assign(Type.prototype, {
   isEquivalentTo(target) {
     return this.description === target.description
-  },
+  }
   // isAssignableTo(target) {
   //   return this.isEquivalentTo(target)
   // }
@@ -36,21 +36,22 @@ Object.assign(Type.prototype, {
 //     return this.isEquivalentTo(target)
 //   }
 // })
+
 Type.BOOL = Object.assign(new Type(), { description: "BOOL" })
 Type.NUM = Object.assign(new Type(), { description: "NUM" })
 Type.DECI = Object.assign(new Type(), { description: "DECI" })
 Type.CHARS = Object.assign(new Type(), { description: "CHARS" })
 Type.VOID = Object.assign(new Type(), { description: "VOID" })
 const PRIMITIVES = {
-  "BOOL": Type.BOOL,
-  "NUM": Type.NUM,
-  "DECI": Type.DECI,
-  "CHARS": Type.CHARS,
-  "VOID": Type.VOID,
-  "number":Type.NUM,
-  "string":Type.CHARS,
-  "boolean":Type.BOOL,
-  isIn(type){
+  BOOL: Type.BOOL,
+  NUM: Type.NUM,
+  DECI: Type.DECI,
+  CHARS: Type.CHARS,
+  VOID: Type.VOID,
+  number: Type.NUM,
+  string: Type.CHARS,
+  boolean: Type.BOOL,
+  isIn(type) {
     return this[type] != undefined
   }
 }
@@ -71,46 +72,25 @@ const check = self => ({
   isBoolean() {
     must([Type.BOOL.description].includes(self.type.description), `Expected a boolean, found ${self.type.description}`)
   },
-  // isInteger() {
-  //   must([Type.NUM.description].includes(self.type.description), `Expected an integer, found ${self.type.description}`)
-  // },
-  // isAType() {
-  //   must(self instanceof Type, "Type expected")
-  // },
-  // isAnArray() {
-  //   must(self.type.constructor === ArrayType, "Array expected")
-  // },
-  // isDictionary() {
-  //   must(self.type.constructor === DictionaryType, "Dictionary expected")
-  // },
-  // hasSameTypeAs(other) {
-  //   must(self.type.isEquivalentTo(other.type), "Operands do not have the same type")
-  // },
-  // allHaveSameType() {
-  //   must(
-  //     self.slice(1).every(e => e.type.isEquivalentTo(self[0].type)),
-  //     "Not all elements have the same type"
-  //   )
-  // },
-  // isInsideAFunction(context) {
-  //   must(self.function, "Return can only appear in a function")
-  // },
+  returnsSomething() {
+    must(self.returnType != Type.VOID, `The Function must have a return type that is not VOID to RETURN something`)
+  },
+  isReturnableFrom(func) {
+    check(self).isAssignableTo(func.returnType)
+  },
+  isInsideAFunction() {
+    must(self.function, "Return can only appear in a function")
+  },
   isAssignableTo(type) {
     must(self.type.isEquivalentTo(type), `Cannot assign a ${self.type.description} to a ${type.description}`)
-  },
-  // match(targetTypes) {
-  //   must(targetTypes.length === self.length, `${targetTypes.length} argument(s) required but ${self.length} passed`)
-  //   targetTypes.forEach((type, i) => check(self[i]).isAssignableTo(type))
-  // }, //CHECK BELOW 4 PROBLEMS
-  // matchParametersOf(calleeType) {
-  //   check(self).match(calleeType.parameters)
-  // }
+  }
 })
 
 class Context {
   constructor(context) {
     this.localVars = new Map()
     this.primitives = PRIMITIVES
+    this.function = null
   }
   analyze(node) {
     return this[node.constructor.name](node)
@@ -139,7 +119,9 @@ class Context {
     f.returnType = this.analyze(f.returnType)
     f.parameters = f.parameters.map(params => this.analyze(params))
     this.add(f.id, f)
+    this.function = this.lookup(f.id)
     f.body = f.body.map(stmnt => this.analyze(stmnt))
+    //this.function = false
     return f
   }
   FunCall(c) {
@@ -164,10 +146,10 @@ class Context {
     return d
   }
   ReturnStatement(r) {
-    //check(this).isInsideAFunction()
-    //check(this.function).returnsSomething()
+    check(this).isInsideAFunction()
+    check(this.function).returnsSomething()
     r.expression = this.analyze(r.expression)
-    //check(r.expression).isReturnableFrom(this.function)
+    check(r.expression).isReturnableFrom(this.function)
     return r
   }
   PrintStatement(p) {
@@ -178,7 +160,6 @@ class Context {
     e.left = this.analyze(e.left)
     e.right = e.right.map(right => this.analyze(right))
     e.op = e.op.map(op => this.analyze(op))
-    //check(e.right).allHaveSameType()
     for (let i = 0; i < e.right.length; i++) {
       if (["+"].includes(e.op[i])) {
         check(e.left).isNumericOrString()
@@ -211,7 +192,6 @@ class Context {
   }
   ArrayLiteral(a) {
     a.list = a.list.map(item => this.analyze(item))
-    //check(a.list).allHaveSameType()
     return a
   }
   Assignment(a) {
@@ -280,27 +260,27 @@ class Context {
     return node.symbol
   }
   ArrayType(node) {
-    if(this.primitives.isIn(node.baseType.description)){
+    if (this.primitives.isIn(node.baseType.description)) {
       node.baseType = this.primitives[node.baseType.description]
     }
     return node
   }
   DictionaryType(node) {
-    if(this.primitives.isIn(node.keyType.description)){
+    if (this.primitives.isIn(node.keyType.description)) {
       node.keyType = this.primitives[node.keyType.description]
     }
-    if(this.primitives.isIn(node.storedType.description)){
+    if (this.primitives.isIn(node.storedType.description)) {
       node.storedType = this.primitives[node.storedType.description]
     }
     return node
   }
   Type(node) {
-    if(this.primitives.isIn(node.description)){
+    if (this.primitives.isIn(node.description)) {
       return this.primitives[node.description]
     }
   }
-  Literal(node){
-    if(this.primitives.isIn(node.type.description)){
+  Literal(node) {
+    if (this.primitives.isIn(node.type.description)) {
       node.type = this.primitives[node.type.description]
     }
     return node
