@@ -6,7 +6,7 @@ import fs from "fs"
 
 const examples = []
 const location = "./examples/example"
-for (let index = 1; index <= 7; index++) {
+for (let index = 1; index <= 8; index++) {
   const example = location + index + ".ags"
   const code = fs.readFileSync(example).toString()
   examples.push({ name: example, code: code })
@@ -18,7 +18,7 @@ const close = "\nEND"
 
 const source = fs.readFileSync(location + "7.ags").toString()
 
-const expectedAst = String.raw`   1 | Program id='Example7' classBody=[#2,#29,#48]
+const expectedAst = String.raw`   1 | Program id='Example7' classBody=[#2,#29,#46]
    2 | FunDec id='fibonacci' parameters=[#3] returnType=#4 body=[#5]
    3 | Variable id='n' type=#4
    4 | Type description='NUM'
@@ -46,32 +46,31 @@ const expectedAst = String.raw`   1 | Program id='Example7' classBody=[#2,#29,#4
   26 | FunCall callee=#2 parameters=[#27] type=#4
   27 | BinaryExpression left=#3 op=['-'] right=[#28] type=#4
   28 | Literal value='2' type=#4
-  29 | FunDec id='main' parameters=[] returnType=#30 body=[#31,#35,#38,#47]
+  29 | FunDec id='main' parameters=[] returnType=#30 body=[#31,#34,#37,#45]
   30 | Type description='VOID'
-  31 | VarInitializer target=#32 source=#34
+  31 | VarDec variable=#32
   32 | Variable id='fibList' type=#33
-  33 | Type description='CHARS'
-  34 | Literal value='' type=#33
-  35 | VarInitializer target=#36 source=#37
-  36 | Variable id='i' type=#4
-  37 | Literal value='0' type=#4
-  38 | Loop condition=#39 body=[#42,#46]
-  39 | BinaryExpression left=#40 op=['&'] right=[#41] type=#9
-  40 | BinaryExpression left=#36 op=['<'] right=[#3] type=#9
-  41 | BinaryExpression left=#36 op=['!='] right=[#3] type=#9
-  42 | Assignment target=#32 source=#43
-  43 | BinaryExpression left=#32 op=['+','+'] right=[#44,#45] type=#33
-  44 | FunCall callee=#2 parameters=[#36] type=#4
-  45 | Literal value=' ' type=#33
-  46 | PostfixExpression operand=#36 op='++'
-  47 | PrintStatement argument=#32
-  48 | FunCall callee=#29 parameters=[] type=#30`
+  33 | ArrayType description='NUM{}' baseType=#4
+  34 | VarInitializer target=#35 source=#36
+  35 | Variable id='i' type=#4
+  36 | Literal value='0' type=#4
+  37 | Loop condition=#38 body=[#41,#44]
+  38 | BinaryExpression left=#39 op=['&'] right=[#40] type=#9
+  39 | BinaryExpression left=#35 op=['<'] right=[#3] type=#9
+  40 | BinaryExpression left=#35 op=['!='] right=[#3] type=#9
+  41 | Assignment target=#42 source=#43
+  42 | ArrayAccess arrayVar=#32 indexExp=#35 type=#4
+  43 | FunCall callee=#2 parameters=[#35] type=#4
+  44 | PostfixExpression operand=#35 op='++' type=#4
+  45 | PrintStatement argument=#32
+  46 | FunCall callee=#29 parameters=[] type=#30`
 
-const semanticErrors  = [
+const semanticErrors = [
   ["using undeclared ids", "id + 1;", /Identifier id not declared/],
   ["redeclared ids", "NUM x = 1;\nNUM x = 1;", /Identifier x already declared/],
   ["calling nondeclared functions", "NUM x = fibonacci(13);", /Identifier fibonacci not declared/],
-  ["redeclaring functions", "END\ntestMethod()VOID:", /Identifier testMethod already declared/]
+  ["redeclaring functions", "END\ntestMethod()VOID:", /Identifier testMethod already declared/],
+  ["assigning a string to an integer variable","NUM x = \"chars\";",/Cannot assign a CHARS to a NUM/]
 ]
 
 const semanticChecks = [
@@ -80,13 +79,14 @@ const semanticChecks = [
   ["single line comment", "OUTPUT( 0 ); ## this is a comment"],
   ["comments with no text", 'OUTPUT("SomeString");##OUTPUT(TRUE);##'],
   ["non-Latin letters in identifiers", "NUM コンパイラ = 100;"],
-  ["variable prefix increment", "NUM x = 0;\nNUM y = ++x;"],
+  ["variable prefix increment", "NUM pre = 0;\nNUM y = ++pre;"],
+  ["variable postfix decrement", "NUM post = 0;\nNUM y = post--;"],
   ["logical negate", "BOOL x=TRUE; OUTPUT(!x);"],
   ["array literal assignment", "NUM{} arr = {1,2,3,4,5};"],
-  ["dictionary get", "[NUM][CHARS] dic;\ndic GET[1];"],
   ["Do loop with internal assignment", "NUM i;\nDO(i = 0, i < 10, i++):\nOUTPUT(i);\nEND"],
   ["dictionary add", '[NUM][CHARS] dic;\n dic ADD[0]["SomeValue"];'],
-  ["dictionary declare", "[NUM][BOOL] dictionary;"]
+  ["dictionary declare", "[NUM][BOOL] dictionary;"],
+  ["dictionary get", `[NUM][CHARS] dic;\ndic ADD[1]["SomeValue"];\nOUTPUT(dic GET[1] == "SomeValue");`],
 ]
 
 function format(test) {
@@ -100,7 +100,7 @@ describe("The Analyzer", () => {
   })
 })
 
-describe("Tha Analyzer", () => {
+describe("The Analyzer", () => {
   for (const { name, code } of examples) {
     it(`Can analyze ${name}`, () => {
       assert(analyze(parse(code)))
@@ -111,8 +111,9 @@ describe("Tha Analyzer", () => {
       assert(analyze(parse(format(source))))
     })
   }
-  for (const [scenario, source, errorMessagePattern] of semanticErrors ) {
+  for (const [scenario, source, errorMessagePattern] of semanticErrors) {
     it(`Throws on ${scenario}`, done => {
+      //console.log(analyze(parse(format(source))))
       assert.throws(() => analyze(parse(format(source))), errorMessagePattern)
       done()
     })

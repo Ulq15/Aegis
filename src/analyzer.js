@@ -8,53 +8,64 @@ function must(condition, errorMessage) {
 
 Object.assign(Type.prototype, {
   isEquivalentTo(target) {
-    return this.description === target.description
+    if((this.description === "NUM" || this.description == "DECI") && (target.description === "NUM" || target.description == "DECI"))
+      return true
+    else
+      return this.description === target.description
+  },
+  isAssignableTo(target) {
+    return this.isEquivalentTo(target)
   }
-  // isAssignableTo(target) {
-  //   return this.isEquivalentTo(target)
-  // }
 })
 
-// Object.assign(ArrayType.prototype, {
-//   isEquivalentTo(target) {
-//     return target.constructor === ArrayType && this.baseType.isEquivalentTo(target.baseType)
-//   },
-//   isAssignableTo(target) {
-//     return this.isEquivalentTo(target)
-//   }
-// })
+Object.assign(ArrayType.prototype, {
+  isEquivalentTo(target) {
+    return target.constructor === ArrayType && this.baseType.isEquivalentTo(target.baseType)
+  },
+  isAssignableTo(target) {
+    return this.isEquivalentTo(target)
+  }
+})
 
-// Object.assign(DictionaryType.prototype, {
-//   isEquivalentTo(target) {
-//     return (
-//       target.constructor === DictionaryType &&
-//       this.keyType.isEquivalentTo(target.keyType) &&
-//       this.storedType.isEquivalentTo(target.storedType)
-//     )
-//   },
-//   isAssignableTo(target) {
-//     return this.isEquivalentTo(target)
-//   }
-// })
+Object.assign(DictionaryType.prototype, {
+  isEquivalentTo(target) {
+    return (
+      target.constructor === DictionaryType &&
+      this.keyType.isEquivalentTo(target.keyType) &&
+      this.storedType.isEquivalentTo(target.storedType)
+    )
+  },
+  isAssignableTo(target) {
+    return this.isEquivalentTo(target)
+  }
+})
+
 
 Type.BOOL = Object.assign(new Type(), { description: "BOOL" })
 Type.NUM = Object.assign(new Type(), { description: "NUM" })
 Type.DECI = Object.assign(new Type(), { description: "DECI" })
 Type.CHARS = Object.assign(new Type(), { description: "CHARS" })
 Type.VOID = Object.assign(new Type(), { description: "VOID" })
+
 const PRIMITIVES = {
   BOOL: Type.BOOL,
   NUM: Type.NUM,
   DECI: Type.DECI,
   CHARS: Type.CHARS,
   VOID: Type.VOID,
-  number: Type.NUM,
-  string: Type.CHARS,
-  boolean: Type.BOOL,
   isIn(type) {
     return this[type] != undefined
   }
 }
+const ARRAYS ={
+  BOOL: new ArrayType(Type.BOOL),
+  NUM: new ArrayType(Type.NUM),
+  DECI: new ArrayType(Type.DECI),
+  CHARS: new ArrayType(Type.CHARS)
+}
+
+
+
 
 const check = self => ({
   isNumeric() {
@@ -82,7 +93,21 @@ const check = self => ({
     must(self.function, "Return can only appear in a function")
   },
   isAssignableTo(type) {
-    must(self.type.isEquivalentTo(type), `Cannot assign a ${self.type.description} to a ${type.description}`)
+    if(type.constructor === ArrayType && self.type === ARRAYS[self.type]){
+      must(self.baseType.isAssignableTo(type.baseType), `Cannot assign an Array of ${self.baseType.description} to an Array of ${type.baseType.description}`)
+    }
+    else if(self.type.constructor === DictionaryType){
+      must(self.type.isAssignableTo(type.storedType), `Cannot assign a ${self.type.description} to an Array of ${type.storedType.description}`)
+    }
+    else{
+      must(self.type.isAssignableTo(type), `Cannot assign a ${self.type.description} to a ${type.description}`)
+    }
+  },
+  allHaveSameType(){
+    must(
+      self.slice(1).every(e => e.type.isEquivalentTo(self[0].type)),
+      "Not all elements have the same type"
+    )
   }
 })
 
@@ -121,7 +146,6 @@ class Context {
     this.add(f.id, f)
     this.function = this.lookup(f.id)
     f.body = f.body.map(stmnt => this.analyze(stmnt))
-    //this.function = false
     return f
   }
   FunCall(c) {
@@ -134,6 +158,7 @@ class Context {
     v.target = new Variable(v.type, v.assignment.target)
     v.target = this.analyze(v.target)
     v.source = this.analyze(v.assignment.source)
+    check(v.source).isAssignableTo(v.target.type)
     delete v.assignment
     delete v.type
     return v
@@ -163,19 +188,24 @@ class Context {
     for (let i = 0; i < e.right.length; i++) {
       if (["+"].includes(e.op[i])) {
         check(e.left).isNumericOrString()
+        check(e.right[i]).isNumericOrString()
+        check(e.right[i]).isAssignableTo(e.left.type)
         e.type = e.left.type
       } else if (["-", "*", "/", "MOD", "**"].includes(e.op[i])) {
         check(e.left).isNumeric()
+        check(e.right[i]).isNumeric()
+        check(e.right[i]).isAssignableTo(e.left.type)
         e.type = e.left.type
       } else if (["<", ">", "<=", ">="].includes(e.op[i])) {
         check(e.left).isNumericOrString()
-        e.type = Type.BOOL
+        check(e.right[i]).isNumericOrString()
+        e.type = this.primitives["BOOL"]
       } else if (["==", "!="].includes(e.op[i])) {
-        e.type = Type.BOOL
+        e.type = this.primitives["BOOL"]
       } else if (["&", "|"].includes(e.op[i])) {
         check(e.left).isBoolean()
         check(e.right[i]).isBoolean()
-        e.type = Type.BOOL
+        e.type = this.primitives["BOOL"]
       }
     }
     return e
@@ -183,15 +213,30 @@ class Context {
   PrefixExpression(e) {
     e.operand = this.analyze(e.operand)
     e.op = this.analyze(e.op)
+    if(["++","--"].includes(e.op)){
+      check(e.operand).isNumeric()
+      e.type = this.primitives["NUM"]
+    }
+    else if(e.op === "!"){
+      check(e.operand).isBoolean()
+      e.type = this.primitives["BOOL"]
+    }
     return e
   }
   PostfixExpression(e) {
     e.operand = this.analyze(e.operand)
     e.op = this.analyze(e.op)
+    if(["++","--"].includes(e.op)){
+      check(e.operand).isNumeric()
+      e.type = this.primitives["NUM"]
+    }
     return e
   }
   ArrayLiteral(a) {
     a.list = a.list.map(item => this.analyze(item))
+    check(a.list).allHaveSameType()
+    a.baseType = this.primitives[a.list[0].type.description]
+    a.type = ARRAYS[a.baseType]
     return a
   }
   Assignment(a) {

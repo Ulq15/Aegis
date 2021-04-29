@@ -11,10 +11,10 @@ CLASS Example7:
         END
     END
     main() VOID:
-        CHARS fibList = "";
+        NUM{} fibList;
         NUM i = 0;
         LOOP(i<n & i!=n):
-            fibList = fibList + fibonacci(i)+ " ";
+            fibList{i} =fibonacci(i);
             i++;
         END
         OUTPUT( fibList );

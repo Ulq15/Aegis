@@ -1,5 +1,14 @@
 CLASS Example1:
-  main() VOID:
-    NUM{} results ={1, 2};
+  [NUM][BOOL] dictionary;
+  populate() VOID:
+    DO(NUM index = 0, index <=10, index++):
+      IF(index MOD 2 == 0):
+        dictionary ADD[index][TRUE];
+      ELSE:
+        dictionary ADD[index][FALSE];
+      END
+    END
   END
+  populate();
+  OUTPUT(dictionary GET[0] == TRUE);
 END
