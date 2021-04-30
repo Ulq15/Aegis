@@ -70,7 +70,7 @@ const semanticErrors = [
   ["redeclared ids", "NUM x = 1;\nNUM x = 1;", /Identifier x already declared/],
   ["calling nondeclared functions", "NUM x = fibonacci(13);", /Identifier fibonacci not declared/],
   ["redeclaring functions", "END\ntestMethod()VOID:", /Identifier testMethod already declared/],
-  ["assigning a string to an integer variable","NUM x = \"chars\";",/Cannot assign a CHARS to a NUM/]
+  ["assigning a string to an integer variable", 'NUM x = "chars";', /Cannot assign a CHARS to a NUM/]
 ]
 
 const semanticChecks = [
@@ -86,7 +86,7 @@ const semanticChecks = [
   ["Do loop with internal assignment", "NUM i;\nDO(i = 0, i < 10, i++):\nOUTPUT(i);\nEND"],
   ["dictionary add", '[NUM][CHARS] dic;\n dic ADD[0]["SomeValue"];'],
   ["dictionary declare", "[NUM][BOOL] dictionary;"],
-  ["dictionary get", `[NUM][CHARS] dic;\ndic ADD[1]["SomeValue"];\nOUTPUT(dic GET[1] == "SomeValue");`],
+  ["dictionary get", `[NUM][CHARS] dic;\ndic ADD[1]["SomeValue"];\nOUTPUT(dic GET[1] == "SomeValue");`]
 ]
 
 function format(test) {

@@ -12,16 +12,13 @@ const makeTabs = (num, line) => {
 }
 
 const translateOperator = operator => {
-  if(operator === "MOD"){
+  if (operator === "MOD") {
     return "%"
-  }
-  else if(operator === "&"){
+  } else if (operator === "&") {
     return "&&"
-  }
-  else if( operator === "|"){
+  } else if (operator === "|") {
     return "||"
-  }
-  else{
+  } else {
     return operator
   }
 }
@@ -55,14 +52,11 @@ export default function generate(program) {
       this.tabNum--
       output.push(makeTabs(this.tabNum, "}"))
     },
-    Param(node) {
-      return targetName(node)
-    },
     FunCall(node) {
       let line = `${targetName(node.callee)}(${node.parameters.map(param => gen(param)).join(", ")})`
       if (inLine) {
         return line
-      }else {
+      } else {
         output.push(makeTabs(this.tabNum, line + ";"))
       }
     },
@@ -71,7 +65,7 @@ export default function generate(program) {
         return `let ${gen(node.target)} = ${gen(node.source)}`
       } else {
         let prev = inLine
-        inLine=true
+        inLine = true
         output.push(makeTabs(this.tabNum, `let ${gen(node.target)} = ${gen(node.source)};`))
         inLine = prev
       }
@@ -122,9 +116,9 @@ export default function generate(program) {
     Assignment(node) {
       let line = `${gen(node.target)} = `
       if (inLine) {
-        return line+`${gen(node.source)}`
+        return line + `${gen(node.source)}`
       } else {
-        output.push(makeTabs(this.tabNum, line+`${gen(node.source)};`))
+        output.push(makeTabs(this.tabNum, line + `${gen(node.source)};`))
       }
     },
     ArrayLiteral(node) {
@@ -173,7 +167,7 @@ export default function generate(program) {
       let prevInLine = inLine
       inLine = true
       let line = `for(${gen(node.iterator)}; `
-      line += gen(node.range) +"; "
+      line += gen(node.range) + "; "
       line += gen(node.steps) + ") {"
       inLine = prevInLine
       output.push(makeTabs(this.tabNum, line))
@@ -185,24 +179,20 @@ export default function generate(program) {
     Variable(node) {
       return targetName(node)
     },
-    String(node) {
-      return node
-    },
-    Array(node){
+    Array(node) {
       return node.map(item => gen(item))
     },
-    Literal(node){
-      if(node.type.description == "CHARS"){
-        return "\""+node.value+"\""
-      }
-      else{
+    Literal(node) {
+      if (node.type.description == "CHARS") {
+        return '"' + node.value + '"'
+      } else {
         return node.value
       }
-    },
+    }
   }
 
   gen(program)
   return output.join("\n")
 }
 
-export {makeTabs}
+export { makeTabs }

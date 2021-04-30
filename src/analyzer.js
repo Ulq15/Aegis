@@ -8,10 +8,12 @@ function must(condition, errorMessage) {
 
 Object.assign(Type.prototype, {
   isEquivalentTo(target) {
-    if((this.description === "NUM" || this.description == "DECI") && (target.description === "NUM" || target.description == "DECI"))
+    if (
+      (this.description === "NUM" || this.description == "DECI") &&
+      (target.description === "NUM" || target.description == "DECI")
+    )
       return true
-    else
-      return this.description === target.description
+    else return this.description === target.description
   },
   isAssignableTo(target) {
     return this.isEquivalentTo(target)
@@ -40,7 +42,6 @@ Object.assign(DictionaryType.prototype, {
   }
 })
 
-
 Type.BOOL = Object.assign(new Type(), { description: "BOOL" })
 Type.NUM = Object.assign(new Type(), { description: "NUM" })
 Type.DECI = Object.assign(new Type(), { description: "DECI" })
@@ -57,15 +58,12 @@ const PRIMITIVES = {
     return this[type] != undefined
   }
 }
-const ARRAYS ={
+const ARRAYS = {
   BOOL: new ArrayType(Type.BOOL),
   NUM: new ArrayType(Type.NUM),
   DECI: new ArrayType(Type.DECI),
   CHARS: new ArrayType(Type.CHARS)
 }
-
-
-
 
 const check = self => ({
   isNumeric() {
@@ -93,17 +91,21 @@ const check = self => ({
     must(self.function, "Return can only appear in a function")
   },
   isAssignableTo(type) {
-    if(type.constructor === ArrayType && self.type === ARRAYS[self.type]){
-      must(self.baseType.isAssignableTo(type.baseType), `Cannot assign an Array of ${self.baseType.description} to an Array of ${type.baseType.description}`)
-    }
-    else if(self.type.constructor === DictionaryType){
-      must(self.type.isAssignableTo(type.storedType), `Cannot assign a ${self.type.description} to an Array of ${type.storedType.description}`)
-    }
-    else{
+    if (type.constructor === ArrayType && self.type === ARRAYS[self.type]) {
+      must(
+        self.baseType.isAssignableTo(type.baseType),
+        `Cannot assign an Array of ${self.baseType.description} to an Array of ${type.baseType.description}`
+      )
+    } else if (self.type.constructor === DictionaryType) {
+      must(
+        self.type.isAssignableTo(type.storedType),
+        `Cannot assign a ${self.type.description} to an Array of ${type.storedType.description}`
+      )
+    } else {
       must(self.type.isAssignableTo(type), `Cannot assign a ${self.type.description} to a ${type.description}`)
     }
   },
-  allHaveSameType(){
+  allHaveSameType() {
     must(
       self.slice(1).every(e => e.type.isEquivalentTo(self[0].type)),
       "Not all elements have the same type"
@@ -213,11 +215,10 @@ class Context {
   PrefixExpression(e) {
     e.operand = this.analyze(e.operand)
     e.op = this.analyze(e.op)
-    if(["++","--"].includes(e.op)){
+    if (["++", "--"].includes(e.op)) {
       check(e.operand).isNumeric()
       e.type = this.primitives["NUM"]
-    }
-    else if(e.op === "!"){
+    } else if (e.op === "!") {
       check(e.operand).isBoolean()
       e.type = this.primitives["BOOL"]
     }
@@ -226,7 +227,7 @@ class Context {
   PostfixExpression(e) {
     e.operand = this.analyze(e.operand)
     e.op = this.analyze(e.op)
-    if(["++","--"].includes(e.op)){
+    if (["++", "--"].includes(e.op)) {
       check(e.operand).isNumeric()
       e.type = this.primitives["NUM"]
     }
