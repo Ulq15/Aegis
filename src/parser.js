@@ -98,6 +98,9 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   Primary_parens(_open, exp, _close) {
     return exp.ast()
   },
+  Primary_prefixparens(op, parens ){
+    return new AST.PrefixExpression(op.ast(), parens.ast())
+  },
   Primary_id(id) {
     return Symbol(id.sourceString)
   },
@@ -171,13 +174,19 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return new AST.Operator(this.sourceString)
   },
   int(_){
-    return new AST.Literal(this.sourceString, new AST.Type("NUM"))
+    return new AST.Literal(BigInt(this.sourceString), new AST.Type("NUM"))
   },
-  decimal(_integer , _dot, _fraction){
-    return new AST.Literal(this.sourceString, new AST.Type("DECI"))
+  decimal(_){
+    return new AST.Literal(Number(this.sourceString), new AST.Type("DECI"))
   },
-  negative(_, num){
+  negative_num(_op, num){
+    return new AST.Literal((-1) * Number(num.sourceString), new AST.Type("NUM"))
+  },
+  negative_deci(_op, num){
     return new AST.Literal((-1) * Number(num.sourceString), new AST.Type("DECI"))
+  },
+  negative_id(_op, id){
+    return new AST.PrefixExpression(op.ast(), id.ast())
   },
   false(_){
     return new AST.Literal(false, new AST.Type("BOOL"))
@@ -188,6 +197,9 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   stringLiteral(_open, chars, _close){
     return new AST.Literal(chars.sourceString, new AST.Type("CHARS"))
   },
+  prefixOps(_){
+    return new AST.Operator(this.sourceString)
+  }
 })
 
 export default function parse(sourceCode) {

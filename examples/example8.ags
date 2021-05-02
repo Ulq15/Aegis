@@ -1,4 +1,4 @@
-CLASS Example1:
+CLASS Example8:
   [NUM][BOOL] dictionary;
   populate() VOID:
     DO(NUM index = 0, index <=10, index++):

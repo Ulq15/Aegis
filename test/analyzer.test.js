@@ -19,7 +19,7 @@ const close = "\nEND"
 const source = fs.readFileSync(location + "7.ags").toString()
 
 const expectedAst = String.raw`   1 | Program id='Example7' classBody=[#2,#29,#46]
-   2 | FunDec id='fibonacci' parameters=[#3] returnType=#4 body=[#5]
+   2 | FunctionDeclaration id='fibonacci' parameters=[#3] returnType=#4 body=[#5]
    3 | Variable id='n' type=#4
    4 | Type description='NUM'
    5 | Conditional ifStatement=#6 elseIfStatements=[#12] elseStatement=[#20]
@@ -40,18 +40,18 @@ const expectedAst = String.raw`   1 | Program id='Example7' classBody=[#2,#29,#4
   20 | ConditionalELSE body=[#21]
   21 | ReturnStatement expression=#22
   22 | BinaryExpression left=#23 op=['+'] right=[#26] type=#4
-  23 | FunCall callee=#2 parameters=[#24] type=#4
+  23 | FunctionCall callee=#2 parameters=[#24] type=#4
   24 | BinaryExpression left=#3 op=['-'] right=[#25] type=#4
   25 | Literal value='1' type=#4
-  26 | FunCall callee=#2 parameters=[#27] type=#4
+  26 | FunctionCall callee=#2 parameters=[#27] type=#4
   27 | BinaryExpression left=#3 op=['-'] right=[#28] type=#4
   28 | Literal value='2' type=#4
-  29 | FunDec id='main' parameters=[] returnType=#30 body=[#31,#34,#37,#45]
+  29 | FunctionDeclaration id='main' parameters=[] returnType=#30 body=[#31,#34,#37,#45]
   30 | Type description='VOID'
-  31 | VarDec variable=#32
+  31 | VariableDeclaration variable=#32
   32 | Variable id='fibList' type=#33
   33 | ArrayType description='NUM{}' baseType=#4
-  34 | VarInitializer target=#35 source=#36
+  34 | VariableAssignment target=#35 source=#36
   35 | Variable id='i' type=#4
   36 | Literal value='0' type=#4
   37 | Loop condition=#38 body=[#41,#44]
@@ -60,10 +60,10 @@ const expectedAst = String.raw`   1 | Program id='Example7' classBody=[#2,#29,#4
   40 | BinaryExpression left=#35 op=['!='] right=[#3] type=#9
   41 | Assignment target=#42 source=#43
   42 | ArrayAccess arrayVar=#32 indexExp=#35 type=#4
-  43 | FunCall callee=#2 parameters=[#35] type=#4
+  43 | FunctionCall callee=#2 parameters=[#35] type=#4
   44 | PostfixExpression operand=#35 op='++' type=#4
   45 | PrintStatement argument=#32
-  46 | FunCall callee=#29 parameters=[] type=#30`
+  46 | FunctionCall callee=#29 parameters=[] type=#30`
 
 const semanticErrors = [
   ["using undeclared ids", "id + 1;", /Identifier id not declared/],

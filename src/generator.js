@@ -89,16 +89,17 @@ export default function generate(program) {
     },
     BinaryExpression(node) {
       let line = `${gen(node.left)} `
+      
       let prevInLine = inLine
       inLine = true
       for (let index = 0; index < node.op.length; index++) {
-        line += `${translateOperator(node.op[index])} ${gen(node.right[index])} `
+        line += `${translateOperator(gen(node.op[index]))} ${gen(node.right[index])} `
       }
       inLine = prevInLine
       return line
     },
     PrefixExpression(node) {
-      let line = `${node.op}${gen(node.operand)}`
+      let line = `${gen(node.op)}${gen(node.operand)}`
       if (inLine) {
         return line
       } else {
@@ -106,7 +107,7 @@ export default function generate(program) {
       }
     },
     PostfixExpression(node) {
-      let line = `${gen(node.operand)}${node.op}`
+      let line = `${gen(node.operand)}${gen(node.op)}`
       if (inLine) {
         return line
       } else {
@@ -181,6 +182,9 @@ export default function generate(program) {
     },
     Array(node) {
       return node.map(item => gen(item))
+    },
+    Operator(node){
+      return node.symbol
     },
     Literal(node) {
       if (node.type.description == "CHARS") {

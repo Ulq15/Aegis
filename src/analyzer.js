@@ -42,11 +42,6 @@ Object.assign(DictionaryType.prototype, {
   }
 })
 
-Type.BOOL = Object.assign(new Type(), { description: "BOOL" })
-Type.NUM = Object.assign(new Type(), { description: "NUM" })
-Type.DECI = Object.assign(new Type(), { description: "DECI" })
-Type.CHARS = Object.assign(new Type(), { description: "CHARS" })
-Type.VOID = Object.assign(new Type(), { description: "VOID" })
 
 const PRIMITIVES = {
   BOOL: Type.BOOL,
@@ -58,6 +53,7 @@ const PRIMITIVES = {
     return this[type] != undefined
   }
 }
+
 const ARRAYS = {
   BOOL: new ArrayType(Type.BOOL),
   NUM: new ArrayType(Type.NUM),
@@ -96,7 +92,7 @@ const check = self => ({
         self.baseType.isAssignableTo(type.baseType),
         `Cannot assign an Array of ${self.baseType.description} to an Array of ${type.baseType.description}`
       )
-    } else if (self.type.constructor === DictionaryType) {
+    } else if (self.constructor === DictionaryType) {
       must(
         self.type.isAssignableTo(type.storedType),
         `Cannot assign a ${self.type.description} to an Array of ${type.storedType.description}`
@@ -186,39 +182,41 @@ class Context {
   BinaryExpression(e) {
     e.left = this.analyze(e.left)
     e.right = e.right.map(right => this.analyze(right))
-    e.op = e.op.map(op => this.analyze(op))
+    e.oper = e.op.map(op => op.symbol)
+    
     for (let i = 0; i < e.right.length; i++) {
-      if (["+"].includes(e.op[i])) {
+      if (["+"].includes(e.oper[i])) {
         check(e.left).isNumericOrString()
         check(e.right[i]).isNumericOrString()
         check(e.right[i]).isAssignableTo(e.left.type)
         e.type = e.left.type
-      } else if (["-", "*", "/", "MOD", "**"].includes(e.op[i])) {
+      } else if (["-", "*", "/", "MOD", "**"].includes(e.oper[i])) {
         check(e.left).isNumeric()
         check(e.right[i]).isNumeric()
         check(e.right[i]).isAssignableTo(e.left.type)
         e.type = e.left.type
-      } else if (["<", ">", "<=", ">="].includes(e.op[i])) {
+      } else if (["<", ">", "<=", ">="].includes(e.oper[i])) {
         check(e.left).isNumericOrString()
         check(e.right[i]).isNumericOrString()
         e.type = this.primitives["BOOL"]
-      } else if (["==", "!="].includes(e.op[i])) {
+      } else if (["==", "!="].includes(e.oper[i])) {
         e.type = this.primitives["BOOL"]
-      } else if (["&", "|"].includes(e.op[i])) {
+      } else if (["&", "|"].includes(e.oper[i])) {
         check(e.left).isBoolean()
         check(e.right[i]).isBoolean()
         e.type = this.primitives["BOOL"]
       }
     }
+    delete e.oper
     return e
   }
   PrefixExpression(e) {
     e.operand = this.analyze(e.operand)
     e.op = this.analyze(e.op)
-    if (["++", "--"].includes(e.op)) {
+    if (["++", "--"].includes(e.op.symbol)) {
       check(e.operand).isNumeric()
       e.type = this.primitives["NUM"]
-    } else if (e.op === "!") {
+    } else if (e.op.symbol === "!") {
       check(e.operand).isBoolean()
       e.type = this.primitives["BOOL"]
     }
@@ -227,7 +225,7 @@ class Context {
   PostfixExpression(e) {
     e.operand = this.analyze(e.operand)
     e.op = this.analyze(e.op)
-    if (["++", "--"].includes(e.op)) {
+    if (["++", "--"].includes(e.op.symbol)) {
       check(e.operand).isNumeric()
       e.type = this.primitives["NUM"]
     }
@@ -299,37 +297,37 @@ class Context {
   Array(a) {
     return a.map(item => this.analyze(item))
   }
-  Symbol(node) {
-    return this.lookup(node.description)
+  Symbol(symb) {
+    return this.lookup(symb.description)
   }
-  Operator(node) {
-    return node.symbol
+  Operator(op) {
+    return op
   }
-  ArrayType(node) {
-    if (this.primitives.isIn(node.baseType.description)) {
-      node.baseType = this.primitives[node.baseType.description]
+  ArrayType(arrType) {
+    if (this.primitives.isIn(arrType.baseType.description)) {
+      arrType.baseType = this.primitives[arrType.baseType.description]
     }
-    return node
+    return arrType
   }
-  DictionaryType(node) {
-    if (this.primitives.isIn(node.keyType.description)) {
-      node.keyType = this.primitives[node.keyType.description]
+  DictionaryType(dicType) {
+    if (this.primitives.isIn(dicType.keyType.description)) {
+      dicType.keyType = this.primitives[dicType.keyType.description]
     }
-    if (this.primitives.isIn(node.storedType.description)) {
-      node.storedType = this.primitives[node.storedType.description]
+    if (this.primitives.isIn(dicType.storedType.description)) {
+      dicType.storedType = this.primitives[dicType.storedType.description]
     }
-    return node
+    return dicType
   }
-  Type(node) {
-    if (this.primitives.isIn(node.description)) {
-      return this.primitives[node.description]
+  Type(typeNode) {
+    if (this.primitives.isIn(typeNode.description)) {
+      return this.primitives[typeNode.description]
     }
   }
-  Literal(node) {
-    if (this.primitives.isIn(node.type.description)) {
-      node.type = this.primitives[node.type.description]
+  Literal(lit) {
+    if (this.primitives.isIn(lit.type.description)) {
+      lit.type = this.primitives[lit.type.description]
     }
-    return node
+    return lit
   }
 }
 

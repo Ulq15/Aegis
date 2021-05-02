@@ -170,25 +170,47 @@ function formatAST(node) {
 
   function tag(node) {
     if (tags.has(node) || typeof node !== "object" || node === null) return
-    tags.set(node, tags.size + 1)
+    if (node.symbol) return
+    else tags.set(node, tags.size + 1)
     for (const child of Object.values(node)) {
       Array.isArray(child) ? child.forEach(tag) : tag(child)
     }
   }
-
+  function formalize(name){
+    if(name === "FunDec"){
+      return "FunctionDeclaration"
+    } else if(name === "VarInitializer"){
+      return "VariableAssignment"
+    } else if(name === "VarDec"){
+      return "VariableDeclaration"
+    } else if(name === "FunCall"){
+      return "FunctionCall"
+    } else{
+      return name
+    }
+  }
   function* lines() {
     function view(e) {
       if (tags.has(e)) return `#${tags.get(e)}`
+      if (typeof e === "symbol") return e.description
       if (Array.isArray(e)) return `[${e.map(view)}]`
+      if (e.symbol) return `\'${e.symbol}\'`
       return util.inspect(e)
     }
     for (const [node, id] of [...tags.entries()].sort((a, b) => a[1] - b[1])) {
       let [type, props] = [node.constructor.name, ""]
       Object.entries(node).forEach(([k, v]) => (props += ` ${k}=${view(v)}`))
-      yield `${String(id).padStart(4, " ")} | ${type}${props}`
+      yield `${String(id).padStart(4, " ")} | ${formalize(type)}${props}`
     }
   }
 
   tag(node)
   return [...lines()].join("\n")
 }
+
+Type.BOOL = Object.assign(new Type(), { description: "BOOL" })
+Type.NUM = Object.assign(new Type(), { description: "NUM" })
+Type.DECI = Object.assign(new Type(), { description: "DECI" })
+Type.CHARS = Object.assign(new Type(), { description: "CHARS" })
+Type.VOID = Object.assign(new Type(), { description: "VOID" })
+

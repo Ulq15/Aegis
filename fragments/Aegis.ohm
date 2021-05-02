@@ -41,6 +41,7 @@ Aegis {
                   | id "{" Comparand "}"                                             --accessArray
                   | id getKey "[" Exp "]"                                            --getDictionary
                   | "(" Exp ")"                                                      --parens
+                  | prefixOps Primary_parens                                         --prefixparens
                   | id                                                               --id
                   | literal                                                          --literal
   Conditional     = If ElseIf* Else? endKey               
@@ -51,8 +52,10 @@ Aegis {
                   | "DO" "(" VarDec "," Exp "," Exp ")" ":" Body endKey              --declare
   Loop            = "LOOP" "(" Exp ")" ":" Body endKey                               --statement
   int             = digit+
-  decimal         = digit+ ("." digit+)
-  negative        = "-" (int | decimal)
+  decimal         = int "." int                                                      --deci
+  negative        = "-" decimal                                                      --deci
+                  | "-" int                                                          --num
+                  | "-" id                                                           --id
   true            = "TRUE" ~alnum
   false           = "FALSE" ~alnum
   char            = alnum
@@ -66,6 +69,7 @@ Aegis {
   multop          = "*" | "/" | moduloKey
   exponentop      = "**"
   crementOp       = "++" | "--"
+  prefixOps       = negateOp | crementOp | "-"
   numType         = "NUM"
   decimalType     = "DECI"
   booleanType     = "BOOL"
