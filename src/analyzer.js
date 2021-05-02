@@ -221,7 +221,8 @@ class Context {
       e.type = this.primitives["BOOL"]
     } else if (e.op.symbol === "-") {
       check(e.operand).isNumeric()
-      e.type = e.operand.type
+      e.operand.value = -1*e.operand.value
+      return e.operand
     }
     return e
   }
