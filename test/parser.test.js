@@ -5,7 +5,7 @@ import util from "util"
 
 const examples = []
 const location = "./examples/example"
-for (let index = 1; index <= 7; index++) {
+for (let index = 1; index <= 9; index++) {
   const example = location + index + ".ags"
   const code = fs.readFileSync(example).toString()
   examples.push({ name: example, code: code })
@@ -56,12 +56,12 @@ const ex1AST = `   1 | Program id=Example1 classBody=[#2,#35]
    9 | VariableAssignment type=#10 assignment=#11
   10 | Type description='NUM'
   11 | Assignment target=count source=#12
-  12 | Literal value='0' type=#13
+  12 | Literal value=0n type=#13
   13 | Type description='NUM'
   14 | VariableAssignment type=#15 assignment=#16
   15 | Type description='NUM'
   16 | Assignment target=x source=#17
-  17 | Literal value='1' type=#18
+  17 | Literal value=1n type=#18
   18 | Type description='NUM'
   19 | Loop condition=#20 body=[#21,#25,#33]
   20 | BinaryExpression left=x op=['<='] right=[y]
@@ -72,7 +72,7 @@ const ex1AST = `   1 | Program id=Example1 classBody=[#2,#35]
   25 | Conditional ifStatement=#26 elseIfStatements=[] elseStatement=[]
   26 | ConditionalIF exp=#27 body=[#30,#32]
   27 | BinaryExpression left=z op=['=='] right=[#28]
-  28 | Literal value='0' type=#29
+  28 | Literal value=0n type=#29
   29 | Type description='NUM'
   30 | Assignment target=#31 source=x
   31 | ArrayAccess arrayVar=results indexExp=count
@@ -80,7 +80,7 @@ const ex1AST = `   1 | Program id=Example1 classBody=[#2,#35]
   33 | PostfixExpression operand=x op='++'
   34 | PrintStatement argument=results
   35 | FunctionCall callee=factors parameters=[#36]
-  36 | Literal value='250' type=#37
+  36 | Literal value=250n type=#37
   37 | Type description='NUM'`
 
 describe("Parsing Example AST", () => {

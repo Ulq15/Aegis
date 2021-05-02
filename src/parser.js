@@ -174,7 +174,7 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
     return new AST.Operator(this.sourceString)
   },
   int(_){
-    return new AST.Literal(BigInt(this.sourceString), new AST.Type("NUM"))
+    return new AST.Literal(Number(this.sourceString), new AST.Type("NUM"))
   },
   decimal(_){
     return new AST.Literal(Number(this.sourceString), new AST.Type("DECI"))
@@ -185,8 +185,8 @@ const astBuilder = aegisGrammar.createSemantics().addOperation("ast", {
   negative_deci(_op, num){
     return new AST.Literal((-1) * Number(num.sourceString), new AST.Type("DECI"))
   },
-  negative_id(_op, id){
-    return new AST.PrefixExpression(op.ast(), id.ast())
+  negative_id(op, id){
+    return new AST.PrefixExpression(new AST.Operator(op.sourceString), id.ast())
   },
   false(_){
     return new AST.Literal(false, new AST.Type("BOOL"))

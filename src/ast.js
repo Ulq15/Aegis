@@ -213,4 +213,3 @@ Type.NUM = Object.assign(new Type(), { description: "NUM" })
 Type.DECI = Object.assign(new Type(), { description: "DECI" })
 Type.CHARS = Object.assign(new Type(), { description: "CHARS" })
 Type.VOID = Object.assign(new Type(), { description: "VOID" })
-

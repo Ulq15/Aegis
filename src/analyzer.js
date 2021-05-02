@@ -1,4 +1,4 @@
-import { Variable, Type, ArrayType, DictionaryType } from "./ast.js"
+import { Variable, Type, ArrayType, DictionaryType, BinaryExpression, Operator, Literal } from "./ast.js"
 
 function must(condition, errorMessage) {
   if (!condition) {
@@ -29,19 +29,18 @@ Object.assign(ArrayType.prototype, {
   }
 })
 
-Object.assign(DictionaryType.prototype, {
-  isEquivalentTo(target) {
-    return (
-      target.constructor === DictionaryType &&
-      this.keyType.isEquivalentTo(target.keyType) &&
-      this.storedType.isEquivalentTo(target.storedType)
-    )
-  },
-  isAssignableTo(target) {
-    return this.isEquivalentTo(target)
-  }
-})
-
+// Object.assign(DictionaryType.prototype, {
+//   isEquivalentTo(target) {
+//     return (
+//       target.constructor === DictionaryType &&
+//       this.keyType.isEquivalentTo(target.keyType) &&
+//       this.storedType.isEquivalentTo(target.storedType)
+//     )
+//   },
+//   isAssignableTo(target) {
+//     return this.isEquivalentTo(target)
+//   }
+// })
 
 const PRIMITIVES = {
   BOOL: Type.BOOL,
@@ -92,11 +91,11 @@ const check = self => ({
         self.baseType.isAssignableTo(type.baseType),
         `Cannot assign an Array of ${self.baseType.description} to an Array of ${type.baseType.description}`
       )
-    } else if (self.constructor === DictionaryType) {
-      must(
-        self.type.isAssignableTo(type.storedType),
-        `Cannot assign a ${self.type.description} to an Array of ${type.storedType.description}`
-      )
+      // } else if (self.constructor === DictionaryType) {
+      //   must(
+      //     self.type.isAssignableTo(type.storedType),
+      //     `Cannot assign a ${self.type.description} to an Array of ${type.storedType.description}`
+      //   )
     } else {
       must(self.type.isAssignableTo(type), `Cannot assign a ${self.type.description} to a ${type.description}`)
     }
@@ -183,7 +182,7 @@ class Context {
     e.left = this.analyze(e.left)
     e.right = e.right.map(right => this.analyze(right))
     e.oper = e.op.map(op => op.symbol)
-    
+
     for (let i = 0; i < e.right.length; i++) {
       if (["+"].includes(e.oper[i])) {
         check(e.left).isNumericOrString()
@@ -215,13 +214,19 @@ class Context {
     e.op = this.analyze(e.op)
     if (["++", "--"].includes(e.op.symbol)) {
       check(e.operand).isNumeric()
-      e.type =  e.operand.type
+      e.type = e.operand.type
     } else if (e.op.symbol === "!") {
       check(e.operand).isBoolean()
       e.type = this.primitives["BOOL"]
     } else if (e.op.symbol === "-") {
       check(e.operand).isNumeric()
-      e.operand.value = -1*e.operand.value
+      if(e.operand.value){
+        e.operand.value = -1 * e.operand.value
+      }
+      if(e.operand.id){
+        e.type = e.operand.type
+        return e
+      }
       return e.operand
     }
     return e

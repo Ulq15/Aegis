@@ -1,7 +1,7 @@
 
 //import * as AST from "./ast.js"
 
-import { Type } from "./ast.js"
+import { Literal, Type } from "./ast.js"
 
 export default function optimize(node) {
   return optimizers[node.constructor.name](node)
@@ -23,6 +23,7 @@ const optimizers = {
   },
   VarInitializer(vInit) {
     vInit.source = optimize(vInit.source)
+    vInit.target.stored = vInit.source
     return vInit
   },
   VarDec(vDec) { 
@@ -44,16 +45,10 @@ const optimizers = {
   },
   PrefixExpression(preExp) {
     preExp.operand = optimize(preExp.operand)
-    console.log(JSON.stringify(preExp))
-    if(preExp.operand.type === Type.NUM || preExp.operand.type === Type.DECI){
-      if(preExp.op.symbol === "-"){
-        
-        if(preExp.operand.constructor.name === "Literal"){
-          preExp.operand.value*=(-1)
-        } else {
-          
-        }
-      }
+    if(preExp.op.symbol ==="-"){
+      if(preExp.operand.id){
+        return optimize(new Literal(preExp.operand.stored.value *(-1), preExp.operand.type))
+      } 
     }
     return preExp
   },

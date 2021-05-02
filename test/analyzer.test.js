@@ -6,7 +6,7 @@ import fs from "fs"
 
 const examples = []
 const location = "./examples/example"
-for (let index = 1; index <= 8; index++) {
+for (let index = 1; index <= 9; index++) {
   const example = location + index + ".ags"
   const code = fs.readFileSync(example).toString()
   examples.push({ name: example, code: code })
@@ -25,27 +25,27 @@ const expectedAst = String.raw`   1 | Program id='Example7' classBody=[#2,#29,#4
    5 | Conditional ifStatement=#6 elseIfStatements=[#12] elseStatement=[#20]
    6 | ConditionalIF exp=#7 body=[#10]
    7 | BinaryExpression left=#3 op=['=='] right=[#8] type=#9
-   8 | Literal value='0' type=#4
+   8 | Literal value=0n type=#4
    9 | Type description='BOOL'
   10 | ReturnStatement expression=#11
-  11 | Literal value='0' type=#4
+  11 | Literal value=0n type=#4
   12 | ConditionalELSEIF exp=#13 body=[#18]
   13 | BinaryExpression left=#14 op=['|'] right=[#16] type=#9
   14 | BinaryExpression left=#3 op=['=='] right=[#15] type=#9
-  15 | Literal value='1' type=#4
+  15 | Literal value=1n type=#4
   16 | BinaryExpression left=#3 op=['=='] right=[#17] type=#9
-  17 | Literal value='2' type=#4
+  17 | Literal value=2n type=#4
   18 | ReturnStatement expression=#19
-  19 | Literal value='1' type=#4
+  19 | Literal value=1n type=#4
   20 | ConditionalELSE body=[#21]
   21 | ReturnStatement expression=#22
   22 | BinaryExpression left=#23 op=['+'] right=[#26] type=#4
   23 | FunctionCall callee=#2 parameters=[#24] type=#4
   24 | BinaryExpression left=#3 op=['-'] right=[#25] type=#4
-  25 | Literal value='1' type=#4
+  25 | Literal value=1n type=#4
   26 | FunctionCall callee=#2 parameters=[#27] type=#4
   27 | BinaryExpression left=#3 op=['-'] right=[#28] type=#4
-  28 | Literal value='2' type=#4
+  28 | Literal value=2n type=#4
   29 | FunctionDeclaration id='main' parameters=[] returnType=#30 body=[#31,#34,#37,#45]
   30 | Type description='VOID'
   31 | VariableDeclaration variable=#32
@@ -53,7 +53,7 @@ const expectedAst = String.raw`   1 | Program id='Example7' classBody=[#2,#29,#4
   33 | ArrayType description='NUM{}' baseType=#4
   34 | VariableAssignment target=#35 source=#36
   35 | Variable id='i' type=#4
-  36 | Literal value='0' type=#4
+  36 | Literal value=0n type=#4
   37 | Loop condition=#38 body=[#41,#44]
   38 | BinaryExpression left=#39 op=['&'] right=[#40] type=#9
   39 | BinaryExpression left=#35 op=['<'] right=[#3] type=#9

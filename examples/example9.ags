@@ -1,5 +1,7 @@
 CLASS Example9:
-  NUM x = -(2.1);
-  ##NUM y = -2;
-
+  DECI x = -(2.2);
+  NUM y = -2;
+  DECI z = -2.2;
+  y = -x;
+  z = y + z;
 END
