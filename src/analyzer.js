@@ -215,10 +215,13 @@ class Context {
     e.op = this.analyze(e.op)
     if (["++", "--"].includes(e.op.symbol)) {
       check(e.operand).isNumeric()
-      e.type = this.primitives["NUM"]
+      e.type =  e.operand.type
     } else if (e.op.symbol === "!") {
       check(e.operand).isBoolean()
       e.type = this.primitives["BOOL"]
+    } else if (e.op.symbol === "-") {
+      check(e.operand).isNumeric()
+      e.type = e.operand.type
     }
     return e
   }
