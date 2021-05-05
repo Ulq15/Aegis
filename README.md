@@ -8,7 +8,7 @@ https://patrickjayo.github.io/aegis/
 
 ## Presentation
 
-![Google Drive](https://docs.google.com/presentation/d/1fRCdLTDNPLnE6X3SXR3gmGLfLWao9xx8mjs2Dat19mg/edit?usp=sharing)
+[Google Drive](https://docs.google.com/presentation/d/1fRCdLTDNPLnE6X3SXR3gmGLfLWao9xx8mjs2Dat19mg/edit?usp=sharing)
 
 ## Pitch
 
