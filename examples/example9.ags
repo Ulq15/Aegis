@@ -4,4 +4,5 @@ CLASS Example9:
   DECI z = -2.2;
   y = -x;
   z = y + z;
+  NUM w = 2 + 3;
 END
