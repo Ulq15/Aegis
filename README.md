@@ -6,6 +6,10 @@
 
 https://patrickjayo.github.io/aegis/
 
+## Presentation
+
+![Google Drive](https://docs.google.com/presentation/d/1fRCdLTDNPLnE6X3SXR3gmGLfLWao9xx8mjs2Dat19mg/edit?usp=sharing)
+
 ## Pitch
 
 Aegis, a word that is derived from Greek mythology is defined as protection, backing, or support to an individual person or organization. Similarly, Aegis is a programming language that aims to support the user and their experience with the langauge. With hints of Java, Aegis was designed to be statically a typed language with a more basic and simpler to understand structure, such as structuring the language to be similar to pseudo-code as well as replacing curly braces with colons for scope limitations. Aegis seeks to improve code functionality while honing in on code readability!
